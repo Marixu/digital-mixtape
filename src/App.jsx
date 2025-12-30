@@ -44,7 +44,7 @@ const isMacDesktop = navigator.platform === 'MacIntel' && navigator.maxTouchPoin
   const [labelMessagePos, setLabelMessagePos] = React.useState({ x: 50, y: 30 });
   const [siteBackground, setSiteBackground] = React.useState(null);
   const [glowEnabled, setGlowEnabled] = React.useState(false);
-  const [glowColor, setGlowColor] = React.useState("#f1aedcff");
+  const [glowColor, setGlowColor] = React.useState("#f1aedc");
   const [isDarkBg, setIsDarkBg] = React.useState(false);
   const [activeButton, setActiveButton] = React.useState(null);
 // possible values: "rewind" | "stop" | "play" | "pause" | "ff" | "next"
@@ -2070,7 +2070,7 @@ if (isMobile) {
           style={{
             padding: "10px 24px",
             background: "transparent",
-            border: `1px solid ${isDarkBg ? "#fff" : "#565656ff"}`,
+            border: `1px solid ${isDarkBg ? "#fff" : "#565656"}`,
             borderRadius: 20,
             fontFamily: "'Hoover', sans serif",
             fontSize: 13,
@@ -2213,7 +2213,7 @@ if (isMobile) {
     {/* Track list */}
     <div style={{ marginTop: 24, display: "grid", gap: 12 }}>
       {tracks.length >= MAX_TRACKS && (
-        <p style={{ fontSize: 12, color: "#d62424ff", marginTop: -8 }}>
+        <p style={{ fontSize: 12, color: "#d62424", marginTop: -8 }}>
           MAXIMUM OF 5 SONGS
         </p>
       )}
@@ -4154,7 +4154,7 @@ transform: isPreviewMode || appMode === "receiver" ? "none" : isTablet ? "none" 
               transform: "translateY(-50%)",
               cursor: isEditable ? "ew-resize": "default",
               padding: "3px 8px",
-              color: "#202020ff",
+              color: "#202020",
               fontSize: 19,
               fontWeight: 800,
               userSelect: "none",
@@ -4901,7 +4901,7 @@ const styles = {
   page: {
   minHeight: "100vh",
   background: "#ffffff", // ← STATIC ONLY
-  color: "#000000ff",
+  color: "#000000",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
@@ -4929,7 +4929,7 @@ const styles = {
   },
   // body of the left white
   card: {
-    background: "#ffffffff",
+    background: "#ffffff",
     border: "1px solid #E5E5EA",
     borderRadius: 20,
     boxShadow: "0 8px 30px rgba(0,0,0,.06)",
@@ -5044,7 +5044,7 @@ tabs: {
   alignItems: "center",
   justifyContent: "center",
   cursor: "pointer",
-  color: "#838383ff",
+  color: "#838383",
   padding: 0,
 },
 
@@ -5067,7 +5067,7 @@ labelButton:
   fontWeight: 700,
   lineHeight: "1",
   padding: 0,
-  color: "#868686ff",
+  color: "#868686",
 },
 
 select: {
