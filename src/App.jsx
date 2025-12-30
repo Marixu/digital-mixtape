@@ -2166,6 +2166,7 @@ if (isMobile) {
     background: "#f6f6fa",
     border: "1px solid #e4e4e7",
     borderRadius: 14,
+    fontFamily: "'Hoover', 'sans serif'",
     fontSize: 14,
     fontWeight: 600,
     color: "#444",
@@ -3061,7 +3062,7 @@ if (isMobile) {
     justifyContent: "center",
     justifyItems: isPreviewMode || appMode === "receiver" ? "center" : "start",
     alignSelf: "flex-start",
-    marginLeft: "auto",
+    marginLeft: isPreviewMode || appMode === "receiver" ? "auto" : "60px",
     marginRight: "auto",
     gap: isTablet ? 20 : 36,
   }}
@@ -3161,6 +3162,7 @@ if (isMobile) {
       borderRadius: 14,
       fontSize: 14,
       fontWeight: 600,
+      fontFamily: "'Hoover', sans serif",
       color: "#444",
       cursor: "pointer",
       display: "flex",
@@ -3169,7 +3171,7 @@ if (isMobile) {
       gap: 8,
     }}
   >
-    🎙️ Record Voice Memo
+     Record Voice Message
   </button>
 </div>
 
@@ -3750,7 +3752,7 @@ justifyContent: "center",
 marginTop: isTablet ? 20 : 50,
 marginLeft: "auto",
 marginRight: "auto",
-transform: isPreviewMode || appMode === "receiver" ? "none" : isTablet ? "none" : "translateX(190px)",
+transform: isPreviewMode || appMode === "receiver" ? "none" : isTablet ? "none" : "translateX(160px)",
 }}
 >
      <div
@@ -4738,18 +4740,19 @@ transform: isPreviewMode || appMode === "receiver" ? "none" : isTablet ? "none" 
         padding: "30px 40px",
         textAlign: "center",
         minWidth: 280,
+        fontFamily: "'Hoover', sans serif",
         boxShadow: "0 10px 40px rgba(0,0,0,0.2)",
       }}
     >
       <h3 style={{ margin: "0 0 20px", color: "#000", fontSize: 20 }}>
-        🎙️ Voice Recorder
+       Voice Recorder
       </h3>
       
       <div
         style={{
           fontSize: 48,
-          fontFamily: "'JetBrains Mono', monospace",
-          color: isRecording ? "#ef4444" : "#000",
+          fontFamily: "'Hoover', sans serif",
+          color: isRecording ? "#1a1a1a" : "#000",
           marginBottom: 24,
         }}
       >
@@ -4761,7 +4764,7 @@ transform: isPreviewMode || appMode === "receiver" ? "none" : isTablet ? "none" 
           style={{
             width: 16,
             height: 16,
-            background: "#ef4444",
+            background: "#1a1a1a",
             borderRadius: "50%",
             margin: "0 auto 20px",
             animation: "pulse 1s infinite",
@@ -4775,7 +4778,7 @@ transform: isPreviewMode || appMode === "receiver" ? "none" : isTablet ? "none" 
             onClick={startRecording}
             style={{
               padding: "12px 24px",
-              background: "#ef4444",
+              background: "#ff69b4",
               color: "#fff",
               border: "none",
               borderRadius: 10,
@@ -4791,7 +4794,7 @@ transform: isPreviewMode || appMode === "receiver" ? "none" : isTablet ? "none" 
             onClick={stopRecording}
             style={{
               padding: "12px 24px",
-              background: "#3a2d3f",
+              background: "#1a1a1a",
               color: "#fff",
               border: "none",
               borderRadius: 10,
