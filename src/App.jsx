@@ -3041,7 +3041,7 @@ if (isMobile) {
         paddingLeft: isTablet ? 100 : 0,
       }}
     >
-      Digital Mixtape
+      HELLO
     </div>
   )}
 </div>
