@@ -3020,18 +3020,7 @@ if (isMobile) {
     </button>
   </div>
 
-  {/* divider line + shadow */}
-  <div
-    style={{
-      marginTop: 18,
-      height: 1,
-      width: "100%",
-      background: isDarkBg ? "rgba(255,255,255,0.35)" : "rgba(0,0,0,0.18)",
-      boxShadow: isDarkBg
-        ? "0 2px 6px rgba(0,0,0,0.45)"
-        : "0 2px 6px rgba(0,0,0,0.12)",
-    }}
-  />
+ 
 
   {/* title under (home only) */}
   {currentPage === "home" && (
@@ -3058,11 +3047,11 @@ if (isMobile) {
 
 {currentPage === "home" && (
   <div style={{ width: "100%", display: "flex", justifyContent: "center", alignItems: "flex-start" }}>
-    <div
+  <div
   style={{
     ...styles.main,
-    gridTemplateColumns: isPreviewMode
-      ? "minmax(400px, 600px)"
+    gridTemplateColumns: isPreviewMode || appMode === "receiver"
+      ? "1fr"
       : isTablet
         ? "minmax(200px, 350px) minmax(400px, 550px)"
         : "minmax(250px, 432px) minmax(500px, 800px)",
@@ -3070,8 +3059,9 @@ if (isMobile) {
     padding: isTablet ? "0 15px" : 0,
     boxSizing: "border-box",
     justifyContent: "center",
+    justifyItems: isPreviewMode || appMode === "receiver" ? "center" : "start",
     alignSelf: "flex-start",
-    marginLeft: isTablet ? "auto" : isPreviewMode ? "auto" : "53px",
+    marginLeft: "auto",
     marginRight: "auto",
     gap: isTablet ? 20 : 36,
   }}
@@ -3734,37 +3724,35 @@ style={{
   gap: 16, 
   width: "100%", 
   alignSelf: "start",
-  transform: isTablet
-  ? "none"
-  : isPreviewMode
-      ? "translateX(20px)" // slide left into center
+  transform: isPreviewMode || appMode === "receiver"
+    ? "none"
+    : isTablet
+      ? "none"
       : "translateX(50px)",
-  transition:
-  appMode === "editor"
+  transition: appMode === "editor" && !isPreviewMode
     ? "transform 600ms cubic-bezier(0.22, 1, 0.36, 1)"
     : "none",
   willChange: "transform",
-  
-  }}>
+}}>
   <div style={{ display: "flex", gap: 20, alignItems: "center", width: "100%"
  }}>
     {/* MIXTAPE */}
-    <div className="mixtape-wrapper"
-        style={{
-    width: "100%",
-    maxWidth: isTablet ? "500px" : "100%",
-    aspectRatio: "4 / 3",
-    background: "transparent",
-    overflow: "visible",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: isTablet ? 20 : 50,
-    marginLeft: isTablet ? "auto" : -25,
-    marginRight: isTablet ? "auto" : 0,
-    transform: isTablet ? "none" : "translateX(190px)",
-  }}
-    >
+   <div className="mixtape-wrapper"
+    style={{
+width: "100%",
+maxWidth: isPreviewMode || appMode === "receiver" ? "650px" : isTablet ? "500px" : "100%",
+aspectRatio: "4 / 3",
+background: "transparent",
+overflow: "visible",
+display: "flex",
+alignItems: "center",
+justifyContent: "center",
+marginTop: isTablet ? 20 : 50,
+marginLeft: "auto",
+marginRight: "auto",
+transform: isPreviewMode || appMode === "receiver" ? "none" : isTablet ? "none" : "translateX(190px)",
+}}
+>
      <div
   ref={tapeRef}
   style={{
