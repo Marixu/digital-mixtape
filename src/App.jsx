@@ -3141,7 +3141,7 @@ if (isMobile) {
       }
     }}
     style={{
-      marginTop: 12,
+      marginTop: 20,
       width: "100%",
       padding: "14px 16px",
       background: "#f6f6fa",
@@ -3725,7 +3725,6 @@ if (isMobile) {
     flexDirection: "column",
     alignItems: "center",
 
-    transition: "transform 600ms cubic-bezier(0.22, 1, 0.36, 1)",
   }}
 >
   <div style={{ display: "flex", gap: 20, alignItems: "center", justifyContent: "center", width: "100%"
