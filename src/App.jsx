@@ -3720,7 +3720,7 @@ if (isMobile) {
     width: "100%",
     maxWidth: 650,
     margin: "0 auto",
-    paddingLeft: 100,
+    paddingLeft: 20,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -4315,7 +4315,8 @@ marginTop: isTablet ? 10 : 20,
 {isPreviewMode && isMP3 && (
   <div
     style={{
-      width: 591,
+      width: "100%",
+      maxWidth: 591, 
       marginTop: -15,
       fontFamily: "'Hoover', sans serif",
       color: isDarkBg ? "#fff" : "#000",
