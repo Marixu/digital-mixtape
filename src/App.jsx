@@ -1329,7 +1329,7 @@ if (isMobile) {
     style={{
       color: isDarkBg ? "#fff" : "#000",
       textShadow: isDarkBg ? "0 1px 3px rgba(0,0,0,0.45)" : "none",
-      fontSize: isTablet ? 36 : undefined,
+      fontSize: isTablet ? 24 : undefined,
       marginTop: isTablet ? 10 : undefined,
     }}
   >
@@ -3032,11 +3032,11 @@ if (isMobile) {
     <div
       onClick={() => setCurrentPage("home")}
       style={{
-        marginTop: isTablet ? 15: 30,
+        marginTop: isTablet ? 15: 15,
         marginBottom: isTablet ? 20 : -5,
         textAlign: "center",
         fontFamily: "'Array', sans-serif",
-        fontSize: "clamp(36px, 5vw, 60px)",
+        fontSize: "clamp(24px, 5vw, 60px)",
         letterSpacing: "0.03em",
         color: isDarkBg ? "#fff" : "#000",
         textShadow: isDarkBg ? "0 1px 3px rgba(0,0,0,0.45)" : "none",
@@ -3731,7 +3731,7 @@ justifyContent: "center",
 marginTop: isTablet ? 20 : 50,
 marginLeft: "auto",
 marginRight: "auto",
-transform: isPreviewMode || appMode === "receiver" ? "none" : isTablet ? "none" : "translateX(20%)",
+transform: isPreviewMode || appMode === "receiver" ? "none" : isTablet ? "none" : "translateX(0%)",
 }}
 >
      <div
