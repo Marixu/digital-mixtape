@@ -4314,6 +4314,7 @@ marginTop: isTablet ? 10 : 20,
 {isPreviewMode && isMP3 && (
   <div
     style={{
+      width: 591,
       marginTop: -15,
       fontFamily: "'Hoover', sans serif",
       color: isDarkBg ? "#fff" : "#000",
