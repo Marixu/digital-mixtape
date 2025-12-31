@@ -2972,7 +2972,7 @@ if (isMobile) {
       alignItems: "center",
       maxWidth: 2200, 
       margin: "0 auto",
-      padding: "0 40px",
+      padding: "0 60px",
     }}
   >
     <button
