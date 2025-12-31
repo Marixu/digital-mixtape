@@ -2970,7 +2970,7 @@ if (isMobile) {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
-      maxWidth: 2000, 
+      maxWidth: 2200, 
       margin: "0 auto",
       padding: "0 40px",
     }}
