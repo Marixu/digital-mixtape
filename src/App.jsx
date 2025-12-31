@@ -3052,7 +3052,7 @@ if (isMobile) {
 
 
 {currentPage === "home" && (
-  <div style={{ width: "100%", display: "flex", justifyContent: "flex-start", alignItems: "flex-start",paddingLeft: "100px" }}> 
+  <div style={{ width: "100%", display: "flex", justifyContent: "flex-start", alignItems: "flex-start",paddingLeft: "80px" }}> 
   <div
   style={{
     ...styles.main,
@@ -3064,7 +3064,7 @@ if (isMobile) {
     width: isTablet ? "95%" : "min(1500px, 80vw)",
     padding: isTablet ? "0 15px" : 0,
     boxSizing: "border-box",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     justifyItems: "center",
     alignSelf: "flex-start",
     marginLeft: "auto",
