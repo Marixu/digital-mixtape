@@ -113,6 +113,7 @@ const recordingIntervalRef = React.useRef(null);
   const isMP3 = current?.type === "mp3" || current?.type === "audio";
   const [tapeVideoReady, setTapeVideoReady] = React.useState(false);
   const [rollerVideoReady, setRollerVideoReady] = React.useState(false);
+
   const [activeObject, setActiveObject] = React.useState(null);
   const [isReceiverReady, setIsReceiverReady] = React.useState(false);
 
@@ -1096,13 +1097,42 @@ React.useEffect(() => {
   const canPlay = (isPreviewMode || appMode === "receiver") && isPlaying;
   
   if (canPlay) {
-    tapeVideo?.play();
-    rollerVideo?.play();
+    // Force load and play on mobile
+    if (isMobile && tapeVideo) {
+      tapeVideo.load();
+      tapeVideo.play().catch(e => console.log('Tape video play failed:', e));
+    } else {
+      tapeVideo?.play();
+    }
+    
+    if (isMobile && rollerVideo) {
+      rollerVideo.load();
+      rollerVideo.play().catch(e => console.log('Roller video play failed:', e));
+    } else {
+      rollerVideo?.play();
+    }
   } else {
     tapeVideo?.pause();
     rollerVideo?.pause();
   }
-}, [isPlaying, isPreviewMode, appMode]);
+}, [isPlaying, isPreviewMode, appMode, isMobile]);
+
+// Force video load on mobile after component mounts
+React.useEffect(() => {
+  if (isMobile && (isPreviewMode || appMode === "receiver")) {
+    setTimeout(() => {
+      const tapeVideo = tapeVideoRef.current;
+      const rollerVideo = rollerVideoRef.current;
+      
+      if (tapeVideo) {
+        tapeVideo.load();
+      }
+      if (rollerVideo) {
+        rollerVideo.load();
+      }
+    }, 100);
+  }
+}, [isMobile, isPreviewMode, appMode]);
 
 // Also pause when exiting preview mode
 React.useEffect(() => {
@@ -1449,6 +1479,12 @@ if (isMobile) {
   playsInline
   webkit-playsinline="true"
   x5-playsinline="true"
+  onLoadedData={(e) => {
+    console.log('Tape video loaded');
+    if (isMobile && (isPreviewMode || appMode === "receiver") && isPlaying) {
+      e.target.play().catch(err => console.log('Auto-play failed:', err));
+    }
+  }}
   style={{
     position: "absolute",
     inset: 0,
@@ -1493,6 +1529,12 @@ if (isMobile) {
   playsInline
   webkit-playsinline="true"
   x5-playsinline="true"
+  onLoadedData={(e) => {
+    console.log('Roller video loaded');
+    if (isMobile && (isPreviewMode || appMode === "receiver") && isPlaying) {
+      e.target.play().catch(err => console.log('Auto-play failed:', err));
+    }
+  }}
   style={{
     position: "absolute",
     inset: 0,
@@ -1508,7 +1550,6 @@ if (isMobile) {
   <source src="/smallrollers.mov" type="video/mp4" />
   <source src="/smallrollers.webm" type="video/webm" />
 </video>
-
 
 {/* Label overlay (1, 2, 3, 4 buttons) */}
 {labelOverlay && (
@@ -2189,27 +2230,36 @@ if (isMobile) {
     {/* Voice Recorder Button */}
 <button
   onClick={async () => {
+    alert('Button clicked!'); // Debug
+    
     // Check if MediaRecorder is supported
     if (!window.MediaRecorder) {
-      alert("Voice recording is not supported on this browser. Please use Chrome, Safari, or Firefox.");
+      alert("Voice recording is not supported on this browser.");
       return;
     }
+    
+    alert('MediaRecorder supported'); // Debug
     
     // Try to get permission first
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      alert('Microphone permission granted'); // Debug
+      
       // Stop the test stream immediately
       stream.getTracks().forEach(track => track.stop());
+      
       // Now show the recorder
       setShowVoiceRecorder(true);
+      alert('Modal should show now'); // Debug
+      
     } catch (err) {
       console.error("Microphone error:", err);
       if (err.name === 'NotAllowedError') {
-        alert("Please allow microphone access in your browser settings to record voice memos.");
+        alert("Please allow microphone access in your browser settings.");
       } else if (err.name === 'NotFoundError') {
         alert("No microphone found on this device.");
       } else {
-        alert("Could not access microphone. Make sure you're using HTTPS and have a microphone connected.");
+        alert("Could not access microphone: " + err.message);
       }
     }
   }}
