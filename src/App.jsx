@@ -3052,7 +3052,7 @@ if (isMobile) {
 
 
 {currentPage === "home" && (
-  <div style={{ width: "100%", display: "flex", justifyContent: "flex-start", alignItems: "flex-start",paddingLeft: "80px" }}> 
+  <div style={{ width: "100%", display: "flex", justifyContent: "flex-start", alignItems: "flex-start",paddingLeft: "20px" }}> 
   <div
   style={{
     ...styles.main,
@@ -3726,7 +3726,7 @@ display: "flex",
 alignItems: "center",
 justifyContent: "center",
 marginTop: isTablet ? 10 : 20,
-marginLeft: "200px", //Mixtape goes left
+marginLeft: "250px", //Mixtape goes left when values go +
 marginRight: "auto",
 transform: "none",
 }}
