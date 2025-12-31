@@ -3713,10 +3713,12 @@ display: "flex",
 alignItems: "center",
 justifyContent: "center",
 marginTop: isTablet ? 10 : 20,
-transform: "translateX(-10vw)",
+transform:
+      isPreviewMode || appMode === "receiver"
+        ? "none"
+        : "translateX(-20vw)",
 marginLeft: "auto",
 marginRight: "auto",
-transform: "none",
 }}
 >
      <div
