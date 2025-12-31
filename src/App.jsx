@@ -849,42 +849,55 @@ const { error: uploadError } = await supabase.storage
   if (input) input.value = "";
 };
 
-
 const startRecording = async () => {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const stream = await navigator.mediaDevices.getUserMedia({ 
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        sampleRate: 44100
+      } 
+    });
     
-    // Find a supported mime type
-    let mimeType = 'audio/webm';
+    // iOS Safari primarily supports mp4/m4a
+    let mimeType = 'audio/mp4';
+    let options = {};
+    
     if (MediaRecorder.isTypeSupported('audio/mp4')) {
       mimeType = 'audio/mp4';
+      options = { mimeType: 'audio/mp4' };
     } else if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
       mimeType = 'audio/webm;codecs=opus';
+      options = { mimeType: 'audio/webm;codecs=opus' };
     } else if (MediaRecorder.isTypeSupported('audio/webm')) {
       mimeType = 'audio/webm';
-    } else if (MediaRecorder.isTypeSupported('audio/ogg')) {
-      mimeType = 'audio/ogg';
+      options = { mimeType: 'audio/webm' };
     }
-    
-    const options = MediaRecorder.isTypeSupported(mimeType) ? { mimeType } : {};
     
     mediaRecorderRef.current = new MediaRecorder(stream, options);
     audioChunksRef.current = [];
     
     mediaRecorderRef.current.ondataavailable = (e) => {
-      if (e.data.size > 0) {
+      if (e.data && e.data.size > 0) {
         audioChunksRef.current.push(e.data);
       }
     };
     
     mediaRecorderRef.current.onstop = async () => {
+      if (audioChunksRef.current.length === 0) {
+        alert('No audio recorded. Please try again.');
+        stream.getTracks().forEach(track => track.stop());
+        setShowVoiceRecorder(false);
+        setRecordingTime(0);
+        return;
+      }
+      
       const recordedMimeType = mediaRecorderRef.current.mimeType || mimeType;
       const audioBlob = new Blob(audioChunksRef.current, { type: recordedMimeType });
       
-      // Determine file extension
-      let extension = 'webm';
-      if (recordedMimeType.includes('mp4') || recordedMimeType.includes('m4a')) {
-        extension = 'm4a';
+      let extension = 'm4a';
+      if (recordedMimeType.includes('webm')) {
+        extension = 'webm';
       } else if (recordedMimeType.includes('ogg')) {
         extension = 'ogg';
       }
@@ -892,20 +905,17 @@ const startRecording = async () => {
       const fileName = `voice-memo-${Date.now()}.${extension}`;
       const file = new File([audioBlob], fileName, { type: recordedMimeType });
       
-      // Stop all tracks
       stream.getTracks().forEach(track => track.stop());
       
-      // Upload the recording
       await handleSongFiles([file]);
       
       setShowVoiceRecorder(false);
       setRecordingTime(0);
     };
     
-    mediaRecorderRef.current.start(1000); // Collect data every second
+    mediaRecorderRef.current.start(100); // Changed from 1000 to 100ms for iOS
     setIsRecording(true);
     
-    // Start timer
     recordingIntervalRef.current = setInterval(() => {
       setRecordingTime(t => t + 1);
     }, 1000);
@@ -1434,10 +1444,11 @@ if (isMobile) {
   ref={tapeVideoRef}
   autoPlay
   loop
-  preload="auto"
+  preload="metadata"
   muted
   playsInline
-  src={isIOS ? "/tapenew.mov" : "/tapenew.webm"}
+  webkit-playsinline="true"
+  x5-playsinline="true"
   style={{
     position: "absolute",
     inset: 0,
@@ -1449,7 +1460,10 @@ if (isMobile) {
     transform: "translateZ(0)",
     backfaceVisibility: "hidden",
   }}
-/>
+>
+  <source src="/tapenew.mov" type="video/mp4" />
+  <source src="/tapenew.webm" type="video/webm" />
+</video>
 
 
 {/* 2️⃣ Cover image (NO tape graphics) */}
@@ -1474,10 +1488,11 @@ if (isMobile) {
   ref={rollerVideoRef}
   autoPlay
   loop
-  preload="auto"
+  preload="metadata"
   muted
   playsInline
-  src={isIOS ? "/smallrollers.mov" : "/smallrollers.webm"}
+  webkit-playsinline="true"
+  x5-playsinline="true"
   style={{
     position: "absolute",
     inset: 0,
@@ -1489,7 +1504,10 @@ if (isMobile) {
     transform: "translateZ(0)",
     backfaceVisibility: "hidden",
   }}
-/>
+>
+  <source src="/smallrollers.mov" type="video/mp4" />
+  <source src="/smallrollers.webm" type="video/webm" />
+</video>
 
 
 {/* Label overlay (1, 2, 3, 4 buttons) */}
@@ -2083,7 +2101,6 @@ if (isMobile) {
       lineHeight: 1.6,
       position: "relative",
       zIndex: 10,
-      background: isDarkBg ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.8)",
       borderRadius: 12,
       maxWidth: 280,
       marginLeft: "auto",
@@ -3141,7 +3158,7 @@ if (isMobile) {
       }
     }}
     style={{
-      marginTop: 20,
+      marginTop: 25,
       width: "100%",
       padding: "14px 16px",
       background: "#f6f6fa",
