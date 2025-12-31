@@ -3720,7 +3720,7 @@ if (isMobile) {
     width: "100%",
     maxWidth: 650,
     margin: "0 auto",
-    transform: isPreviewMode ? "translateX(90px)" : "translateX(-20px)",
+    transform: isPreviewMode ? "translateX(80px)" : "none",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
