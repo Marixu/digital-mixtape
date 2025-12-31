@@ -3064,9 +3064,9 @@ if (isMobile) {
     padding: isTablet ? "0 15px" : 0,
     boxSizing: "border-box",
     justifyContent: "center",
-    justifyItems: isPreviewMode || appMode === "receiver" ? "center" : "start",
+    justifyItems: "center",
     alignSelf: "flex-start",
-    marginLeft: isPreviewMode || appMode === "receiver" ? "auto" : "60px",
+    marginLeft: "auto",
     marginRight: "auto",
     gap: isTablet ? 20 : 36,
   }}
@@ -3705,11 +3705,7 @@ style={{
   gap: 16, 
   width: "100%", 
   alignSelf: "start",
-  transform: isPreviewMode || appMode === "receiver"
-    ? "none"
-    : isTablet
-      ? "none"
-      : "translateX(8%)" ,
+  transform: "none",
   transition: appMode === "editor" && !isPreviewMode
     ? "transform 600ms cubic-bezier(0.22, 1, 0.36, 1)"
     : "none",

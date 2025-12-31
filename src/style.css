@@ -721,3 +721,14 @@ html, body {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.5; transform: scale(1.1); }
 }
+
+/* Fix left panel overflow on desktop */
+.left-column {
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+/* Ensure the card inside can scroll */
+.left-column > div {
+  max-height: 100%;
+}
