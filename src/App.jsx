@@ -3726,7 +3726,7 @@ display: "flex",
 alignItems: "center",
 justifyContent: "center",
 marginTop: isTablet ? 10 : 20,
-marginLeft: "-200px", //Mixtape goes left
+marginLeft: "200px", //Mixtape goes left
 marginRight: "auto",
 transform: "none",
 }}
