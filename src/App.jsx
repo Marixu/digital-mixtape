@@ -3717,7 +3717,7 @@ marginTop: isTablet ? 10 : 20,
 transform:
       isPreviewMode || appMode === "receiver"
         ? "none"
-        : "translateX(-20vw)",
+        : "translateX(-10vw)",
 }}
 >
      <div
