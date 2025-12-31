@@ -3052,7 +3052,7 @@ if (isMobile) {
 
 
 {currentPage === "home" && (
-  <div style={{ width: "100%", display: "flex", justifyContent: "flex-start", alignItems: "flex-start",paddingLeft: "80px" }}> 
+  <div style={{ width: "100%", display: "flex", justifyContent: "flex-start", alignItems: "flex-start",paddingLeft: "10px", }}> 
   <div
   style={{
     ...styles.main,
@@ -3069,7 +3069,7 @@ if (isMobile) {
     alignSelf: "flex-start",
     marginLeft: "auto",
     marginRight: "auto",
-    gap: isTablet ? 20 : -40,
+    gap: isTablet ? 20 : 10,
   }}
   className={isPreviewMode ? "preview-mode" : ""}
 >
