@@ -3021,18 +3021,19 @@ if (isMobile) {
     <div
       onClick={() => setCurrentPage("home")}
       style={{
-        marginTop: isTablet ? 15: 15,
-        marginBottom: isTablet ? 20 : -5,
-        textAlign: "center",
-        fontFamily: "'Array', sans-serif",
-        fontSize: "40px",
-        letterSpacing: "0.03em",
-        color: isDarkBg ? "#fff" : "#000",
-        textShadow: isDarkBg ? "0 1px 3px rgba(0,0,0,0.45)" : "none",
-        cursor: "pointer",
-        userSelect: "none",
-        paddingLeft: isTablet ? 100 : 0,
-      }}
+    marginTop: 15,
+    marginBottom: isTablet ? 20 : -5,
+    textAlign: "center",
+    fontFamily: "'Array', sans-serif",
+    fontSize: "40px",
+    letterSpacing: "0.03em",
+    color: isDarkBg ? "#fff" : "#000",
+    textShadow: isDarkBg ? "0 1px 3px rgba(0,0,0,0.45)" : "none",
+    cursor: "pointer",
+    userSelect: "none",
+    paddingLeft: isTablet ? 100 : 0,
+    visibility: currentPage === "home" ? "visible" : "hidden",
+  }}
     >
       Digital Mixtape
     </div>
