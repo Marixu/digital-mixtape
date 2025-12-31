@@ -3050,8 +3050,9 @@ if (isMobile) {
   )}
 </div>
 
+
 {currentPage === "home" && (
-  <div style={{ width: "100%", display: "flex", justifyContent: "center", alignItems: "flex-start" }}>
+  <div style={{ width: "100%", display: "flex", justifyContent: "flex-start", alignItems: "flex-start",paddingLeft: "80px" }}> 
   <div
   style={{
     ...styles.main,
@@ -3725,7 +3726,7 @@ display: "flex",
 alignItems: "center",
 justifyContent: "center",
 marginTop: isTablet ? 10 : 20,
-marginLeft: "-100px",
+marginLeft: "-100px", //Mixtape goes left
 marginRight: "auto",
 transform: "none",
 }}
