@@ -3709,7 +3709,7 @@ if (isMobile) {
   className="mixtape-panel"
   style={{
     display: "flex",
-    justifyContent: "center",
+    justifyContent: isPreviewMode ? "flex-start" : "center",
     width: "100%",
   }}
   >
@@ -3720,7 +3720,7 @@ if (isMobile) {
     width: "100%",
     maxWidth: 650,
     margin: "0 auto",
-    transform: "translateX(100px)",
+    transform: isPreviewMode ? "translateX(80px)" : "none",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
