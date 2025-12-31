@@ -118,15 +118,16 @@ button:focus-visible {
   justify-self: center;
 }
 
+.preview-mode.preview-enter .mixtape-wrapper {
+  transform: translateX(-80px);
+}
+
 .preview-mode .mixtape-wrapper {
   margin: 0 auto;
   transform: translateX(0);
   transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.preview-enter .mixtape-wrapper {
-  transform: translateX(-120px);
-}
 
 /* MIXTAPE WRAPPER */
 .mixtape-wrapper {
