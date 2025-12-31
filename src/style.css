@@ -122,10 +122,10 @@ button:focus-visible {
   animation: previewSlideIn 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-@keyframes previewSlideIn {
+@keyframes slideIn {
   from {
     opacity: 0;
-    transform: translateX(-14px);
+    transform: translateX(-24px);
   }
   to {
     opacity: 1;
