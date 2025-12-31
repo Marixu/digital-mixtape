@@ -2967,6 +2967,7 @@ if (isMobile) {
       <ReceiverLoading />
     ) : (
       <>
+      <div style={{ flex: 1 }}>
 {/* ================= DESKTOP HEADER (MATCH MOBILE) ================= */}
 <div
   className="desktop-header"
@@ -4611,7 +4612,7 @@ transform: "none",
 </button>
   </div>
 )}
-
+</div>
 
 
 {/* ================= DESKTOP FOOTER (MATCH MOBILE) ================= */}
