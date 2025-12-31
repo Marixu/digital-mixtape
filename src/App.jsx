@@ -3690,7 +3690,7 @@ style={{
   display: "flex", 
   flexDirection: "column", 
   alignItems: "center", 
-  gap: 16, 
+  gap: 50, 
   width: "100%", 
   alignSelf: "start",
   transform: "none",
@@ -3699,7 +3699,7 @@ style={{
     : "none",
   willChange: "transform",
 }}>
-  <div style={{ display: "flex", gap: 5, alignItems: "center", width: "100%"
+  <div style={{ display: "flex", gap: 20, alignItems: "center", width: "100%"
  }}>
     {/* MIXTAPE */}
    <div className="mixtape-wrapper"
