@@ -722,8 +722,7 @@ html, body {
   50% { opacity: 0.5; transform: scale(1.1); }
 }
 
-/* Fix left panel overflow on desktop */
 .left-column {
-  max-height: calc(100vh - 200px);
-  overflow-y: auto;
+  max-height: none;
+  overflow: visible;
 }

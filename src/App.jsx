@@ -4618,10 +4618,9 @@ transform: "none",
 <div
   className="desktop-footer"
   style={{
-  position: "relative",
-  bottom: "auto",
+  position: "fixed",
     marginTop: isTablet ? 60 : 40,
-    marginBottom: isTablet ? 40 : 10,
+    marginBottom: isTablet ? 40 : 20,
     left: 0,
     width: "100%",
     textAlign: "center",
