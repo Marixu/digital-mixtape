@@ -3724,6 +3724,8 @@ if (isMobile) {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+
+    transition: "transform 600ms cubic-bezier(0.22, 1, 0.36, 1)",
   }}
 >
   <div style={{ display: "flex", gap: 20, alignItems: "center", justifyContent: "center", width: "100%"
