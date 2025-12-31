@@ -4618,7 +4618,6 @@ transform: "none",
 <div
   className="desktop-footer"
   style={{
-  position: "fixed",
     marginTop: isTablet ? 60 : 40,
     marginBottom: isTablet ? 40 : 20,
     left: 0,
