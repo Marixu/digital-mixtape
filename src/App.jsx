@@ -3725,7 +3725,7 @@ display: "flex",
 alignItems: "center",
 justifyContent: "center",
 marginTop: isTablet ? 10 : 20,
-marginLeft: "100px",
+marginLeft: "-100px",
 marginRight: "auto",
 transform: "none",
 }}
