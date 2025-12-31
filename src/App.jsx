@@ -4438,7 +4438,7 @@ transform: isPreviewMode || appMode === "receiver" ? "none" : isTablet ? "none" 
       />
     </div>
 
-    <div style={{ fontSize: 20, marginTop: "40px", lineHeight: 1.7 }}>
+    <div style={{ fontSize: 14, marginTop: "40px", lineHeight: 1.2 }}>
       <p>
         Hello! I'm Maria, an interaction designer who builds experimental human-computer driven experiences.
       </p>
