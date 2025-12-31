@@ -3052,7 +3052,7 @@ if (isMobile) {
 
 
 {currentPage === "home" && (
-  <div style={{ width: "100%", display: "flex", justifyContent: "flex-start", alignItems: "flex-start",paddingLeft: "10px", }}> 
+  <div style={{ width: "95%", display: "flex", justifyContent: "flex-start", alignItems: "flex-start",paddingLeft: "10px", }}> 
   <div
   style={{
     ...styles.main,
