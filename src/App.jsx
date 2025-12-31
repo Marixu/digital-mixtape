@@ -2973,7 +2973,7 @@ if (isMobile) {
       width: "100%", 
       maxWidth: "none", 
       margin: "0 auto",
-      padding: "0 80px",
+      padding: "0 100px",
     }}
   >
     <button
