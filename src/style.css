@@ -1,3 +1,7 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 :root {
   font-family: 'Hoover', sans-serif;
   line-height: 1.5;
@@ -125,24 +129,6 @@ button:focus-visible {
   overflow: visible !important;
 }
 
-
-/* SPOTIFY/YOUTUBE EMBED */
-.spotify-embed-side {
-  width: 45%;
-  opacity: 0;
-  transform: translateX(20px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
-}
-
-.spotify-embed-side.show {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.spotify-embed-side iframe {
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-}
 
 /* PLAY BUTTON */
 .play-button {
@@ -694,51 +680,34 @@ img {
   transform: translate3d(0, 0, 0);
 }
 }/* ================= iPad / Tablet Layout (768px - 1024px) ================= */
+/* ✅ NEW - without !important */
 @media (min-width: 769px) and (max-width: 1024px) {
-  /* Main layout - stack vertically on iPad */
-  .App > div > div:has(.left-column) {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    gap: 30px !important;
-    width: 100% !important;
-    padding: 0 20px !important;
-    box-sizing: border-box !important;
-  }
-
-  /* Left panel - full width on iPad */
   .left-column {
-    width: 100% !important;
-    max-width: 500px !important;
-    order: 1 !important;
+    width: 100%;
+    max-width: 500px;
   }
 
-  /* Mixtape panel - center it */
   .mixtape-panel {
-    width: 100% !important;
-    max-width: 550px !important;
-    transform: none !important;
-    margin: 0 auto !important;
-    order: 2 !important;
+    width: 100%;
+    max-width: 550px;
+    transform: none;
+    margin: 0 auto;
   }
 
-  /* Mixtape wrapper */
   .mixtape-wrapper {
-    transform: none !important;
-    margin: 0 auto !important;
+    transform: none;
+    margin: 0 auto;
   }
 
-  /* Header spacing */
   .desktop-header-top {
-    padding: 0 40px !important;
+    padding: 0 40px;
   }
 
-  /* Footer positioning */
   .desktop-footer {
-    position: relative !important;
-    bottom: auto !important;
-    margin-top: 40px !important;
-    padding-bottom: 30px !important;
+    position: relative;
+    bottom: auto;
+    margin-top: 40px;
+    padding-bottom: 30px;
   }
 }
 

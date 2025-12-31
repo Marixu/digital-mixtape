@@ -20,17 +20,42 @@ function isValidUrl(value) {
 export default function App() {
 
   /* ---------- MOBILE ---------- */
-const isMobile = window.matchMedia("(max-width: 768px)").matches;
-// Better iPad detection - includes iPads up to 1366px (iPad Pro)
-const isTablet = window.matchMedia("(min-width: 769px) and (max-width: 1366px)").matches || 
-  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1 && window.innerWidth <= 1366);
+// ✅ GOOD - Use state and useEffect for client-side detection
+const [deviceInfo, setDeviceInfo] = React.useState({
+  isMobile: false,
+  isTablet: false,
+  isIOS: false,
+  isAndroid: false,
+  isSafari: false,
+  isMacDesktop: false,
+});
 
-// Detect platform
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
-  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-const isAndroid = /Android/.test(navigator.userAgent);
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-const isMacDesktop = navigator.platform === 'MacIntel' && navigator.maxTouchPoints === 0;
+// Run device detection only on client-side after mount
+React.useEffect(() => {
+  const checkDevice = () => {
+    const width = window.innerWidth;
+    const isTouchDevice = navigator.maxTouchPoints > 1;
+    const userAgent = navigator.userAgent;
+    const platform = navigator.platform;
+
+    setDeviceInfo({
+      isMobile: width <= 768,
+      isTablet: (width > 768 && width <= 1366) || 
+        (platform === 'MacIntel' && isTouchDevice && width <= 1366),
+      isIOS: /iPad|iPhone|iPod/.test(userAgent) || 
+        (platform === 'MacIntel' && isTouchDevice),
+      isAndroid: /Android/.test(userAgent),
+      isSafari: /^((?!chrome|android).)*safari/i.test(userAgent),
+      isMacDesktop: platform === 'MacIntel' && !isTouchDevice,
+    });
+  };
+
+  checkDevice();
+  window.addEventListener('resize', checkDevice);
+  return () => window.removeEventListener('resize', checkDevice);
+}, []);
+
+const { isMobile, isTablet, isIOS, isAndroid, isSafari, isMacDesktop } = deviceInfo;
 
 
   const [isLoadingSharedMixtape, setIsLoadingSharedMixtape] = React.useState(false);
@@ -67,7 +92,6 @@ const recordingIntervalRef = React.useRef(null);
   const [currentTime, setCurrentTime] = React.useState(0);
   const [totalDuration, setTotalDuration] = React.useState(0);
   const [textFont, setTextFont] = React.useState("Chubbo");
-  const [textSize, setTextSize] = React.useState(isMobile ? 16 : 24);
   const [textColor, setTextColor] = React.useState("#252525ff");
   const [note, setNote] = React.useState("");
   const [isPlaying, setIsPlaying] = React.useState(false);
@@ -93,7 +117,15 @@ const recordingIntervalRef = React.useRef(null);
   const [isReceiverReady, setIsReceiverReady] = React.useState(false);
 
 
+// ✅ NEW - safe default, then adjust after mount
+const [textSize, setTextSize] = React.useState(24);
 
+// Add this useEffect AFTER your device detection useEffect:
+React.useEffect(() => {
+  if (isMobile) {
+    setTextSize(16);
+  }
+}, [isMobile]);
 
 React.useEffect(() => {
   const images = [
@@ -1334,7 +1366,7 @@ if (isMobile) {
     width: "100%",
     height: "100%",
     pointerEvents: "auto",
-    transform: "translateX(-8px)",
+    transform: "translateX(-2.5%)",
     overflow: isPreviewMode || appMode === "receiver" ? "visible" : "visible",
   }}
 >
@@ -1669,10 +1701,10 @@ if (isMobile) {
           />
 
           {/* Corner anchors - positioned relative to the 80px image */}
-          <div style={{ position: "absolute", width: 6, height: 6, background: "#fff", border: "1px solid #3b82f6", left: 3, top: 3, transform: "translate(-50%, -50%)", pointerEvents: "none" }} />
-          <div style={{ position: "absolute", width: 6, height: 6, background: "#fff", border: "1px solid #3b82f6", right: 3, top: 3, transform: "translate(50%, -50%)", pointerEvents: "none" }} />
-          <div style={{ position: "absolute", width: 6, height: 6, background: "#fff", border: "1px solid #3b82f6", left: 3, bottom: 3, transform: "translate(-50%, 50%)", pointerEvents: "none" }} />
-          <div style={{ position: "absolute", width: 6, height: 6, background: "#fff", border: "1px solid #3b82f6", right: 3, bottom: 3, transform: "translate(50%, 50%)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", width: "8%", minWidth: 6, height: "8%", minHeight: 6, background: "#fff", border: "1px solid #3b82f6", left: 3, top: 3, transform: "translate(-50%, -50%)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", width: "8%", minWidth: 6, height: "8%", minHeight: 6, background: "#fff", border: "1px solid #3b82f6", right: 3, top: 3, transform: "translate(50%, -50%)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", width: "8%", minWidth: 6, height: "8%", minHeight: 6, background: "#fff", border: "1px solid #3b82f6", left: 3, bottom: 3, transform: "translate(-50%, 50%)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", width: "8%", minWidth: 6, height: "8%", minHeight: 6, background: "#fff", border: "1px solid #3b82f6", right: 3, bottom: 3, transform: "translate(50%, 50%)", pointerEvents: "none" }} />
 
           {/* Scale control (right arrow) */}
           <div
@@ -1722,7 +1754,7 @@ if (isMobile) {
             style={{
               position: "absolute",
               left: "-5%",
-              top: -25,
+              top: "-30%",
               transform: "translateX(-50%) rotate(-220deg)",
               cursor: isEditable ? "grab": "default",
               padding: "3px 8px",
@@ -1812,7 +1844,9 @@ if (isMobile) {
         alt=""
         draggable={false}
         style={{
-          width: 80,
+          width: "20vw",
+          right: "-35%",
+          top: "-30%",
           height: "auto",
           display: "block",
           cursor: activeObject === s.id ? "move" : "pointer",
@@ -2959,7 +2993,7 @@ if (isMobile) {
         background: "none",
         border: "none",
         fontFamily: "'Hoover', sans-serif",
-        fontSize: isTablet ? 14 : 20,
+        fontSize: isTablet ? 14 : 14,
         fontWeight: 600,
         color: isDarkBg ? "#fff" : "#000",
         textShadow: isDarkBg ? "0 1px 3px rgba(0,0,0,0.45)" : "none",
@@ -2979,7 +3013,7 @@ if (isMobile) {
         background: "none",
         border: "none",
         fontFamily: "'Hoover', sans-serif",
-        fontSize: isTablet ? 14 : 20,
+        fontSize: isTablet ? 14 : 14,
         fontWeight: 600,
         color: isDarkBg ? "#fff" : "#000",
         textShadow: isDarkBg ? "0 1px 3px rgba(0,0,0,0.45)" : "none",
@@ -3002,7 +3036,7 @@ if (isMobile) {
         marginBottom: isTablet ? 20 : -5,
         textAlign: "center",
         fontFamily: "'Array', sans-serif",
-        fontSize: isTablet ? 36 : 60,
+        fontSize: "clamp(36px, 5vw, 60px)",
         letterSpacing: "0.03em",
         color: isDarkBg ? "#fff" : "#000",
         textShadow: isDarkBg ? "0 1px 3px rgba(0,0,0,0.45)" : "none",
@@ -3675,7 +3709,7 @@ style={{
     ? "none"
     : isTablet
       ? "none"
-      : "translateX(50px)",
+      : "translateX(8%)" ,
   transition: appMode === "editor" && !isPreviewMode
     ? "transform 600ms cubic-bezier(0.22, 1, 0.36, 1)"
     : "none",
@@ -3697,7 +3731,7 @@ justifyContent: "center",
 marginTop: isTablet ? 20 : 50,
 marginLeft: "auto",
 marginRight: "auto",
-transform: isPreviewMode || appMode === "receiver" ? "none" : isTablet ? "none" : "translateX(160px)",
+transform: isPreviewMode || appMode === "receiver" ? "none" : isTablet ? "none" : "translateX(20%)",
 }}
 >
      <div
@@ -4096,7 +4130,7 @@ transform: isPreviewMode || appMode === "receiver" ? "none" : isTablet ? "none" 
             }}
             style={{
               position: "absolute",
-              right: -28,
+              right: "-35%",
               top: "50%",
               transform: "translateY(-50%)",
               cursor: isEditable ? "ew-resize": "default",
@@ -4129,7 +4163,7 @@ transform: isPreviewMode || appMode === "receiver" ? "none" : isTablet ? "none" 
             style={{
               position: "absolute",
               left: "-5%",
-              top: -25,
+              top: "-30%",
               transform: "translateX(-50%) rotate(-220deg)",
               cursor: isEditable ? "grab": "default",
               padding: "3px 8px",
@@ -4154,8 +4188,8 @@ transform: isPreviewMode || appMode === "receiver" ? "none" : isTablet ? "none" 
             }}
             style={{
               position: "absolute",
-              right: -20,
-              top: -20,
+              right: "-25%",
+              top: "-25%",
               cursor: isEditable ? "pointer": "default",
               width: 19,
               height: 19,
@@ -4198,7 +4232,9 @@ transform: isPreviewMode || appMode === "receiver" ? "none" : isTablet ? "none" 
         alt=""
         draggable={false}
         style={{
-          width: 80,
+          width: "20vw",
+          maxWidth: 80,
+          minWidth: 50,
           height: "auto",
           display: "block",
           cursor: activeObject === s.id ? "move" : "pointer",
