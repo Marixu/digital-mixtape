@@ -3714,10 +3714,6 @@ display: "flex",
 alignItems: "center",
 justifyContent: "center",
 marginTop: isTablet ? 10 : 20,
-transform:
-      isPreviewMode || appMode === "receiver"
-        ? "none"
-        : "translateX(-10vw)",
 }}
 >
      <div
