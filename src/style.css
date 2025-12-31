@@ -118,14 +118,19 @@ button:focus-visible {
   justify-self: center;
 }
 
-.preview-mode.preview-enter .mixtape-wrapper {
-  transform: translateX(-80px);
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
-.preview-mode .mixtape-wrapper {
-  margin: 0 auto;
-  transform: translateX(0);
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+.preview-mode .mixtape-panel {
+  animation: slideInFromLeft 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 

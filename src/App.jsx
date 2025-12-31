@@ -3693,7 +3693,7 @@ style={{
   display: "flex", 
   flexDirection: "column", 
   alignItems: "center", 
-  paddingLeft: 40,
+  paddingLeft: isPreviewMode ? 0 : 40,
   gap: 16, 
   width: "100%", 
   alignSelf: "start",
