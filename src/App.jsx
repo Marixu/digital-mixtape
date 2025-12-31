@@ -3699,7 +3699,7 @@ style={{
     : "none",
   willChange: "transform",
 }}>
-  <div style={{ display: "flex", gap: 60, alignItems: "center", width: "100%"
+  <div style={{ display: "flex", gap: -10, alignItems: "center", width: "100%"
  }}>
     {/* MIXTAPE */}
    <div className="mixtape-wrapper"
