@@ -117,6 +117,8 @@ const recordingIntervalRef = React.useRef(null);
   const [isReceiverReady, setIsReceiverReady] = React.useState(false);
 
 
+
+
 // ✅ NEW - safe default, then adjust after mount
 const [textSize, setTextSize] = React.useState(24);
 
@@ -401,6 +403,21 @@ React.useEffect(() => {
     window.removeEventListener("touchend", onUp);
   };
 }, []);
+
+const [previewEntering, setPreviewEntering] = React.useState(false);
+const prevPreviewRef = React.useRef(isPreviewMode);
+
+React.useEffect(() => {
+  // only animate when YOU click into preview (editor -> preview)
+  if (appMode === "editor" && !prevPreviewRef.current && isPreviewMode) {
+    setPreviewEntering(true);
+    const t = setTimeout(() => setPreviewEntering(false), 450);
+    return () => clearTimeout(t);
+  }
+  prevPreviewRef.current = isPreviewMode;
+}, [isPreviewMode, appMode]);
+
+
 
 
 const isEditable = appMode === "editor" && !isPreviewMode;
@@ -3688,7 +3705,7 @@ if (isMobile) {
 {/* RIGHT PANEL: 3D CANVAS + CONTROLS */}
         
 {appMode !== "receiver" || (!isLoadingSharedMixtape && isHydrated) ? (
-<div className="mixtape-panel" 
+<div className={`mixtape-panel ${previewEntering ? "preview-enter" : ""}`}
 style={{ 
   display: "flex", 
   flexDirection: "column", 
@@ -3703,7 +3720,7 @@ style={{
     : "none",
   willChange: "transform",
 }}>
-  <div style={{ display: "flex", gap: 20, alignItems: "center", width: "100%"
+  <div style={{ display: "flex", gap: 20, alignItems: "center", justifyContent: "center", width: "100%"
  }}>
     {/* MIXTAPE */}
    <div className="mixtape-wrapper"
