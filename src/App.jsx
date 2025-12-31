@@ -3705,21 +3705,26 @@ if (isMobile) {
 {/* RIGHT PANEL: 3D CANVAS + CONTROLS */}
         
 {appMode !== "receiver" || (!isLoadingSharedMixtape && isHydrated) ? (
-<div className={`mixtape-panel ${previewEntering ? "preview-enter" : ""}`}
-style={{ 
-  display: "flex", 
-  flexDirection: "column", 
-  alignItems: "center", 
-  paddingLeft: isPreviewMode ? 0 : 40,
-  gap: 16, 
-  width: "100%", 
-  alignSelf: "start",
-  transform: "none",
-  transition: appMode === "editor" && !isPreviewMode
-    ? "transform 600ms cubic-bezier(0.22, 1, 0.36, 1)"
-    : "none",
-  willChange: "transform",
-}}>
+<div
+  className="mixtape-panel"
+  style={{
+    display: "flex",
+    justifyContent: "center",
+    width: "100%",
+  }}
+  >
+    {/* ===================== PREVIEW STACK START ===================== */}
+<div
+  className={`preview-stack ${previewEntering ? "preview-enter" : ""}`}
+  style={{
+    width: "100%",
+    maxWidth: 650,
+    margin: "0 auto",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  }}
+>
   <div style={{ display: "flex", gap: 20, alignItems: "center", justifyContent: "center", width: "100%"
  }}>
     {/* MIXTAPE */}
@@ -4309,7 +4314,6 @@ marginTop: isTablet ? 10 : 20,
 {isPreviewMode && isMP3 && (
   <div
     style={{
-      width: 591,
       marginTop: -15,
       fontFamily: "'Hoover', sans serif",
       color: isDarkBg ? "#fff" : "#000",
@@ -4409,7 +4413,8 @@ marginTop: isTablet ? 10 : 20,
     />
   </div>
 )}
-
+ {/* ===================== PREVIEW STACK END ===================== */}
+</div>
 </div>
 ) : null}
       </div>
