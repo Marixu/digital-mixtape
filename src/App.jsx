@@ -3718,8 +3718,6 @@ transform:
       isPreviewMode || appMode === "receiver"
         ? "none"
         : "translateX(-20vw)",
-marginLeft: "auto",
-marginRight: "auto",
 }}
 >
      <div
