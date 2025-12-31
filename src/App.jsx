@@ -4730,12 +4730,17 @@ marginTop: isTablet ? 10 : 20,
   <div
     style={{
       position: "fixed",
-      inset: 0,
-      background: "rgba(0,0,0,0.5)",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: "rgba(0,0,0,0.7)",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      zIndex: 1000,
+      zIndex: 9999,
+      WebkitTransform: "translateZ(0)",
+      transform: "translateZ(0)",
     }}
     onClick={cancelRecording}
   >
@@ -4744,23 +4749,28 @@ marginTop: isTablet ? 10 : 20,
       style={{
         background: "#fff",
         borderRadius: 20,
-        padding: "30px 40px",
+        padding: isMobile ? "24px 30px" : "30px 40px",
         textAlign: "center",
-        minWidth: 280,
+        width: isMobile ? "85%" : "auto",
+        minWidth: isMobile ? "unset" : 280,
+        maxWidth: isMobile ? 320 : "none",
         fontFamily: "'Hoover', sans serif",
-        boxShadow: "0 10px 40px rgba(0,0,0,0.2)",
+        boxShadow: "0 10px 40px rgba(0,0,0,0.3)",
+        WebkitTransform: "translateZ(0)",
+        transform: "translateZ(0)",
       }}
     >
-      <h3 style={{ margin: "0 0 20px", color: "#000", fontSize: 20 }}>
-       Voice Recorder
+      <h3 style={{ margin: "0 0 20px", color: "#000", fontSize: isMobile ? 18 : 20 }}>
+        🎙️ Voice Recorder
       </h3>
       
       <div
         style={{
-          fontSize: 48,
+          fontSize: isMobile ? 40 : 48,
           fontFamily: "'Hoover', sans serif",
-          color: isRecording ? "#1a1a1a" : "#000",
+          color: isRecording ? "#ff69b4" : "#000",
           marginBottom: 24,
+          fontWeight: 700,
         }}
       >
         {formatRecordingTime(recordingTime)}
@@ -4771,7 +4781,7 @@ marginTop: isTablet ? 10 : 20,
           style={{
             width: 16,
             height: 16,
-            background: "#1a1a1a",
+            background: "#ff69b4",
             borderRadius: "50%",
             margin: "0 auto 20px",
             animation: "pulse 1s infinite",
@@ -4779,12 +4789,17 @@ marginTop: isTablet ? 10 : 20,
         />
       )}
       
-      <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+      <div style={{ 
+        display: "flex", 
+        flexDirection: isMobile ? "column" : "row",
+        gap: 12, 
+        justifyContent: "center" 
+      }}>
         {!isRecording ? (
           <button
             onClick={startRecording}
             style={{
-              padding: "12px 24px",
+              padding: "14px 24px",
               background: "#ff69b4",
               color: "#fff",
               border: "none",
@@ -4792,6 +4807,7 @@ marginTop: isTablet ? 10 : 20,
               fontSize: 15,
               fontWeight: 600,
               cursor: "pointer",
+              width: isMobile ? "100%" : "auto",
             }}
           >
             Start Recording
@@ -4800,7 +4816,7 @@ marginTop: isTablet ? 10 : 20,
           <button
             onClick={stopRecording}
             style={{
-              padding: "12px 24px",
+              padding: "14px 24px",
               background: "#1a1a1a",
               color: "#fff",
               border: "none",
@@ -4808,6 +4824,7 @@ marginTop: isTablet ? 10 : 20,
               fontSize: 15,
               fontWeight: 600,
               cursor: "pointer",
+              width: isMobile ? "100%" : "auto",
             }}
           >
             Stop & Save
@@ -4817,7 +4834,7 @@ marginTop: isTablet ? 10 : 20,
         <button
           onClick={cancelRecording}
           style={{
-            padding: "12px 24px",
+            padding: "14px 24px",
             background: "#f3f3f3",
             color: "#333",
             border: "1px solid #ddd",
@@ -4825,6 +4842,7 @@ marginTop: isTablet ? 10 : 20,
             fontSize: 15,
             fontWeight: 600,
             cursor: "pointer",
+            width: isMobile ? "100%" : "auto",
           }}
         >
           Cancel
