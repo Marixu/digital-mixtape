@@ -3036,7 +3036,7 @@ if (isMobile) {
         marginBottom: isTablet ? 20 : -5,
         textAlign: "center",
         fontFamily: "'Array', sans-serif",
-        fontSize: "clamp(24px, 5vw, 60px)",
+        fontSize: "clamp(24px, 5vw, 24px)",
         letterSpacing: "0.03em",
         color: isDarkBg ? "#fff" : "#000",
         textShadow: isDarkBg ? "0 1px 3px rgba(0,0,0,0.45)" : "none",
