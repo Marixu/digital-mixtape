@@ -2970,9 +2970,10 @@ if (isMobile) {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
-      maxWidth: 2200, 
+      width: "100%", 
+      maxWidth: "none", 
       margin: "0 auto",
-      padding: "0 60px",
+      padding: "0 80px",
     }}
   >
     <button
