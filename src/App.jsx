@@ -593,21 +593,7 @@ setTextColor(s.textColor || "#000");
   })();
 }, []);
 
-// No scroll in desktop (but allow on tablet and mobile)
-React.useEffect(() => {
-  if (!isMobile && !isTablet) {
-    document.body.style.overflow = "hidden";
-    document.documentElement.style.overflow = "hidden";
-  } else {
-    document.body.style.overflow = "";
-    document.documentElement.style.overflow = "";
-  }
 
-  return () => {
-    document.body.style.overflow = "";
-    document.documentElement.style.overflow = "";
-  };
-}, [isMobile]);
 
 //----------------------------------------------------------------
 React.useEffect(() => {
