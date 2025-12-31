@@ -2109,10 +2109,10 @@ if (isMobile) {
          {/* SONGS TAB */}
 {tab === "songs" && (
   <div>
-     <label style={{ ...styles.label, marginTop: 8 }}>Upload Music Files</label>
-    <p style={styles.helperText}>
-      Only .mp3 files for now, please! (Max 8 MB per track)
-    </p>
+     <label style={{ ...styles.label, marginTop: 8 }}>Upload Music</label>
+<p style={styles.helperText}>
+  Add MP3 files or record a voice message (Max 8 MB per track)
+</p>
 
     {/* Upload dropzone */}
     <div style={{ marginBottom: 12 }}>
@@ -2180,36 +2180,6 @@ if (isMobile) {
   🎙️ Record Voice Memo
 </button>
 
-    <label style={{ ...styles.label, marginTop: 8 }}>Links</label>
-    {/* URL input - NOW SECOND */}
-    <p style={styles.helperText}>Paste a direct MP3 link:</p>
-    <div style={{ display: "flex", gap: 12, marginBottom: 18 }}>
-      <input
-        style={{ ...styles.input, color: "black" }}
-        placeholder="Paste your URL here..."
-        value={pendingUrl}
-        onChange={(e) => setPendingUrl(e.target.value)}
-      />
-      <button
-  onClick={addTrackByUrl}
-  disabled={tracks.length >= MAX_TRACKS}
-  style={{
-    padding: "10px 16px",
-    background: "transparent",
-    color: "#3a2d3f",
-    border: "1px solid #3a2d3f",
-    borderRadius: 10,
-    fontFamily: "'Hoover', sans serif",
-    fontSize: 13,
-    fontWeight: 600,
-    cursor: tracks.length >= MAX_TRACKS ? "not-allowed" : "pointer",
-    opacity: tracks.length >= MAX_TRACKS ? 0.4 : 1,
-    whiteSpace: "nowrap",
-  }}
->
-  + Add
-</button>
-    </div>
 
     {/* Track list */}
     <div style={{ marginTop: 24, display: "grid", gap: 12 }}>
@@ -3041,7 +3011,7 @@ if (isMobile) {
         paddingLeft: isTablet ? 100 : 0,
       }}
     >
-      HELLO
+      Digital Mixtape
     </div>
   )}
 </div>
@@ -3095,40 +3065,15 @@ if (isMobile) {
         </div>
         <div style={{ ...styles.card, borderRadius: "0 20px 20px 20px" }}>
           <div style={styles.panel}>
-            {/* SONGS TAB */}
-            {tab === "songs" && (
-              <div>
-                <h3 style={styles.h3}>Add Links</h3>
-                <p style={styles.helperText}>
-                  Youtube, Soundcloud, Spotify, mp3 or audio files. </p>
+    {/* SONGS TAB */}
+{tab === "songs" && (
+  <div>
+    <h3 style={styles.h3}>Upload Music</h3>
+    <p style={styles.helperText}>
+      Add MP3 files or record a voice message (Max 8 MB per track)
+    </p>
 
-                  <div style={{ display: "flex", gap: 12, marginBottom: 18 }}>
-                  <input
-                    style={{ ...styles.input, color: "black" }}
-                    placeholder="Paste your URL here..."
-                    value={pendingUrl}
-                    onChange={(e) => setPendingUrl(e.target.value)}
-                  />
-                  <button
-                       onClick={addTrackByUrl}
-                      disabled={tracks.length >= MAX_TRACKS}
-                       style={{
-                        ...styles.cta,
-                        display: "inline-flex",
-                        alignItems: "center",
-                         justifyContent: "center",
-                         gap: 6,
-                        whiteSpace: "nowrap",
-                         minWidth: 72,
-                       opacity: tracks.length >= MAX_TRACKS ? 0.4 : 1,
-                        cursor: tracks.length >= MAX_TRACKS ? "not-allowed" : "pointer",
-                      }}
-                      >
-                       + Add
-                      </button>
-                </div>
-
-                <div style={{ marginTop: 20 }}>
+    <div style={{ marginTop: 10 }}>
   <div
     onClick={() => document.getElementById("songFiles").click()}
     style={styles.dropzone}
