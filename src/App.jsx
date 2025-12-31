@@ -3718,7 +3718,7 @@ style={{
    <div className="mixtape-wrapper"
     style={{
 width: "100%",
-maxWidth: isPreviewMode || appMode === "receiver" ? "550px" : isTablet ? "450px" : "500px",
+maxWidth: isPreviewMode || appMode === "receiver" ? "650px" : isTablet ? "500px" : "100%",
 aspectRatio: "4 / 3",
 background: "transparent",
 overflow: "visible",
@@ -3726,7 +3726,7 @@ display: "flex",
 alignItems: "center",
 justifyContent: "center",
 marginTop: isTablet ? 10 : 20,
-marginLeft: "-100px", //Mixtape goes left
+marginLeft: "-200px", //Mixtape goes left
 marginRight: "auto",
 transform: "none",
 }}
