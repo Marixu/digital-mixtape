@@ -279,9 +279,9 @@ React.useEffect(() => {
   if (!dragRef.current) return;
   
   // Prevent page scrolling while dragging
-  if (e.cancelable) {
-    e.preventDefault();
-  }
+  if (dragRef.current && e.cancelable) {
+  e.preventDefault();
+}
     
     // Get clientX/clientY from touch or mouse event
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -3023,7 +3023,7 @@ if (isMobile) {
         marginBottom: isTablet ? 20 : -5,
         textAlign: "center",
         fontFamily: "'Array', sans-serif",
-        fontSize: "33px",
+        fontSize: "40px",
         letterSpacing: "0.03em",
         color: isDarkBg ? "#fff" : "#000",
         textShadow: isDarkBg ? "0 1px 3px rgba(0,0,0,0.45)" : "none",
@@ -3713,7 +3713,8 @@ display: "flex",
 alignItems: "center",
 justifyContent: "center",
 marginTop: isTablet ? 10 : 20,
-marginLeft: "250px", //Mixtape goes left when values go +
+transform: "translateX(-10vw)",
+marginLeft: "auto",
 marginRight: "auto",
 transform: "none",
 }}
@@ -4283,7 +4284,7 @@ transform: "none",
       color: isDarkBg ? "#fff" : "#000",
     }}
   >
-    🎉 Congratulations! You finished listening to the mixtape 🎶
+    🎉 Congratulations! You finished listening to the mixtape! 
   </div>
 )}
 
@@ -4411,7 +4412,7 @@ transform: "none",
       textShadow: isDarkBg ? "0 1px 3px rgba(0,0,0,0.45)" : "none",
     }}
   >
-    <h2 style={{ fontSize: isTablet ? 33 : 33, marginBottom: 22, fontFamily: "'Array', sans-serif", }}>About</h2>
+    <h2 style={{ fontSize: isTablet ? 33 : 40, marginBottom: 22, fontFamily: "'Array', sans-serif", }}>About</h2>
 
     <div style={{ display: "flex", justifyContent: "center", marginBottom: 18 }}>
       <img
