@@ -3056,7 +3056,7 @@ if (isMobile) {
     alignSelf: "flex-start",
     marginLeft: "auto",
     marginRight: "auto",
-    gap: isTablet ? 20 : 10,
+    gap: isTablet ? 40 : 80,
   }}
   className={isPreviewMode ? "preview-mode" : ""}
 >
