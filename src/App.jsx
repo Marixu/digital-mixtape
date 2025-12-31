@@ -3036,7 +3036,7 @@ if (isMobile) {
         marginBottom: isTablet ? 20 : -5,
         textAlign: "center",
         fontFamily: "'Array', sans-serif",
-        fontSize: "24px",
+        fontSize: "33px",
         letterSpacing: "0.03em",
         color: isDarkBg ? "#fff" : "#000",
         textShadow: isDarkBg ? "0 1px 3px rgba(0,0,0,0.45)" : "none",
@@ -4424,7 +4424,7 @@ transform: "none",
       textShadow: isDarkBg ? "0 1px 3px rgba(0,0,0,0.45)" : "none",
     }}
   >
-    <h2 style={{ fontSize: isTablet ? 36 : 24, marginBottom: 22, fontFamily: "'Array', sans-serif", }}>About</h2>
+    <h2 style={{ fontSize: isTablet ? 33 : 33, marginBottom: 22, fontFamily: "'Array', sans-serif", }}>About</h2>
 
     <div style={{ display: "flex", justifyContent: "center", marginBottom: 18 }}>
       <img
