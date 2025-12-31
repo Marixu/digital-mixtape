@@ -3719,7 +3719,6 @@ if (isMobile) {
   style={{
     width: "100%",
     maxWidth: 650,
-    paddingLeft: 12,
     margin: "0 auto",
     display: "flex",
     flexDirection: "column",
