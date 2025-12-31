@@ -3058,8 +3058,8 @@ if (isMobile) {
     gridTemplateColumns: isPreviewMode || appMode === "receiver"
       ? "1fr"
       : isTablet
-        ? "minmax(200px, 350px) minmax(400px, 550px)"
-        : "minmax(250px, 432px) minmax(500px, 800px)",
+        ? "minmax(200px, 320px) minmax(350px, 500px)"
+        : "minmax(220px, 380px) minmax(400px, 600px)",
     width: isTablet ? "95%" : "min(1500px, 80vw)",
     padding: isTablet ? "0 15px" : 0,
     boxSizing: "border-box",
@@ -3717,17 +3717,17 @@ style={{
    <div className="mixtape-wrapper"
     style={{
 width: "100%",
-maxWidth: isPreviewMode || appMode === "receiver" ? "650px" : isTablet ? "500px" : "100%",
+maxWidth: isPreviewMode || appMode === "receiver" ? "550px" : isTablet ? "450px" : "500px",
 aspectRatio: "4 / 3",
 background: "transparent",
 overflow: "visible",
 display: "flex",
 alignItems: "center",
 justifyContent: "center",
-marginTop: isTablet ? 20 : 50,
+marginTop: isTablet ? 10 : 20,
 marginLeft: "auto",
 marginRight: "auto",
-transform: isPreviewMode || appMode === "receiver" ? "none" : isTablet ? "none" : "translateX(0%)",
+transform: "none",
 }}
 >
      <div
@@ -4423,7 +4423,7 @@ transform: isPreviewMode || appMode === "receiver" ? "none" : isTablet ? "none" 
       textShadow: isDarkBg ? "0 1px 3px rgba(0,0,0,0.45)" : "none",
     }}
   >
-    <h2 style={{ fontSize: isTablet ? 36 : 50, marginBottom: 22, fontFamily: "'Array', sans-serif", }}>About</h2>
+    <h2 style={{ fontSize: isTablet ? 36 : 24, marginBottom: 22, fontFamily: "'Array', sans-serif", }}>About</h2>
 
     <div style={{ display: "flex", justifyContent: "center", marginBottom: 18 }}>
       <img
@@ -4617,10 +4617,10 @@ transform: isPreviewMode || appMode === "receiver" ? "none" : isTablet ? "none" 
 <div
   className="desktop-footer"
   style={{
-    position: isTablet ? "relative" : "absolute",
-    bottom: isTablet ? "auto" : 36,
-    marginTop: isTablet ? 60 : 0,
-    marginBottom: isTablet ? 40 : 0,
+  position: "relative",
+  bottom: "auto",
+    marginTop: isTablet ? 60 : 40,
+    marginBottom: isTablet ? 40 : 20,
     left: 0,
     width: "100%",
     textAlign: "center",

@@ -727,8 +727,3 @@ html, body {
   max-height: calc(100vh - 200px);
   overflow-y: auto;
 }
-
-/* Ensure the card inside can scroll */
-.left-column > div {
-  max-height: 100%;
-}
