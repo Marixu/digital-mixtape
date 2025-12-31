@@ -852,6 +852,17 @@ const { error: uploadError } = await supabase.storage
 
 const startRecording = async () => {
   try {
+    // PAUSE ALL VIDEOS FIRST - iOS only allows one media stream at a time
+    const tapeVideo = tapeVideoRef.current;
+    const rollerVideo = rollerVideoRef.current;
+    const audio = audioRef.current;
+    
+    if (tapeVideo) tapeVideo.pause();
+    if (rollerVideo) rollerVideo.pause();
+    if (audio) audio.pause();
+    
+    setIsPlaying(false); // Stop playback state
+    
     const stream = await navigator.mediaDevices.getUserMedia({ 
       audio: {
         echoCancellation: true,
@@ -860,7 +871,6 @@ const startRecording = async () => {
       } 
     });
     
-    // iOS Safari primarily supports mp4/m4a
     let mimeType = 'audio/mp4';
     let options = {};
     
@@ -914,7 +924,7 @@ const startRecording = async () => {
       setRecordingTime(0);
     };
     
-    mediaRecorderRef.current.start(100); // Changed from 1000 to 100ms for iOS
+    mediaRecorderRef.current.start(100);
     setIsRecording(true);
     
     recordingIntervalRef.current = setInterval(() => {
@@ -923,7 +933,7 @@ const startRecording = async () => {
     
   } catch (err) {
     console.error("Recording error:", err);
-    alert("Could not start recording. Please check microphone permissions.");
+    alert("Could not start recording: " + (err.message || "Unknown error"));
     setShowVoiceRecorder(false);
   }
 };
@@ -1472,7 +1482,6 @@ if (isMobile) {
 
 <video
   ref={tapeVideoRef}
-  autoPlay
   loop
   preload="metadata"
   muted
@@ -1522,7 +1531,6 @@ if (isMobile) {
 
 <video
   ref={rollerVideoRef}
-  autoPlay
   loop
   preload="metadata"
   muted
@@ -2230,36 +2238,37 @@ if (isMobile) {
     {/* Voice Recorder Button */}
 <button
   onClick={async () => {
-    alert('Button clicked!'); // Debug
+    // Stop all media first
+    const tapeVideo = tapeVideoRef.current;
+    const rollerVideo = rollerVideoRef.current;
+    const audio = audioRef.current;
+    
+    if (tapeVideo) tapeVideo.pause();
+    if (rollerVideo) rollerVideo.pause();
+    if (audio) audio.pause();
+    setIsPlaying(false);
     
     // Check if MediaRecorder is supported
     if (!window.MediaRecorder) {
-      alert("Voice recording is not supported on this browser.");
+      alert("Voice recording is not supported on this browser. Please use Chrome, Safari, or Firefox.");
       return;
     }
-    
-    alert('MediaRecorder supported'); // Debug
     
     // Try to get permission first
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      alert('Microphone permission granted'); // Debug
-      
       // Stop the test stream immediately
       stream.getTracks().forEach(track => track.stop());
-      
       // Now show the recorder
       setShowVoiceRecorder(true);
-      alert('Modal should show now'); // Debug
-      
     } catch (err) {
       console.error("Microphone error:", err);
       if (err.name === 'NotAllowedError') {
-        alert("Please allow microphone access in your browser settings.");
+        alert("Please allow microphone access in your browser settings to record voice memos.");
       } else if (err.name === 'NotFoundError') {
         alert("No microphone found on this device.");
       } else {
-        alert("Could not access microphone: " + err.message);
+        alert("Could not access microphone. Make sure you're using HTTPS and have a microphone connected.");
       }
     }
   }}
