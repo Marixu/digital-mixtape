@@ -3720,6 +3720,7 @@ if (isMobile) {
     width: "100%",
     maxWidth: 650,
     margin: "0 auto",
+    paddingLeft: 20,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
