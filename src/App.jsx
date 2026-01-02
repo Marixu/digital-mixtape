@@ -156,7 +156,7 @@ React.useEffect(() => {
   });
 
   // Preload videos for faster preview
-  const videos = ["/tapeios.mov", "/smallrollersios.mov", "/tapenew.webm", "/smallrollers.webm"];
+  const videos = ["/tapeprores.mov", "/smallrollersprores.mov", "/tapenew.webm", "/smallrollers.webm"];
   videos.forEach(src => {
     const link = document.createElement('link');
     link.rel = 'preload';
@@ -1549,7 +1549,7 @@ if (isMobile) {
     backfaceVisibility: "hidden",
   }}
 >
-  <source src="/tapeios.mov" type="video/mp4; codecs=hvc1" />
+  <source src="/tapeprores.mov" type="video/quicktime" />
   <source src="/tapenew.webm" type="video/webm" />
 </video>
 
@@ -1598,7 +1598,7 @@ if (isMobile) {
     backfaceVisibility: "hidden",
   }}
 >
-  <source src="/smallrollersios.mov" type="video/mp4; codecs=hvc1" />
+  <source src="/smallrollersprores.mov" type="video/quicktime" />
   <source src="/smallrollers.webm" type="video/webm" />
 </video>
 
@@ -4032,7 +4032,7 @@ if (isMobile) {
 
 <video
   ref={tapeVideoRef}
-  src={isSafari ? "/tapeios.mov" : "/tapenew.webm"}
+  src={isSafari ? "/tapeprores.mov" : "/tapenew.webm"}
   preload="auto"
   loop
   muted
@@ -4069,7 +4069,7 @@ if (isMobile) {
 
 <video
   ref={rollerVideoRef}
-  src={isSafari ? "/smallrollersios.mov" : "/smallrollers.webm"}
+  src={isSafari ? "/smallrollersprores.mov" : "/smallrollers.webm"}
   preload="auto"
   loop
   muted
