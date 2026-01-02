@@ -328,8 +328,6 @@ React.useEffect(() => {
 }, [isIOS, isPlaying, tapeFrames, rollerFrames]);
 
 
-
-
 // Pinch-to-zoom for label image on mobile
 React.useEffect(() => {
   if (!isMobile) return;
