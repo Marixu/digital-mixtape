@@ -154,6 +154,16 @@ React.useEffect(() => {
     link.href = src;
     document.head.appendChild(link);
   });
+
+  // Preload videos for faster preview
+  const videos = ["/tapenew.mov", "/smallrollers.mov", "/tapenew.webm", "/smallrollers.webm"];
+  videos.forEach(src => {
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'video';
+    link.href = src;
+    document.head.appendChild(link);
+  });
 }, []);
 
 // Computed value for checking if there's a next track
@@ -1516,7 +1526,7 @@ if (isMobile) {
 <video
   ref={tapeVideoRef}
   loop
-  preload="metadata"
+  preload="auto"
   muted
   playsInline
   webkit-playsinline="true"
@@ -1539,7 +1549,7 @@ if (isMobile) {
     backfaceVisibility: "hidden",
   }}
 >
-  <source src="/tapenew.mov" type="video/mp4" />
+  <source src="/tapenew.mov" type="video/mp4; codecs=hvc1" />
   <source src="/tapenew.webm" type="video/webm" />
 </video>
 
@@ -1565,7 +1575,7 @@ if (isMobile) {
 <video
   ref={rollerVideoRef}
   loop
-  preload="metadata"
+  preload="auto"
   muted
   playsInline
   webkit-playsinline="true"
@@ -1588,7 +1598,7 @@ if (isMobile) {
     backfaceVisibility: "hidden",
   }}
 >
-  <source src="/smallrollers.mov" type="video/mp4" />
+  <source src="/smallrollers.mov" type="video/mp4; codecs=hvc1" />
   <source src="/smallrollers.webm" type="video/webm" />
 </video>
 
