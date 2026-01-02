@@ -125,7 +125,6 @@ const tapeFrameIndex = React.useRef(0);
 const rollerFrameIndex = React.useRef(0);
 const animationRef = React.useRef(null);
 
-
 // ✅ NEW - safe default, then adjust after mount
 const [textSize, setTextSize] = React.useState(24);
 
@@ -136,8 +135,7 @@ React.useEffect(() => {
   }
 }, [isMobile]);
 
-
-
+// Preload images and videos
 React.useEffect(() => {
   const images = [
     "/label1.png", "/label2.png", "/label3.png", "/label4.png",
@@ -146,7 +144,6 @@ React.useEffect(() => {
     "/bluenotape.png", "/crop.png"
   ];
   
-  // More aggressive preloading
   images.forEach(src => {
     const img = new Image();
     img.loading = "eager";
@@ -154,7 +151,6 @@ React.useEffect(() => {
     img.src = src;
   });
 
-  // Also use link preload for highest priority
   images.forEach(src => {
     const link = document.createElement('link');
     link.rel = 'preload';
@@ -163,7 +159,6 @@ React.useEffect(() => {
     document.head.appendChild(link);
   });
 
-  // Preload videos for faster preview
   const videos = ["/tapeprores.mov", "/smallrollersprores.mov", "/tapenew.webm", "/smallrollers.webm"];
   videos.forEach(src => {
     const link = document.createElement('link');
@@ -178,98 +173,162 @@ React.useEffect(() => {
 const hasNextTrack = currentTrackIndex < tracks.length - 1;
 
 /* ---------- FONT OPTIONS FOR MIXTAPE MESSAGE ---------- */
-  const FONT_OPTIONS = [
+const FONT_OPTIONS = [
   { label: "Chubbo", fontFamily: "'Chubbo', serif" },
   { label: "Dancing Script", fontFamily: "'Dancing Script', cursive" },
   { label: "Kalam", fontFamily: "'Kalam', cursive" },
   { label: "Quicksand", fontFamily: "'Quicksand', sans-serif" },
   { label: "Aktura", fontFamily: "'Aktura', cursive" },
-   { label: "Comico", fontFamily: "'Comico', cursive" },
+  { label: "Comico", fontFamily: "'Comico', cursive" },
   { label: "Melodrama", fontFamily: "'Melodrama', serif" },
   { label: "JetBrains Mono", fontFamily: "'JetBrains Mono', sans-serif" },
 ];
 
-// Preload PNG frames for iOS
+// Load PNG frames for iOS on mount
 React.useEffect(() => {
-  if (!isIOS) return;
-  
+  if (!isIOS) {
+    console.log('Not iOS, skipping frame loading');
+    return;
+  }
+
+  console.log('🎬 iOS detected, starting frame loading...');
+
   const loadFrames = async (folder, count) => {
-  const frames = await Promise.all(
-    Array.from({ length: count }, (_, i) => {
-      return new Promise((resolve) => {
-        const img = new Image();
-        img.src = `/${folder}/0001.png${String(i + 1).padStart(4, "0")}`;
-        img.onload = () => resolve(img);
-        img.onerror = () => resolve(null);
+    const frames = [];
+    for (let i = 1; i <= count; i++) {
+      const img = new Image();
+      const src = `/${folder}/${String(i).padStart(4, '0')}.png`;
+      img.src = src;
+      
+      if (i === 1) {
+        console.log(`Loading first frame: ${src}`);
+      }
+      
+      await new Promise((resolve) => {
+        img.onload = () => {
+          frames.push(img);
+          if (i === 1) {
+            console.log(`✅ First frame loaded! Size: ${img.naturalWidth}x${img.naturalHeight}`);
+          }
+          resolve();
+        };
+        img.onerror = () => {
+          console.error(`❌ Failed to load: ${src}`);
+          resolve();
+        };
       });
-    })
-  );
+    }
+    return frames;
+  };
 
-  return frames.filter(Boolean);
-};
-
-  
-  // Load tape frames
-  loadFrames('tapeframes', 100).then(frames => {
+  loadFrames('tapeframes', 100).then((frames) => {
+    console.log(`✅ Loaded ${frames.length} tape frames`);
     setTapeFrames(frames);
   });
-  
-  // Load roller frames
-  loadFrames('rollerframes', 100).then(frames => {
+
+  loadFrames('rollerframes', 100).then((frames) => {
+    console.log(`✅ Loaded ${frames.length} roller frames`);
     setRollerFrames(frames);
   });
 }, [isIOS]);
 
-// Canvas animation for iOS
+// Draw first frame as static image when not playing
 React.useEffect(() => {
-  if (!isIOS || tapeFrames.length === 0) return;
+  console.log('Static frame effect running:', { isIOS, tapeFramesCount: tapeFrames.length, rollerFramesCount: rollerFrames.length, isPlaying });
   
+  if (!isIOS) return;
+  if (tapeFrames.length === 0 || rollerFrames.length === 0) return;
+
+  const tapeCanvas = tapeCanvasRef.current;
+  const rollerCanvas = rollerCanvasRef.current;
+  
+  console.log('Canvas refs:', { tapeCanvas: !!tapeCanvas, rollerCanvas: !!rollerCanvas });
+  
+  if (!tapeCanvas || !rollerCanvas) return;
+
+  // Set canvas size to match first frame dimensions
+  const tapeImg = tapeFrames[0];
+  const rollerImg = rollerFrames[0];
+
+  tapeCanvas.width = tapeImg.naturalWidth || tapeImg.width;
+  tapeCanvas.height = tapeImg.naturalHeight || tapeImg.height;
+  
+  rollerCanvas.width = rollerImg.naturalWidth || rollerImg.width;
+  rollerCanvas.height = rollerImg.naturalHeight || rollerImg.height;
+
+  console.log('Canvas sizes set:', { 
+    tape: `${tapeCanvas.width}x${tapeCanvas.height}`,
+    roller: `${rollerCanvas.width}x${rollerCanvas.height}`
+  });
+
+  const tapeCtx = tapeCanvas.getContext('2d');
+  const rollerCtx = rollerCanvas.getContext('2d');
+
+  // Only draw when NOT playing
+  if (!isPlaying) {
+    tapeCtx.clearRect(0, 0, tapeCanvas.width, tapeCanvas.height);
+    rollerCtx.clearRect(0, 0, rollerCanvas.width, rollerCanvas.height);
+
+    tapeCtx.drawImage(tapeFrames[0], 0, 0, tapeCanvas.width, tapeCanvas.height);
+    rollerCtx.drawImage(rollerFrames[0], 0, 0, rollerCanvas.width, rollerCanvas.height);
+
+    tapeFrameIndex.current = 0;
+    rollerFrameIndex.current = 0;
+    
+    console.log('✅ Drew static frame!');
+  }
+}, [isIOS, tapeFrames, rollerFrames, isPlaying]);
+// Animation loop when playing
+React.useEffect(() => {
+  if (!isIOS) return;
+  if (tapeFrames.length === 0 || rollerFrames.length === 0) return;
+  
+  if (!isPlaying) {
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+      animationRef.current = null;
+    }
+    return;
+  }
+
   const tapeCanvas = tapeCanvasRef.current;
   const rollerCanvas = rollerCanvasRef.current;
   if (!tapeCanvas || !rollerCanvas) return;
-  
+
   const tapeCtx = tapeCanvas.getContext('2d');
   const rollerCtx = rollerCanvas.getContext('2d');
-  
+
   const fps = 30;
   const frameDuration = 1000 / fps;
   let lastTime = 0;
-  
+
   const animate = (timestamp) => {
-    if (!isPlaying) {
-      animationRef.current = requestAnimationFrame(animate);
-      return;
-    }
-    
     if (timestamp - lastTime >= frameDuration) {
-      // Draw tape frame
-      if (tapeFrames.length > 0) {
-        tapeCtx.clearRect(0, 0, tapeCanvas.width, tapeCanvas.height);
-        tapeCtx.drawImage(tapeFrames[tapeFrameIndex.current], 0, 0, tapeCanvas.width, tapeCanvas.height);
-        tapeFrameIndex.current = (tapeFrameIndex.current + 1) % tapeFrames.length;
-      }
-      
-      // Draw roller frame
-      if (rollerFrames.length > 0) {
-        rollerCtx.clearRect(0, 0, rollerCanvas.width, rollerCanvas.height);
-        rollerCtx.drawImage(rollerFrames[rollerFrameIndex.current], 0, 0, rollerCanvas.width, rollerCanvas.height);
-        rollerFrameIndex.current = (rollerFrameIndex.current + 1) % rollerFrames.length;
-      }
-      
+      tapeCtx.clearRect(0, 0, tapeCanvas.width, tapeCanvas.height);
+      tapeCtx.drawImage(tapeFrames[tapeFrameIndex.current], 0, 0, tapeCanvas.width, tapeCanvas.height);
+      tapeFrameIndex.current = (tapeFrameIndex.current + 1) % tapeFrames.length;
+
+      rollerCtx.clearRect(0, 0, rollerCanvas.width, rollerCanvas.height);
+      rollerCtx.drawImage(rollerFrames[rollerFrameIndex.current], 0, 0, rollerCanvas.width, rollerCanvas.height);
+      rollerFrameIndex.current = (rollerFrameIndex.current + 1) % rollerFrames.length;
+
       lastTime = timestamp;
     }
-    
+
     animationRef.current = requestAnimationFrame(animate);
   };
-  
+
   animationRef.current = requestAnimationFrame(animate);
-  
+
   return () => {
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
     }
   };
 }, [isIOS, isPlaying, tapeFrames, rollerFrames]);
+
+
+
 
 // Pinch-to-zoom for label image on mobile
 React.useEffect(() => {
@@ -1612,21 +1671,38 @@ if (isMobile) {
 )}
 
 
+{/* TAPE LAYER */}
 {isIOS ? (
-  <canvas
-    ref={tapeCanvasRef}
-    width={1920}
-    height={1080}
-    style={{
-      position: "absolute",
-      inset: 0,
-      width: "100%",
-      height: "100%",
-      objectFit: "contain",
-      zIndex: 1,
-      pointerEvents: "none",
-    }}
-  />
+  // iOS: Show static image in editor, canvas animation in preview
+  isPreviewMode || appMode === "receiver" ? (
+    <canvas
+      ref={tapeCanvasRef}
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        objectFit: "contain",
+        zIndex: 1,
+        pointerEvents: "none",
+      }}
+    />
+  ) : (
+    // Editor mode: just show first frame as static image
+    <img
+      src="/tapeframes/0001.png"
+      alt=""
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        objectFit: "contain",
+        zIndex: 1,
+        pointerEvents: "none",
+      }}
+    />
+  )
 ) : (
   <video
     ref={tapeVideoRef}
@@ -1669,21 +1745,38 @@ if (isMobile) {
 
 
 
+{/* ROLLER LAYER */}
 {isIOS ? (
-  <canvas
-    ref={rollerCanvasRef}
-    width={1920}
-    height={1080}
-    style={{
-      position: "absolute",
-      inset: 0,
-      width: "100%",
-      height: "100%",
-      objectFit: "contain",
-      zIndex: 3,
-      pointerEvents: "none",
-    }}
-  />
+  // iOS: Show static image in editor, canvas animation in preview
+  isPreviewMode || appMode === "receiver" ? (
+    <canvas
+      ref={rollerCanvasRef}
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        objectFit: "contain",
+        zIndex: 3,
+        pointerEvents: "none",
+      }}
+    />
+  ) : (
+    // Editor mode: just show first frame as static image
+    <img
+      src="/rollerframes/0001.png"
+      alt=""
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        objectFit: "contain",
+        zIndex: 3,
+        pointerEvents: "none",
+      }}
+    />
+  )
 ) : (
   <video
     ref={rollerVideoRef}
@@ -2116,7 +2209,7 @@ if (isMobile) {
 
 {/* ================= PLAYER CONTROLS (RIGHT UNDER NOTE) ================= */}
 {currentPage === "home" && isPreviewMode && isMP3 && (
-  <div style={{ padding: "10px 0 20px",marginTop: isPreviewMode ? 10 : 0  }}>
+  <div style={{ padding: "10px 0 20px", marginTop: -25 }}>
     {/* Timeline */}
     <div
       style={{
@@ -2286,8 +2379,8 @@ if (isMobile) {
 {mixtapeFinished && (
   <div
     style={{
-      marginTop: 30,
-      marginBottom: 20,
+      marginTop: 10,
+      marginBottom: 10,
       padding: "16px 20px",
       textAlign: "center",
       fontFamily: "'Hoover', sans-serif",
@@ -2341,7 +2434,7 @@ if (isMobile) {
 
   {/* ================= SCROLL AREA (ONLY THIS SCROLLS) ================= */}
   {currentPage === "home" && (
-  <div className="mobile-scroll">
+  <div className="mobile-scroll" style={{  }}>
    {/* ---------- EDITOR ---------- */}
 {appMode === "editor" && !isPreviewMode && (
   <div className="mobile-editor">

@@ -320,7 +320,8 @@ input, textarea, select {
     display: flex;
     flex-direction: column;
     background: #fff;
-    overflow: hidden; /* 🔑 prevents page scroll */
+    overflow-x: hidden; /* 🔑 prevents page scroll */
+    overflow-y: auto;
   }
 
   @media (max-width: 768px) {
@@ -379,7 +380,7 @@ button:focus {
      =============================== */
 
   .mobile-mixtape-area {
-    margin-top: 0px;
+    margin-top: 15px;
     margin-bottom: 20px;
     flex-shrink: 0;
     height: 30vh; /* 🔧 tweak if needed */
@@ -400,6 +401,7 @@ button:focus {
   }
 
 .mobile-mixtape-area.preview {
+  height: 36vh; /* Even more room in preview for glow */
   overflow: visible !important;
 }
 
@@ -639,10 +641,6 @@ button:focus {
   will-change: transform;
 }
 
-/* Prevent layout shifts during drag */
-.mobile-mixtape-area {
-  contain: layout style paint;
-}
 
 /* Optimize label button clicks */
 button[style*="labelButton"] {
@@ -725,4 +723,21 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center; /* 🔑 shared center */
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.mobile-scroll {
+  position: relative;
+  z-index: 1;
+}
+
+.mobile-mixtape-area {
+  position: relative;
+  z-index: 2;
+  overflow: visible !important;
+  padding-bottom: 30px;
 }
