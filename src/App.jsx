@@ -2201,11 +2201,11 @@ if (isMobile) {
     {/* LEFT PANEL */}
 {!isPreviewMode && !isLoadingSharedMixtape && (
 <div style={styles.leftColumn} className="left-column">
-        <div style={{ ...styles.tabs, background: "transparent" }}>
-            <Tab label="Add Songs" active={tab === "songs"} onClick={() => setTab("songs")} />
-            <Tab label="Decorate" active={tab === "decorate"} onClick={() => setTab("decorate")} />
-            <Tab label="Cover" active={tab === "preview"} onClick={() => setTab("preview")} />
-        </div>
+        <div style={styles.tabs}>
+    <Tab label="Add Songs" active={tab === "songs"} onClick={() => setTab("songs")} />
+    <Tab label="Decorate" active={tab === "decorate"} onClick={() => setTab("decorate")} />
+    <Tab label="Cover" active={tab === "preview"} onClick={() => setTab("preview")} />
+</div>
         <div style={styles.card}>
           <div style={styles.panel}>
 
@@ -2479,50 +2479,50 @@ if (isMobile) {
 
                <label style={styles.label}>Font</label>
 
-                  <div style={{ display: "flex", gap: 10 }}>
-                  <select
-                   value={textFont}
-                    onChange={(e) => setTextFont(e.target.value)}
-                    style={styles.select}
-                  >
-                  {FONT_OPTIONS.map(f => (
-                  <option key={f.value} value={f.value}>
-                   {f.label}
-                   </option>
-                  ))}
-                  </select>
+                 <div style={{ display: "flex", flexWrap: "wrap", gap: 10, width: "100%" }}>
+  <select
+    value={textFont}
+    onChange={(e) => setTextFont(e.target.value)}
+    style={{ ...styles.select, flex: "1 1 100px", minWidth: 0 }}
+  >
+    {FONT_OPTIONS.map(f => (
+      <option key={f.value} value={f.value}>
+        {f.label}
+      </option>
+    ))}
+  </select>
 
-                <select
-                  value={textSize}
-                  onChange={(e) => setTextSize(Number(e.target.value))}
-                 style={styles.select}
-                 >
-               {[14, 16, 20, 24, 32, 36, 40].map(size => (
-                <option key={size} value={size}>{size}px</option>
-               ))}
-              </select>
+  <select
+    value={textSize}
+    onChange={(e) => setTextSize(Number(e.target.value))}
+    style={{ ...styles.select, flex: "0 1 70px", minWidth: 60 }}
+  >
+    {[20, 24, 32, 36, 40].map(size => (
+      <option key={size} value={size}>{size}px</option>
+    ))}
+  </select>
 
-              <label
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 10,
-                  border: "1px solid #e4e4e7",
-                  background: "linear-gradient(135deg, #ff6b9d 0%, #ffa726 25%, #c4e86b 50%, #64d8cb 75%, #ba8fdb 100%)",
-                  cursor: isEditable ? "pointer" : "default",
-                  position: "relative",
-                  display: "block",
-                  flexShrink: 0,
-                }}
-              >
-                <input
-                  type="color"
-                  value={textColor}
-                  onChange={(e) => setTextColor(e.target.value)}
-                  style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer", width: "100%", height: "100%" }}
-                />
-              </label>
-              </div>
+  <label
+    style={{
+      width: 36,
+      height: 36,
+      flexShrink: 0,
+      borderRadius: 10,
+      border: "1px solid #e4e4e7",
+      background: "linear-gradient(135deg, #ff6b9d 0%, #ffa726 25%, #c4e86b 50%, #64d8cb 75%, #ba8fdb 100%)",
+      cursor: isEditable ? "pointer" : "default",
+      position: "relative",
+      display: "block",
+    }}
+  >
+    <input
+      type="color"
+      value={textColor}
+      onChange={(e) => setTextColor(e.target.value)}
+      style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer", width: "100%", height: "100%" }}
+    />
+  </label>
+</div>
 
 
                 <label style={styles.label}>Mixtape Message</label>
@@ -2716,32 +2716,6 @@ if (isMobile) {
 </div>
 
 
-                <label style={{ ...styles.label, marginTop: 18 }}>Leave a Message</label>
-                <div style={{ position: "relative" }}>
-  <textarea
-    style={{ ...styles.textarea, color: "#000", background: "#f9f9fb" }}
-    rows={4}
-    placeholder="Write a personal note…"
-    maxLength={100}
-    value={note}
-    onChange={(e) => setNote(e.target.value)}
-  />
-
-  <div
-    style={{
-      position: "absolute",
-      bottom: 6,
-      right: 10,
-      fontSize: 11,
-      color: "#aaa",
-      pointerEvents: "none",
-    }}
-  >
-    {note.length}/100
-  </div>
-
-</div>
-
 <label style={{ ...styles.label, marginTop: 18 }}>
   Share link
 </label>
@@ -2857,6 +2831,167 @@ if (isMobile) {
 
   </div>
 )} {/* ✅ END mobile-scroll */}
+
+
+{/* Voice Recorder Modal - Mobile */}
+{showVoiceRecorder && isMobile && (
+  <div
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100vw",
+      height: "100vh",
+      height: "100dvh",
+      background: "rgba(0,0,0,0.8)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 99999,
+      WebkitTransform: "translate3d(0,0,0)",
+      transform: "translate3d(0,0,0)",
+    }}
+    onClick={(e) => {
+      if (e.target === e.currentTarget) {
+        cancelRecording();
+      }
+    }}
+  >
+    <div
+      style={{
+        background: "#fff",
+        borderRadius: 16,
+        padding: "30px 25px",
+        textAlign: "center",
+        width: "85%",
+        maxWidth: 300,
+        fontFamily: "'Hoover', sans serif",
+        boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+        position: "relative",
+        WebkitTransform: "translate3d(0,0,0)",
+        transform: "translate3d(0,0,0)",
+      }}
+    >
+      <div style={{ 
+        fontSize: 28, 
+        marginBottom: 15,
+      }}>
+        🎙️
+      </div>
+      
+      <h3 style={{ 
+        margin: "0 0 20px", 
+        color: "#000", 
+        fontSize: 18,
+        fontWeight: 700,
+      }}>
+        Voice Recorder
+      </h3>
+      
+      <div
+        style={{
+          fontSize: 42,
+          fontFamily: "'Hoover', sans serif",
+          color: isRecording ? "#ff69b4" : "#1a1a1a",
+          marginBottom: 20,
+          fontWeight: 700,
+        }}
+      >
+        {formatRecordingTime(recordingTime)}
+      </div>
+      
+      {isRecording && (
+        <div
+          style={{
+            width: 12,
+            height: 12,
+            background: "#ff69b4",
+            borderRadius: "50%",
+            margin: "0 auto 20px",
+            animation: "pulse 1.5s ease-in-out infinite",
+          }}
+        />
+      )}
+      
+      <div style={{ 
+        display: "flex", 
+        flexDirection: "column",
+        gap: 10,
+      }}>
+        {!isRecording ? (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              startRecording();
+            }}
+            style={{
+              padding: "16px 20px",
+              background: "#ff69b4",
+              color: "#fff",
+              border: "none",
+              borderRadius: 12,
+              fontSize: 16,
+              fontWeight: 700,
+              cursor: "pointer",
+              width: "100%",
+              fontFamily: "'Hoover', sans serif",
+              WebkitTapHighlightColor: "transparent",
+            }}
+          >
+            Start Recording
+          </button>
+        ) : (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              stopRecording();
+            }}
+            style={{
+              padding: "16px 20px",
+              background: "#1a1a1a",
+              color: "#fff",
+              border: "none",
+              borderRadius: 12,
+              fontSize: 16,
+              fontWeight: 700,
+              cursor: "pointer",
+              width: "100%",
+              fontFamily: "'Hoover', sans serif",
+              WebkitTapHighlightColor: "transparent",
+            }}
+          >
+            Stop & Save
+          </button>
+        )}
+        
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            cancelRecording();
+          }}
+          style={{
+            padding: "16px 20px",
+            background: "#f5f5f5",
+            color: "#333",
+            border: "1px solid #ddd",
+            borderRadius: 12,
+            fontSize: 16,
+            fontWeight: 600,
+            cursor: "pointer",
+            width: "100%",
+            fontFamily: "'Hoover', sans serif",
+            WebkitTapHighlightColor: "transparent",
+          }}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
  {/* ================= LEGAL PAGES (SEPARATE SCROLL) ================= */}
 {currentPage === "terms" && (
@@ -3177,10 +3312,11 @@ if (isMobile) {
 {!isPreviewMode && !isLoadingSharedMixtape && (
 <div style={styles.leftColumn} className="left-column">
         <div style={styles.tabs}>
-            <Tab label="Add Songs" active={tab === "songs"} onClick={() => setTab("songs")} />
-            <Tab label="Decorate" active={tab === "decorate"} onClick={() => setTab("decorate")} />
-            <Tab label="Cover" active={tab === "preview"} onClick={() => setTab("preview")} />
-        </div>
+    <Tab label="Add Songs" active={tab === "songs"} onClick={() => setTab("songs")} />
+    <Tab label="Decorate" active={tab === "decorate"} onClick={() => setTab("decorate")} />
+    <Tab label="Cover" active={tab === "preview"} onClick={() => setTab("preview")} />
+
+</div>
         <div style={{ ...styles.card, borderRadius: "0 20px 20px 20px" }}>
           <div style={styles.panel}>
     {/* SONGS TAB */}
@@ -3682,32 +3818,6 @@ if (isMobile) {
 </div>
 
 
-                <label style={{ ...styles.label, marginTop: 18 }}>Leave a Message</label>
-                <div style={{ position: "relative" }}>
-  <textarea
-    style={{ ...styles.textarea, color: "#000", background: "#f9f9fb" }}
-    rows={4}
-    placeholder="Write a personal note…"
-    maxLength={100}
-    value={note}
-    onChange={(e) => setNote(e.target.value)}
-  />
-
-  <div
-    style={{
-      position: "absolute",
-      bottom: 6,
-      right: 10,
-      fontSize: 11,
-      color: "#aaa",
-      pointerEvents: "none",
-    }}
-  >
-    {note.length}/100
-  </div>
-
-</div>
-
 <label style={{ ...styles.label, marginTop: 18 }}>
   Share link
 </label>
@@ -3796,28 +3906,31 @@ if (isMobile) {
     width: "100%",
     maxWidth: 650,
     margin: "0 auto",
-    transform: isPreviewMode ? "translateX(90px)" : "none",
+    marginLeft: isPreviewMode ? "auto" : undefined,
+    marginRight: isPreviewMode ? "auto" : undefined,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-
+    paddingTop: isTablet ? 30 : 80,
+    gap: 20,
   }}
 >
   <div style={{ display: "flex", gap: 20, alignItems: "center", justifyContent: "center", width: "100%"
  }}>
     {/* MIXTAPE */}
-   <div className="mixtape-wrapper"
+<div className="mixtape-wrapper"
     style={{
-width: "100%",
-maxWidth: isPreviewMode || appMode === "receiver" ? "650px" : isTablet ? "500px" : "100%",
-aspectRatio: "4 / 3",
-background: "transparent",
-overflow: "visible",
-display: "flex",
-alignItems: "center",
-justifyContent: "center",
-marginTop: isTablet ? 10 : 20,
-}}
+      width: "100%",
+      maxWidth: isPreviewMode || appMode === "receiver" ? "650px" : isTablet ? "500px" : "550px",
+      aspectRatio: "4 / 3",
+      position: "relative", // This MUST stay relative - it's the container for absolute children
+      background: "transparent",
+      overflow: "visible",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      marginTop: isTablet ? 10 : 20,
+    }}
 >
      <div
   ref={tapeRef}
@@ -4336,11 +4449,9 @@ marginTop: isTablet ? 10 : 20,
 {!isMobile && note && (
   <div
     style={{
-      position: "absolute",
-      bottom: "-28px",              // ← controls distance under mixtape
-      left: "52%",
-      transform: "translateX(-50%)",
-      padding: "6px 12px",          // ← MUCH smaller
+      position: "relative",
+      marginTop: "12px",
+      padding: "6px 12px",
       border: `1px dashed ${isDarkBg ? "#fff" : "#000"}`,
       color: isDarkBg ? "#fff" : "#000",
       fontFamily: "'Hoover', sans serif",
@@ -4352,14 +4463,9 @@ marginTop: isTablet ? 10 : 20,
       overflowWrap: "break-word",
       background: "transparent",
       pointerEvents: "none",
-      textShadow: isDarkBg
-  ? "0 0 3px black"
-  : "none",
-
-      boxShadow: isDarkBg
-  ? "0 0 0 1px rgba(114, 114, 114, 0.35)"
-  : "none",
-
+      textShadow: isDarkBg ? "0 0 3px black" : "none",
+      boxShadow: isDarkBg ? "0 0 0 1px rgba(114, 114, 114, 0.35)" : "none",
+      margin: "12px auto 0",
     }}
   >
     {note}
@@ -4708,9 +4814,9 @@ marginTop: isTablet ? 10 : 20,
 <div
   className="desktop-footer"
   style={{
-    marginTop: isTablet ? 60 : 40,
-    marginBottom: isTablet ? 40 : 20,
-    left: 0,
+    marginTop: "auto",
+    paddingTop: isTablet ? 60 : 40,
+    paddingBottom: isTablet ? 40 : 20,
     width: "100%",
     textAlign: "center",
     fontFamily: "'Hoover', sans-serif",
@@ -4784,132 +4890,7 @@ marginTop: isTablet ? 10 : 20,
     </button>
   </div>
 </div>
-{/* Voice Recorder Modal */}
-{showVoiceRecorder && (
-  <div
-    style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: "rgba(0,0,0,0.7)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: 9999,
-      WebkitTransform: "translateZ(0)",
-      transform: "translateZ(0)",
-    }}
-    onClick={cancelRecording}
-  >
-    <div
-      onClick={(e) => e.stopPropagation()}
-      style={{
-        background: "#fff",
-        borderRadius: 20,
-        padding: isMobile ? "24px 30px" : "30px 40px",
-        textAlign: "center",
-        width: isMobile ? "85%" : "auto",
-        minWidth: isMobile ? "unset" : 280,
-        maxWidth: isMobile ? 320 : "none",
-        fontFamily: "'Hoover', sans serif",
-        boxShadow: "0 10px 40px rgba(0,0,0,0.3)",
-        WebkitTransform: "translateZ(0)",
-        transform: "translateZ(0)",
-      }}
-    >
-      <h3 style={{ margin: "0 0 20px", color: "#000", fontSize: isMobile ? 18 : 20 }}>
-        🎙️ Voice Recorder
-      </h3>
-      
-      <div
-        style={{
-          fontSize: isMobile ? 40 : 48,
-          fontFamily: "'Hoover', sans serif",
-          color: isRecording ? "#ff69b4" : "#000",
-          marginBottom: 24,
-          fontWeight: 700,
-        }}
-      >
-        {formatRecordingTime(recordingTime)}
-      </div>
-      
-      {isRecording && (
-        <div
-          style={{
-            width: 16,
-            height: 16,
-            background: "#ff69b4",
-            borderRadius: "50%",
-            margin: "0 auto 20px",
-            animation: "pulse 1s infinite",
-          }}
-        />
-      )}
-      
-      <div style={{ 
-        display: "flex", 
-        flexDirection: isMobile ? "column" : "row",
-        gap: 12, 
-        justifyContent: "center" 
-      }}>
-        {!isRecording ? (
-          <button
-            onClick={startRecording}
-            style={{
-              padding: "14px 24px",
-              background: "#ff69b4",
-              color: "#fff",
-              border: "none",
-              borderRadius: 10,
-              fontSize: 15,
-              fontWeight: 600,
-              cursor: "pointer",
-              width: isMobile ? "100%" : "auto",
-            }}
-          >
-            Start Recording
-          </button>
-        ) : (
-          <button
-            onClick={stopRecording}
-            style={{
-              padding: "14px 24px",
-              background: "#1a1a1a",
-              color: "#fff",
-              border: "none",
-              borderRadius: 10,
-              fontSize: 15,
-              fontWeight: 600,
-              cursor: "pointer",
-              width: isMobile ? "100%" : "auto",
-            }}
-          >
-            Stop & Save
-          </button>
-        )}
-        
-        <button
-          onClick={cancelRecording}
-          style={{
-            padding: "14px 24px",
-            background: "#f3f3f3",
-            color: "#333",
-            border: "1px solid #ddd",
-            borderRadius: 10,
-            fontSize: 15,
-            fontWeight: 600,
-            cursor: "pointer",
-            width: isMobile ? "100%" : "auto",
-          }}
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+
 </>
     )}
   </div>
@@ -4924,13 +4905,16 @@ function Tab({ label, active, onClick }) {
     <button
       onClick={onClick}
       style={{
-        padding: "8px 14px",
+        padding: "12px 20px",
         borderRadius: "10px 10px 0 0",
         background: active ? "#ffffff" : "#ECECEF",
         color: "#2a2438",
         border: "1px solid #E5E5EA",
-        borderBottomColor: active ? "#ffffff" : "#E5E5EA",
+        borderBottom: active ? "1px solid #ffffff" : "1px solid #E5E5EA",
+        marginBottom: -1,
         fontWeight: 700,
+        fontSize: 14,
+        whiteSpace: "nowrap",
       }}
     >
       {label}
@@ -4985,29 +4969,28 @@ function CassetteButton({ label, active, disabled, onClick }) {
 }
 
 const styles = {
-  page: {
+page: {
   minHeight: "100vh",
-  background: "#ffffff", // ← STATIC ONLY
+  background: "#ffffff",
   color: "#000000",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  padding: "10px 20px 0px",
+  padding: "10px 20px 20px",
   justifyContent: "flex-start",
-   
+  boxSizing: "border-box",
 },
 
   logo: { width: 260, margin: "8px auto 14px", display: "block" },
-  main: {
+main: {
     display: "grid",
-    // left card size
-    gridTemplateColumns: "minmax(250px, 432px) minmax(500px, 800px)",
+    gridTemplateColumns: "minmax(250px, 380px) minmax(400px, 1fr)",
     gap: 36,
-    //width of the mixtape
-    width: "min(1500px, 80vw)",
+    width: "min(1400px, 90vw)",
     alignItems: "start",
     margin: "0 auto",
-    
+    padding: "0 20px",
+    boxSizing: "border-box",
   },
 
   leftColumn: {
@@ -5015,27 +4998,34 @@ const styles = {
   flexDirection: "column",
   },
   // body of the left white
-  card: {
-    background: "#ffffff",
-    border: "1px solid #E5E5EA",
-    borderRadius: 20,
-    boxShadow: "0 8px 30px rgba(0,0,0,.06)",
-    overflow: "20px",
-    padding: "0px 24px 24px",
-  },
+card: {
+  background: "#ffffff",
+  border: "1px solid #E5E5EA",
+  borderRadius: "0 0 20px 20px",
+  boxShadow: "0 8px 30px rgba(0,0,0,.06)",
+  overflow: "hidden",
+  padding: "0px 24px 24px",
+  boxSizing: "border-box",
+  width: "100%",
+  maxWidth: "100%",
+},
 tabs: {
   display: "flex",
+  flexWrap: "wrap",
   gap: 5,
   padding: "8px 0 0 0",
   borderBottom: "0px solid #E5E5EA",
   borderRadius: "12px",
   background: "transparent",
+  width: "100%",
 },
-  panel: { 
-    padding: "15px 20px 30px", 
-    paddingBottom: 30, 
-    boxSizing: "border-box",
-   },
+panel: { 
+  padding: "15px 20px 30px", 
+  paddingBottom: 30, 
+  boxSizing: "border-box",
+  width: "100%",
+  overflow: "hidden",
+},
   h3: { margin: "4px 0 12px", fontSize: 18 },
   input: {
     width: "100%",
@@ -5166,6 +5156,8 @@ select: {
   fontSize: 14,
   color: "#000",
   fontFamily: "'Hoover', sans-serif",
+  boxSizing: "border-box",
+  maxWidth: "100%",
 },
 
 stickerPanel: {
