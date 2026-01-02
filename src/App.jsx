@@ -156,7 +156,7 @@ React.useEffect(() => {
   });
 
   // Preload videos for faster preview
-  const videos = ["/tapenew.mov", "/smallrollers.mov", "/tapenew.webm", "/smallrollers.webm"];
+  const videos = ["/tapeios.mov", "/smallrollersios.mov", "/tapenew.webm", "/smallrollers.webm"];
   videos.forEach(src => {
     const link = document.createElement('link');
     link.rel = 'preload';
@@ -4032,7 +4032,7 @@ if (isMobile) {
 
 <video
   ref={tapeVideoRef}
-  src={isSafari ? "/tapenew.mov" : "/tapenew.webm"}
+  src={isSafari ? "/tapeios.mov" : "/tapenew.webm"}
   preload="auto"
   loop
   muted
@@ -4069,7 +4069,7 @@ if (isMobile) {
 
 <video
   ref={rollerVideoRef}
-  src={isSafari ? "/smallrollers.mov" : "/smallrollers.webm"}
+  src={isSafari ? "/smallrollersios.mov" : "/smallrollers.webm"}
   preload="auto"
   loop
   muted
