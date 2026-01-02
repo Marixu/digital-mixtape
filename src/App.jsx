@@ -265,62 +265,19 @@ React.useEffect(() => {
   const rollerCtx = rollerCanvas.getContext('2d');
 
   // Only draw when NOT playing
- // Draw static frame ONLY in editor mode
-if (!isPlaying && appMode === "editor") {
-  tapeCtx.clearRect(0, 0, tapeCanvas.width, tapeCanvas.height);
-  rollerCtx.clearRect(0, 0, rollerCanvas.width, rollerCanvas.height);
+  if (!isPlaying) {
+    tapeCtx.clearRect(0, 0, tapeCanvas.width, tapeCanvas.height);
+    rollerCtx.clearRect(0, 0, rollerCanvas.width, rollerCanvas.height);
 
-  tapeCtx.drawImage(tapeFrames[0], 0, 0);
-  rollerCtx.drawImage(rollerFrames[0], 0, 0);
+    tapeCtx.drawImage(tapeFrames[0], 0, 0, tapeCanvas.width, tapeCanvas.height);
+    rollerCtx.drawImage(rollerFrames[0], 0, 0, rollerCanvas.width, rollerCanvas.height);
 
-  tapeFrameIndex.current = 0;
-  rollerFrameIndex.current = 0;
+    tapeFrameIndex.current = 0;
+    rollerFrameIndex.current = 0;
+    
+    console.log('✅ Drew static frame!');
   }
-}, [isIOS, tapeFrames, rollerFrames, isPlaying, appMode]);
-
-
-// ✅ Draw first frame when entering preview / receiver
-const isViewingMode = appMode === "preview" || appMode === "receiver";
-
-React.useEffect(() => {
-  if (!isIOS) return;
-  if (!isViewingMode) return;
-  if (!tapeFrames.length || !rollerFrames.length) return;
-
-  const tapeCanvas = tapeCanvasRef.current;
-  const rollerCanvas = rollerCanvasRef.current;
-  if (!tapeCanvas || !rollerCanvas) return;
-
-  const tapeImg = tapeFrames[0];
-  const rollerImg = rollerFrames[0];
-
-  // fallback in case naturalWidth is 0 for any reason
-  const tw = tapeImg.naturalWidth || tapeImg.width;
-  const th = tapeImg.naturalHeight || tapeImg.height;
-  const rw = rollerImg.naturalWidth || rollerImg.width;
-  const rh = rollerImg.naturalHeight || rollerImg.height;
-
-  tapeCanvas.width = tw;
-  tapeCanvas.height = th;
-  rollerCanvas.width = rw;
-  rollerCanvas.height = rh;
-
-  const tapeCtx = tapeCanvas.getContext("2d");
-  const rollerCtx = rollerCanvas.getContext("2d");
-
-  tapeCtx.clearRect(0, 0, tw, th);
-  rollerCtx.clearRect(0, 0, rw, rh);
-
-  tapeCtx.drawImage(tapeImg, 0, 0);
-  rollerCtx.drawImage(rollerImg, 0, 0);
-
-  tapeFrameIndex.current = 0;
-  rollerFrameIndex.current = 0;
-}, [appMode, isIOS, tapeFrames, rollerFrames]);
-
-
-
-
+}, [isIOS, tapeFrames, rollerFrames, isPlaying]);
 // Animation loop when playing
 React.useEffect(() => {
   if (!isIOS) return;
@@ -369,6 +326,8 @@ React.useEffect(() => {
     }
   };
 }, [isIOS, isPlaying, tapeFrames, rollerFrames]);
+
+
 
 
 // Pinch-to-zoom for label image on mobile
