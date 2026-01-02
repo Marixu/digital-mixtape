@@ -117,7 +117,13 @@ const recordingIntervalRef = React.useRef(null);
   const [activeObject, setActiveObject] = React.useState(null);
   const [isReceiverReady, setIsReceiverReady] = React.useState(false);
 
-
+const [tapeFrames, setTapeFrames] = React.useState([]);
+const [rollerFrames, setRollerFrames] = React.useState([]);
+const tapeCanvasRef = React.useRef(null);
+const rollerCanvasRef = React.useRef(null);
+const tapeFrameIndex = React.useRef(0);
+const rollerFrameIndex = React.useRef(0);
+const animationRef = React.useRef(null);
 
 
 // ✅ NEW - safe default, then adjust after mount
@@ -129,6 +135,8 @@ React.useEffect(() => {
     setTextSize(16);
   }
 }, [isMobile]);
+
+
 
 React.useEffect(() => {
   const images = [
@@ -181,6 +189,87 @@ const hasNextTrack = currentTrackIndex < tracks.length - 1;
   { label: "JetBrains Mono", fontFamily: "'JetBrains Mono', sans-serif" },
 ];
 
+// Preload PNG frames for iOS
+React.useEffect(() => {
+  if (!isIOS) return;
+  
+  const loadFrames = async (folder, count) => {
+  const frames = await Promise.all(
+    Array.from({ length: count }, (_, i) => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.src = `/${folder}/0001.png${String(i + 1).padStart(4, "0")}`;
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+      });
+    })
+  );
+
+  return frames.filter(Boolean);
+};
+
+  
+  // Load tape frames
+  loadFrames('tapeframes', 100).then(frames => {
+    setTapeFrames(frames);
+  });
+  
+  // Load roller frames
+  loadFrames('rollerframes', 100).then(frames => {
+    setRollerFrames(frames);
+  });
+}, [isIOS]);
+
+// Canvas animation for iOS
+React.useEffect(() => {
+  if (!isIOS || tapeFrames.length === 0) return;
+  
+  const tapeCanvas = tapeCanvasRef.current;
+  const rollerCanvas = rollerCanvasRef.current;
+  if (!tapeCanvas || !rollerCanvas) return;
+  
+  const tapeCtx = tapeCanvas.getContext('2d');
+  const rollerCtx = rollerCanvas.getContext('2d');
+  
+  const fps = 30;
+  const frameDuration = 1000 / fps;
+  let lastTime = 0;
+  
+  const animate = (timestamp) => {
+    if (!isPlaying) {
+      animationRef.current = requestAnimationFrame(animate);
+      return;
+    }
+    
+    if (timestamp - lastTime >= frameDuration) {
+      // Draw tape frame
+      if (tapeFrames.length > 0) {
+        tapeCtx.clearRect(0, 0, tapeCanvas.width, tapeCanvas.height);
+        tapeCtx.drawImage(tapeFrames[tapeFrameIndex.current], 0, 0, tapeCanvas.width, tapeCanvas.height);
+        tapeFrameIndex.current = (tapeFrameIndex.current + 1) % tapeFrames.length;
+      }
+      
+      // Draw roller frame
+      if (rollerFrames.length > 0) {
+        rollerCtx.clearRect(0, 0, rollerCanvas.width, rollerCanvas.height);
+        rollerCtx.drawImage(rollerFrames[rollerFrameIndex.current], 0, 0, rollerCanvas.width, rollerCanvas.height);
+        rollerFrameIndex.current = (rollerFrameIndex.current + 1) % rollerFrames.length;
+      }
+      
+      lastTime = timestamp;
+    }
+    
+    animationRef.current = requestAnimationFrame(animate);
+  };
+  
+  animationRef.current = requestAnimationFrame(animate);
+  
+  return () => {
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
+  };
+}, [isIOS, isPlaying, tapeFrames, rollerFrames]);
 
 // Pinch-to-zoom for label image on mobile
 React.useEffect(() => {
@@ -1523,35 +1612,43 @@ if (isMobile) {
 )}
 
 
-<video
-  ref={tapeVideoRef}
-  loop
-  preload="auto"
-  muted
-  playsInline
-  webkit-playsinline="true"
-  x5-playsinline="true"
-  onLoadedData={(e) => {
-    console.log('Tape video loaded');
-    if (isMobile && (isPreviewMode || appMode === "receiver") && isPlaying) {
-      e.target.play().catch(err => console.log('Auto-play failed:', err));
-    }
-  }}
-  style={{
-    position: "absolute",
-    inset: 0,
-    width: "100%",
-    height: "100%",
-    objectFit: "contain",
-    zIndex: 1,
-    pointerEvents: "none",
-    transform: "translateZ(0)",
-    backfaceVisibility: "hidden",
-  }}
->
-  <source src="/tapeprores.mov" type="video/quicktime" />
-  <source src="/tapenew.webm" type="video/webm" />
-</video>
+{isIOS ? (
+  <canvas
+    ref={tapeCanvasRef}
+    width={1920}
+    height={1080}
+    style={{
+      position: "absolute",
+      inset: 0,
+      width: "100%",
+      height: "100%",
+      objectFit: "contain",
+      zIndex: 1,
+      pointerEvents: "none",
+    }}
+  />
+) : (
+  <video
+    ref={tapeVideoRef}
+    loop
+    preload="auto"
+    muted
+    playsInline
+    webkit-playsinline="true"
+    x5-playsinline="true"
+    style={{
+      position: "absolute",
+      inset: 0,
+      width: "100%",
+      height: "100%",
+      objectFit: "contain",
+      zIndex: 1,
+      pointerEvents: "none",
+    }}
+  >
+    <source src="/tapenew.webm" type="video/webm" />
+  </video>
+)}
 
 
 {/* 2️⃣ Cover image (NO tape graphics) */}
@@ -1572,35 +1669,43 @@ if (isMobile) {
 
 
 
-<video
-  ref={rollerVideoRef}
-  loop
-  preload="auto"
-  muted
-  playsInline
-  webkit-playsinline="true"
-  x5-playsinline="true"
-  onLoadedData={(e) => {
-    console.log('Roller video loaded');
-    if (isMobile && (isPreviewMode || appMode === "receiver") && isPlaying) {
-      e.target.play().catch(err => console.log('Auto-play failed:', err));
-    }
-  }}
-  style={{
-    position: "absolute",
-    inset: 0,
-    width: "100%",
-    height: "100%",
-    objectFit: "contain",
-    zIndex: 3,
-    pointerEvents: "none",
-    transform: "translateZ(0)",
-    backfaceVisibility: "hidden",
-  }}
->
-  <source src="/smallrollersprores.mov" type="video/quicktime" />
-  <source src="/smallrollers.webm" type="video/webm" />
-</video>
+{isIOS ? (
+  <canvas
+    ref={rollerCanvasRef}
+    width={1920}
+    height={1080}
+    style={{
+      position: "absolute",
+      inset: 0,
+      width: "100%",
+      height: "100%",
+      objectFit: "contain",
+      zIndex: 3,
+      pointerEvents: "none",
+    }}
+  />
+) : (
+  <video
+    ref={rollerVideoRef}
+    loop
+    preload="auto"
+    muted
+    playsInline
+    webkit-playsinline="true"
+    x5-playsinline="true"
+    style={{
+      position: "absolute",
+      inset: 0,
+      width: "100%",
+      height: "100%",
+      objectFit: "contain",
+      zIndex: 3,
+      pointerEvents: "none",
+    }}
+  >
+    <source src="/smallrollers.webm" type="video/webm" />
+  </video>
+)}
 
 {/* Label overlay (1, 2, 3, 4 buttons) */}
 {labelOverlay && (
