@@ -476,17 +476,22 @@ React.useEffect(() => {
   // set src when track changes
   if (audio.src !== current.src) {
     audio.src = current.src;
+    audio.load(); // Force load for iOS
     audio.currentTime = 0;
   }
 
   // only autoplay if user is already "playing"
   if (!isPlaying) return;
 
-  audio.play().catch((err) => {
-    console.warn("audio.play() blocked:", err);
-  });
+  // Small delay for iOS to ensure audio is ready
+  const playTimeout = setTimeout(() => {
+    audio.play().catch((err) => {
+      console.warn("audio.play() blocked:", err);
+    });
+  }, 50);
+  
+  return () => clearTimeout(playTimeout);
 }, [currentTrackIndex, current?.src, isPlaying]);
-
 
 
 //------------------SHARE LINK ----------------------------------
@@ -1029,18 +1034,36 @@ const addTrackByUrl = async () => {
   setPendingUrl("");
 };
   /* ---------- Audio controls ---------- */
-  React.useEffect(() => {
-    const audio = audioRef.current;
-     const onEnded = () => {
+React.useEffect(() => {
+  const audio = audioRef.current;
+  
+  const onEnded = () => {
+    // Make sure we're actually at the end (iOS sometimes fires early)
+    if (audio.currentTime < audio.duration - 0.5) {
+      return; // Ignore false "ended" events
+    }
+    
     if (currentTrackIndex < tracks.length - 1) {
-      skipToNextTrack();
+      // Go to next track
+      const nextIndex = currentTrackIndex + 1;
+      audio.pause();
+      audio.currentTime = 0;
+      setCurrentTrackIndex(nextIndex);
+      
+      // Small delay for iOS before playing next track
+      setTimeout(() => {
+        if (isPlaying) {
+          audio.play().catch(e => console.log('Auto-play next failed:', e));
+        }
+      }, 100);
     } else {
       finishMixtape();
     }
   };
-    audio.addEventListener("ended", onEnded);
-    return () => audio.removeEventListener("ended", onEnded);
-  }, []);
+  
+  audio.addEventListener("ended", onEnded);
+  return () => audio.removeEventListener("ended", onEnded);
+}, [currentTrackIndex, tracks.length, isPlaying]);
 
   const play = () => {
   if (!current || (current.type !== "mp3" && current.type !== "audio") || !current.src) return;
@@ -1411,11 +1434,9 @@ if (isMobile) {
 {/* MIXTAPE MOBILE */}
 {currentPage === "home" && (
     <div 
-      className={`mobile-mixtape-area ${isPreviewMode ? "preview" : ""}`}
-      style={{ overflow: "visible",
-        paddingBottom: glowEnabled ? "40px" : "0px",
-       }}
-    >
+  className={`mobile-mixtape-area ${isPreviewMode ? "preview" : ""}`}
+  style={{ overflow: "visible" }}
+>
   <div className="mixtape-wrapper" style={{ 
   background: "transparent", 
   width: isTablet ? "450px" : "calc(100vw - 20px)",
@@ -2252,6 +2273,13 @@ if (isMobile) {
 {/* Voice Recorder Button */}
 <button
   onClick={() => {
+
+    // Check if max tracks reached
+    if (tracks.length >= MAX_TRACKS) {
+      alert("Maximum of 5 tracks reached!");
+      return;
+    }
+
     // Stop all media first - iOS only allows one media stream at a time
     const tapeVideo = tapeVideoRef.current;
     const rollerVideo = rollerVideoRef.current;
@@ -2451,7 +2479,7 @@ if (isMobile) {
 {/* ─────────────────────────────
     UPLOAD IMAGE ROW
    ───────────────────────────── */}
-<div>
+<div style={{ marginTop: 10 }}>
   <label
     style={{
       height: 36,
