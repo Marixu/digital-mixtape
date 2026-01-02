@@ -282,7 +282,7 @@ React.useEffect(() => {
 // 🔑 BRIDGE: ensure canvas is NEVER empty in preview / receiver
 React.useEffect(() => {
   if (!isIOS) return;
-  if (!(isPreviewMode || appMode === "receiver")) return;
+  if (!(isPreviewMode || appMode === "preview" || appMode === "receiver")) return;
   if (isPlaying) return;
   if (!tapeFrames.length || !rollerFrames.length) return;
 
