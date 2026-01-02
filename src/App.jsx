@@ -2384,10 +2384,11 @@ if (isMobile) {
    ───────────────────────────── */}
 <div
   style={{
-    display: "grid",
-    gridTemplateColumns: "repeat(5, 1fr)",
+    display: "flex",
+    flexWrap: "wrap",
     gap: 8,
-    marginBottom: 10,
+    alignItems: "center",
+    maxWidth: "100%",
   }}
 >
   {/* 1 */}
@@ -3423,9 +3424,9 @@ if (isMobile) {
               <div>
                 <label style={{ ...styles.label, marginTop: 18 }}>Mixtape Color</label>
 <div style={{ 
-  display: "grid", 
-  gridTemplateColumns: isTablet ? "repeat(7, 1fr)" : "repeat(7, 40px)", 
-  gap: isTablet ? 8 : 10,
+  display: "flex", 
+  flexWrap: "wrap",
+  gap: 8,
   maxWidth: "100%",
 }}>
   {[
@@ -3444,9 +3445,9 @@ if (isMobile) {
         setMixtapeImage(item.image);
       }}
       style={{
-        aspectRatio: "1",
-        width: isTablet ? "100%" : 40,
-        height: isTablet ? "auto" : 40,
+        width: 36,
+        height: 36,
+        minWidth: 36,
         borderRadius: 10,
         border: coverColor === item.color ? "2px solid #3a2d3f" : "2px solid #e4e4e7",
         background: item.color,
@@ -3588,50 +3589,50 @@ if (isMobile) {
 
                <label style={styles.label}>Font</label>
 
-                  <div style={{ display: "flex", gap: 10 }}>
-                  <select
-                   value={textFont}
-                    onChange={(e) => setTextFont(e.target.value)}
-                    style={styles.select}
-                  >
-                  {FONT_OPTIONS.map(f => (
-                  <option key={f.value} value={f.value}>
-                   {f.label}
-                   </option>
-                  ))}
-                  </select>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+  <select
+    value={textFont}
+    onChange={(e) => setTextFont(e.target.value)}
+    style={{ ...styles.select, flex: "1 1 120px", minWidth: 100 }}
+  >
+    {FONT_OPTIONS.map(f => (
+      <option key={f.value} value={f.value}>
+        {f.label}
+      </option>
+    ))}
+  </select>
 
-                <select
-                  value={textSize}
-                  onChange={(e) => setTextSize(Number(e.target.value))}
-                 style={styles.select}
-                 >
-               {[20, 24, 32, 36, 40].map(size => (
-                <option key={size} value={size}>{size}px</option>
-               ))}
-              </select>
+  <select
+    value={textSize}
+    onChange={(e) => setTextSize(Number(e.target.value))}
+    style={{ ...styles.select, flex: "0 1 70px", minWidth: 60 }}
+  >
+    {[20, 24, 32, 36, 40].map(size => (
+      <option key={size} value={size}>{size}px</option>
+    ))}
+  </select>
 
-              <label
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 10,
-                  border: "1px solid #e4e4e7",
-                  background: "linear-gradient(135deg, #ff6b9d 0%, #ffa726 25%, #c4e86b 50%, #64d8cb 75%, #ba8fdb 100%)",
-                  cursor: isEditable ? "pointer" : "default",
-                  position: "relative",
-                  display: "block",
-                  flexShrink: 0,
-                }}
-              >
-                <input
-                  type="color"
-                  value={textColor}
-                  onChange={(e) => setTextColor(e.target.value)}
-                  style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer", width: "100%", height: "100%" }}
-                />
-              </label>
-              </div>
+  <label
+    style={{
+      width: 36,
+      height: 36,
+      flexShrink: 0,
+      borderRadius: 10,
+      border: "1px solid #e4e4e7",
+      background: "linear-gradient(135deg, #ff6b9d 0%, #ffa726 25%, #c4e86b 50%, #64d8cb 75%, #ba8fdb 100%)",
+      cursor: "pointer",
+      position: "relative",
+      display: "block",
+    }}
+  >
+    <input
+      type="color"
+      value={textColor}
+      onChange={(e) => setTextColor(e.target.value)}
+      style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer", width: "100%", height: "100%" }}
+    />
+  </label>
+</div>
 
 
                 <label style={styles.label}>Mixtape Message</label>
@@ -3911,7 +3912,7 @@ if (isMobile) {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    paddingTop: isTablet ? 30 : 80,
+    paddingTop: isTablet ? 30 : 70,
     gap: 20,
   }}
 >
@@ -5129,21 +5130,18 @@ panel: {
 
 labelButton:
 {
-  height: 40,
-  width: 40,
+  height: 36,
+  minWidth: 36,
+  flex: "0 0 36px",
   borderRadius: 10,
   border: "2px solid #e4e4e7",
-  background: "#ffffffff",
+  background: "#ffffff",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
   cursor: "pointer",
-  color: "#838383ff",
-  padding: 0,
   fontSize: 14,
   fontWeight: 700,
-  lineHeight: "1",
-  padding: 0,
   color: "#868686",
 },
 
