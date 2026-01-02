@@ -1419,7 +1419,6 @@ if (isMobile) {
     width: "100%",
     height: "100%",
     pointerEvents: "auto",
-    transform: "translateX(-2.5%)",
     overflow: isPreviewMode || appMode === "receiver" ? "visible" : "visible",
   }}
 >
@@ -2214,7 +2213,9 @@ if (isMobile) {
   <div>
      <label style={{ ...styles.label, marginTop: 8 }}>Upload Music</label>
 <p style={styles.helperText}>
-  Add MP3 files or record a voice message (Max 8 MB per track)
+  Add MP3 files or record a voice message 
+  <br />
+  (Max 8 MB per track)
 </p>
 
     {/* Upload dropzone */}
