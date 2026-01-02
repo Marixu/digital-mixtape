@@ -1549,7 +1549,7 @@ if (isMobile) {
     backfaceVisibility: "hidden",
   }}
 >
-  <source src="/tapenew.mov" type="video/mp4; codecs=hvc1" />
+  <source src="/tapenew.mov?v=2" type="video/mp4; codecs=hvc1" />
   <source src="/tapenew.webm" type="video/webm" />
 </video>
 
@@ -1598,7 +1598,7 @@ if (isMobile) {
     backfaceVisibility: "hidden",
   }}
 >
-  <source src="/smallrollers.mov" type="video/mp4; codecs=hvc1" />
+  <source src="/smallrollers.mov?v=2" type="video/mp4; codecs=hvc1" />
   <source src="/smallrollers.webm" type="video/webm" />
 </video>
 
