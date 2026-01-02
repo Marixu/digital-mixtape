@@ -246,6 +246,10 @@ React.useEffect(() => {
   
   if (!tapeCanvas || !rollerCanvas) return;
 
+  // Get the first frame images
+  const tapeImg = tapeFrames[0];
+  const rollerImg = rollerFrames[0];
+
   tapeCanvas.width = tapeImg.naturalWidth || tapeImg.width;
   tapeCanvas.height = tapeImg.naturalHeight || tapeImg.height;
   
