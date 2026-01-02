@@ -134,8 +134,8 @@ React.useEffect(() => {
   const images = [
     "/label1.png", "/label2.png", "/label3.png", "/label4.png",
     "/pinkntape.png", "/greennotape.png", "/transnotape.png",
-    "/whitenotape.png", "/blacknotape.png", "/purplenotape.png", 
-    "/bluewithfront.png", "/crop.png"
+    "/whitenotape.png", "/blacknotape1.png", "/purplenotape1.png", 
+    "/bluenotape.png", "/crop.png"
   ];
   
   // More aggressive preloading
@@ -852,41 +852,47 @@ const { error: uploadError } = await supabase.storage
 
 const startRecording = async () => {
   try {
-    // PAUSE ALL VIDEOS FIRST - iOS only allows one media stream at a time
-    const tapeVideo = tapeVideoRef.current;
-    const rollerVideo = rollerVideoRef.current;
-    const audio = audioRef.current;
-    
-    if (tapeVideo) tapeVideo.pause();
-    if (rollerVideo) rollerVideo.pause();
-    if (audio) audio.pause();
-    
-    setIsPlaying(false); // Stop playback state
-    
+    // Request microphone permission - this must happen on user gesture (button click)
     const stream = await navigator.mediaDevices.getUserMedia({ 
       audio: {
         echoCancellation: true,
         noiseSuppression: true,
-        sampleRate: 44100
       } 
     });
     
-    let mimeType = 'audio/mp4';
-    let options = {};
+    // Determine the best supported MIME type for this device
+    let mimeType = 'audio/webm';
+    let fileExtension = 'webm';
     
+    // iOS Safari prefers mp4/aac
     if (MediaRecorder.isTypeSupported('audio/mp4')) {
       mimeType = 'audio/mp4';
-      options = { mimeType: 'audio/mp4' };
+      fileExtension = 'm4a';
     } else if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
       mimeType = 'audio/webm;codecs=opus';
-      options = { mimeType: 'audio/webm;codecs=opus' };
+      fileExtension = 'webm';
     } else if (MediaRecorder.isTypeSupported('audio/webm')) {
       mimeType = 'audio/webm';
-      options = { mimeType: 'audio/webm' };
+      fileExtension = 'webm';
+    } else if (MediaRecorder.isTypeSupported('audio/aac')) {
+      mimeType = 'audio/aac';
+      fileExtension = 'aac';
     }
     
-    mediaRecorderRef.current = new MediaRecorder(stream, options);
+    // Store file extension for later use
     audioChunksRef.current = [];
+    audioChunksRef.current.fileExtension = fileExtension;
+    
+    const options = { mimeType };
+    
+    try {
+      mediaRecorderRef.current = new MediaRecorder(stream, options);
+    } catch (e) {
+      // Fallback: let browser choose format
+      console.log('Using default MediaRecorder format');
+      mediaRecorderRef.current = new MediaRecorder(stream);
+      audioChunksRef.current.fileExtension = 'm4a'; // iOS default
+    }
     
     mediaRecorderRef.current.ondataavailable = (e) => {
       if (e.data && e.data.size > 0) {
@@ -895,7 +901,10 @@ const startRecording = async () => {
     };
     
     mediaRecorderRef.current.onstop = async () => {
-      if (audioChunksRef.current.length === 0) {
+      const ext = audioChunksRef.current.fileExtension || 'm4a';
+      
+      if (audioChunksRef.current.length === 0 || 
+          (audioChunksRef.current.length === 1 && audioChunksRef.current[0].size === 0)) {
         alert('No audio recorded. Please try again.');
         stream.getTracks().forEach(track => track.stop());
         setShowVoiceRecorder(false);
@@ -904,16 +913,9 @@ const startRecording = async () => {
       }
       
       const recordedMimeType = mediaRecorderRef.current.mimeType || mimeType;
-      const audioBlob = new Blob(audioChunksRef.current, { type: recordedMimeType });
+      const audioBlob = new Blob(audioChunksRef.current.filter(c => c.size > 0), { type: recordedMimeType });
       
-      let extension = 'm4a';
-      if (recordedMimeType.includes('webm')) {
-        extension = 'webm';
-      } else if (recordedMimeType.includes('ogg')) {
-        extension = 'ogg';
-      }
-      
-      const fileName = `voice-memo-${Date.now()}.${extension}`;
+      const fileName = `voice-memo-${Date.now()}.${ext}`;
       const file = new File([audioBlob], fileName, { type: recordedMimeType });
       
       stream.getTracks().forEach(track => track.stop());
@@ -924,7 +926,8 @@ const startRecording = async () => {
       setRecordingTime(0);
     };
     
-    mediaRecorderRef.current.start(100);
+    // Start recording - use timeslice for iOS compatibility
+    mediaRecorderRef.current.start(1000); // Collect data every second
     setIsRecording(true);
     
     recordingIntervalRef.current = setInterval(() => {
@@ -933,7 +936,17 @@ const startRecording = async () => {
     
   } catch (err) {
     console.error("Recording error:", err);
-    alert("Could not start recording: " + (err.message || "Unknown error"));
+    
+    let errorMessage = "Could not start recording.";
+    if (err.name === 'NotAllowedError') {
+      errorMessage = "Microphone access denied. Please allow microphone access in your browser/device settings.";
+    } else if (err.name === 'NotFoundError') {
+      errorMessage = "No microphone found on this device.";
+    } else if (err.name === 'NotReadableError') {
+      errorMessage = "Microphone is being used by another app. Please close other apps and try again.";
+    }
+    
+    alert(errorMessage);
     setShowVoiceRecorder(false);
   }
 };
@@ -2205,7 +2218,7 @@ if (isMobile) {
     <Tab label="Decorate" active={tab === "decorate"} onClick={() => setTab("decorate")} />
     <Tab label="Cover" active={tab === "preview"} onClick={() => setTab("preview")} />
 </div>
-        <div style={styles.card}>
+        <div style={{ ...styles.card, borderRadius: "0 20px 20px 20px" }}>
           <div style={styles.panel}>
 
          {/* SONGS TAB */}
@@ -2213,11 +2226,10 @@ if (isMobile) {
   <div>
      <label style={{ ...styles.label, marginTop: 8 }}>Upload Music</label>
 <p style={styles.helperText}>
-  Add MP3 files or record a voice message 
-  <br />
-  (Max 8 MB per track)
-</p>
-
+      Add MP3 files or record a voice message 
+      <br />
+      (Max 8 MB per track)
+    </p>
     {/* Upload dropzone */}
     <div style={{ marginBottom: 12 }}>
       <div
@@ -2236,10 +2248,11 @@ if (isMobile) {
       </div>
     </div>
 
-    {/* Voice Recorder Button */}
+  
+{/* Voice Recorder Button */}
 <button
-  onClick={async () => {
-    // Stop all media first
+  onClick={() => {
+    // Stop all media first - iOS only allows one media stream at a time
     const tapeVideo = tapeVideoRef.current;
     const rollerVideo = rollerVideoRef.current;
     const audio = audioRef.current;
@@ -2255,23 +2268,15 @@ if (isMobile) {
       return;
     }
     
-    // Try to get permission first
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      // Stop the test stream immediately
-      stream.getTracks().forEach(track => track.stop());
-      // Now show the recorder
-      setShowVoiceRecorder(true);
-    } catch (err) {
-      console.error("Microphone error:", err);
-      if (err.name === 'NotAllowedError') {
-        alert("Please allow microphone access in your browser settings to record voice memos.");
-      } else if (err.name === 'NotFoundError') {
-        alert("No microphone found on this device.");
-      } else {
-        alert("Could not access microphone. Make sure you're using HTTPS and have a microphone connected.");
-      }
+    // Check if getUserMedia is available
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      alert("Voice recording is not supported on this device/browser.");
+      return;
     }
+    
+    // Just show the modal - let startRecording handle the permission request
+    // This is important for iOS which has strict requirements about user gesture timing
+    setShowVoiceRecorder(true);
   }}
   style={{
     marginBottom: 20,
@@ -2354,9 +2359,9 @@ if (isMobile) {
     { color: "#B7FF33", image: "/greennotape.png" },
     { color: "#C9D3DA", image: "/transnotape.png" },
     { color: "#FFFFFF", image: "/whitenotape.png" },
-    { color: "#3F3F3F", image: "/blacknotape.png" },
-    { color: "#AF96E6", image: "/purplenotape.png" },
-    { color: "#86E3FD", image: "/bluewithfront.png" },
+    { color: "#3F3F3F", image: "/blacknotape1.png" },
+    { color: "#AF96E6", image: "/purplenotape1.png" },
+    { color: "#86E3FD", image: "/bluenotape.png" },
   ].map((item, i) => (
     <button
       key={i}
@@ -3244,7 +3249,7 @@ if (isMobile) {
     </button>
   </div>
 
- 
+ <div className="center-column-desktop">
 
   {/* title under (home only) */}
   {currentPage === "home" && (
@@ -3326,7 +3331,9 @@ if (isMobile) {
   <div>
     <h3 style={styles.h3}>Upload Music</h3>
     <p style={styles.helperText}>
-      Add MP3 files or record a voice message (Max 8 MB per track)
+      Add MP3 files or record a voice message 
+      <br />
+      (Max 8 MB per track)
     </p>
 
     <div style={{ marginTop: 10 }}>
@@ -3435,9 +3442,9 @@ if (isMobile) {
     { color: "#B7FF33", image: "/greennotape.png" },
     { color: "#C9D3DA", image: "/transnotape.png" },
     { color: "#FFFFFF", image: "/whitenotape.png" },
-    { color: "#3F3F3F", image: "/blacknotape.png" },
-    { color: "#AF96E6", image: "/purplenotape.png" },
-    { color: "#86E3FD", image: "/bluewithfront.png" },
+    { color: "#3F3F3F", image: "/blacknotape1.png" },
+    { color: "#AF96E6", image: "/purplenotape1.png" },
+    { color: "#86E3FD", image: "/bluenotape.png" },
   ].map((item, i) => (
     <button
       key={i}
@@ -4892,7 +4899,7 @@ if (isMobile) {
     </button>
   </div>
 </div>
-
+</div>
 </>
     )}
   </div>
