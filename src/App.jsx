@@ -276,39 +276,47 @@ if (!isPlaying && appMode === "editor") {
   tapeFrameIndex.current = 0;
   rollerFrameIndex.current = 0;
   }
-}, [isIOS, tapeFrames, rollerFrames, isPlaying]);
+}, [isIOS, tapeFrames, rollerFrames, isPlaying, appMode]);
+
 
 // ✅ Draw first frame when entering preview / receiver
+const isViewingMode = appMode === "preview" || appMode === "receiver";
+
 React.useEffect(() => {
   if (!isIOS) return;
-  if (!isPreviewMode && appMode !== "receiver") return;
+  if (!isViewingMode) return;
   if (!tapeFrames.length || !rollerFrames.length) return;
 
   const tapeCanvas = tapeCanvasRef.current;
   const rollerCanvas = rollerCanvasRef.current;
   if (!tapeCanvas || !rollerCanvas) return;
 
-  const tapeCtx = tapeCanvas.getContext("2d");
-  const rollerCtx = rollerCanvas.getContext("2d");
-
   const tapeImg = tapeFrames[0];
   const rollerImg = rollerFrames[0];
 
-  // Ensure canvas matches image size
-  tapeCanvas.width = tapeImg.naturalWidth;
-  tapeCanvas.height = tapeImg.naturalHeight;
-  rollerCanvas.width = rollerImg.naturalWidth;
-  rollerCanvas.height = rollerImg.naturalHeight;
+  // fallback in case naturalWidth is 0 for any reason
+  const tw = tapeImg.naturalWidth || tapeImg.width;
+  const th = tapeImg.naturalHeight || tapeImg.height;
+  const rw = rollerImg.naturalWidth || rollerImg.width;
+  const rh = rollerImg.naturalHeight || rollerImg.height;
 
-  tapeCtx.clearRect(0, 0, tapeCanvas.width, tapeCanvas.height);
-  rollerCtx.clearRect(0, 0, rollerCanvas.width, rollerCanvas.height);
+  tapeCanvas.width = tw;
+  tapeCanvas.height = th;
+  rollerCanvas.width = rw;
+  rollerCanvas.height = rh;
+
+  const tapeCtx = tapeCanvas.getContext("2d");
+  const rollerCtx = rollerCanvas.getContext("2d");
+
+  tapeCtx.clearRect(0, 0, tw, th);
+  rollerCtx.clearRect(0, 0, rw, rh);
 
   tapeCtx.drawImage(tapeImg, 0, 0);
   rollerCtx.drawImage(rollerImg, 0, 0);
 
   tapeFrameIndex.current = 0;
   rollerFrameIndex.current = 0;
-}, [isPreviewMode, appMode, isIOS, tapeFrames, rollerFrames]);
+}, [appMode, isIOS, tapeFrames, rollerFrames]);
 
 
 
