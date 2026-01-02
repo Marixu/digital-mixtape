@@ -1545,7 +1545,13 @@ if (isMobile) {
         fontSize: isTablet ? 14 : undefined,
       }}
     >
+     <a
+      href="https://www.instagram.com/softparticle/"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
       @Softparticle
+    </a>
     </button>
 
     <button
