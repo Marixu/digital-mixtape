@@ -246,10 +246,6 @@ React.useEffect(() => {
   
   if (!tapeCanvas || !rollerCanvas) return;
 
-  // Set canvas size to match first frame dimensions
-  const tapeImg = tapeFrames[0];
-  const rollerImg = rollerFrames[0];
-
   tapeCanvas.width = tapeImg.naturalWidth || tapeImg.width;
   tapeCanvas.height = tapeImg.naturalHeight || tapeImg.height;
   
@@ -278,6 +274,52 @@ React.useEffect(() => {
     console.log('✅ Drew static frame!');
   }
 }, [isIOS, tapeFrames, rollerFrames, isPlaying]);
+
+// 🔑 BRIDGE: ensure canvas is NEVER empty in preview / receiver
+React.useEffect(() => {
+  if (!isIOS) return;
+  if (!(isPreviewMode || appMode === "receiver")) return;
+  if (isPlaying) return;
+  if (!tapeFrames.length || !rollerFrames.length) return;
+
+  const tapeCanvas = tapeCanvasRef.current;
+  const rollerCanvas = rollerCanvasRef.current;
+  if (!tapeCanvas || !rollerCanvas) return;
+
+  const tapeCtx = tapeCanvas.getContext("2d");
+  const rollerCtx = rollerCanvas.getContext("2d");
+
+  const tapeImg =
+    tapeFrames[tapeFrameIndex.current] || tapeFrames[0];
+  const rollerImg =
+    rollerFrames[rollerFrameIndex.current] || rollerFrames[0];
+
+  // ensure correct canvas size
+  tapeCanvas.width = tapeImg.naturalWidth || tapeImg.width;
+  tapeCanvas.height = tapeImg.naturalHeight || tapeImg.height;
+  rollerCanvas.width = rollerImg.naturalWidth || rollerImg.width;
+  rollerCanvas.height = rollerImg.naturalHeight || rollerImg.height;
+
+  tapeCtx.clearRect(0, 0, tapeCanvas.width, tapeCanvas.height);
+  rollerCtx.clearRect(0, 0, rollerCanvas.width, rollerCanvas.height);
+
+  tapeCtx.drawImage(tapeImg, 0, 0);
+  rollerCtx.drawImage(rollerImg, 0, 0);
+}, [
+  isIOS,
+  isPreviewMode,
+  appMode,
+  isPlaying,
+  tapeFrames,
+  rollerFrames,
+]);
+
+
+
+
+
+
+
 // Animation loop when playing
 React.useEffect(() => {
   if (!isIOS) return;
