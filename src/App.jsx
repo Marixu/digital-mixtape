@@ -675,7 +675,10 @@ React.useEffect(() => {
   if (!audio) return;
 
   const updateTime = () => {
-    setCurrentTime(audio.currentTime || 0);
+    // Clamp currentTime to track duration to prevent overshoot on timeline
+    const trackDuration = tracks[currentTrackIndex]?.duration || audio.duration || 0;
+    const clampedTime = Math.min(audio.currentTime || 0, trackDuration);
+    setCurrentTime(clampedTime);
     setTotalDuration(audio.duration || 0);
   };
 
@@ -686,7 +689,7 @@ React.useEffect(() => {
     audio.removeEventListener("timeupdate", updateTime);
     audio.removeEventListener("loadedmetadata", updateTime);
   };
-}, []);
+}, [currentTrackIndex, tracks]);
 
 
 React.useEffect(() => {
@@ -1350,6 +1353,9 @@ React.useEffect(() => {
     }
     
     if (currentTrackIndex < tracks.length - 1) {
+      // Reset currentTime FIRST to prevent timeline overshoot
+      setCurrentTime(0);
+      
       // Go to next track
       const nextIndex = currentTrackIndex + 1;
       audio.pause();
