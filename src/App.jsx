@@ -30,31 +30,36 @@ const [deviceInfo, setDeviceInfo] = React.useState({
   isMacDesktop: false,
 });
 
-// Run device detection only on client-side after mount
 React.useEffect(() => {
   const checkDevice = () => {
     const width = window.innerWidth;
-    const isTouchDevice = navigator.maxTouchPoints > 1;
     const userAgent = navigator.userAgent;
     const platform = navigator.platform;
 
+    // 🔑 LAYOUT FLAG (this is the important one)
+    const isMobile = width <= 768; // phones only
+
+    // OS / browser flags (for quirks, NOT layout)
+    const isIOS = /iPhone|iPad|iPod/.test(userAgent);
+    const isAndroid = /Android/.test(userAgent);
+    const isSafari = /^((?!chrome|android).)*safari/i.test(userAgent);
+    const isMacDesktop = platform === "MacIntel" && !isIOS;
+
     setDeviceInfo({
-      isMobile: width <= 768,
-      isTablet: (width > 768 && width <= 1366) || 
-        (platform === 'MacIntel' && isTouchDevice && width <= 1366),
-      isIOS: /iPad|iPhone|iPod/.test(userAgent) || 
-        (platform === 'MacIntel' && isTouchDevice),
-      isAndroid: /Android/.test(userAgent),
-      isSafari: /^((?!chrome|android).)*safari/i.test(userAgent) || 
-  (platform === 'MacIntel' && !isTouchDevice && /Safari/.test(userAgent) && !/Chrome/.test(userAgent)),
-      isMacDesktop: platform === 'MacIntel' && !isTouchDevice,
+      isMobile,        // ✅ phone-only
+      isIOS,           // ⚠️ quirks only
+      isAndroid,
+      isSafari,
+      isMacDesktop,
     });
   };
 
   checkDevice();
-  window.addEventListener('resize', checkDevice);
-  return () => window.removeEventListener('resize', checkDevice);
+  window.addEventListener("resize", checkDevice);
+  return () => window.removeEventListener("resize", checkDevice);
 }, []);
+
+
 
 const { isMobile, isTablet, isIOS, isAndroid, isSafari, isMacDesktop } = deviceInfo;
 const nextFrame = () =>
