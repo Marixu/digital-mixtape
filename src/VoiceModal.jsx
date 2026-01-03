@@ -50,8 +50,39 @@ export default function VoiceModal({
           onClick={(e) => e.stopPropagation()}
         >
           <div style={{ fontSize: 28, marginBottom: 15 }}>
-            {isProcessingRecording ? "⏳" : "🎙️"}
-          </div>
+  {isProcessingRecording ? (
+    <svg
+      className="w-6 h-6 text-gray-800 dark:text-white"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      fill="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path d="m12.75 20.66 6.184-7.098c2.677-2.884 2.559-6.506.754-8.705-.898-1.095-2.206-1.816-3.72-1.855-1.293-.034-2.652.43-3.963 1.442-1.315-1.012-2.678-1.476-3.973-1.442-1.515.04-2.825.76-3.724 1.855-1.806 2.201-1.915 5.823.772 8.706l6.183 7.097c.19.216.46.34.743.34a.985.985 0 0 0 .743-.34Z" />
+    </svg>
+  ) : (
+    <svg
+      className="w-6 h-6 text-gray-800 dark:text-white"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M19 9v3a5.006 5.006 0 0 1-5 5h-4a5.006 5.006 0 0 1-5-5V9m7 9v3m-3 0h6M11 3h2a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3h-2a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Z"
+      />
+    </svg>
+  )}
+</div>
+
 
           <h3 style={{ margin: "0 0 20px", color: "#000", fontSize: 18, fontWeight: 700 }}>
             {isProcessingRecording ? "Saving..." : isRecording ? "Recording..." : "Voice Recorder"}
@@ -196,9 +227,40 @@ export default function VoiceModal({
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div style={{ fontSize: 48, marginBottom: 20 }}>
-          {isProcessingRecording ? "⏳" : "🎙️"}
-        </div>
+        <div style={{ fontSize: 28, marginBottom: 15 }}>
+  {isProcessingRecording ? (
+    <svg
+      className="w-6 h-6 text-gray-800 dark:text-white"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      fill="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path d="m12.75 20.66 6.184-7.098c2.677-2.884 2.559-6.506.754-8.705-.898-1.095-2.206-1.816-3.72-1.855-1.293-.034-2.652.43-3.963 1.442-1.315-1.012-2.678-1.476-3.973-1.442-1.515.04-2.825.76-3.724 1.855-1.806 2.201-1.915 5.823.772 8.706l6.183 7.097c.19.216.46.34.743.34a.985.985 0 0 0 .743-.34Z" />
+    </svg>
+  ) : (
+    <svg
+      className="w-6 h-6 text-gray-800 dark:text-white"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M19 9v3a5.006 5.006 0 0 1-5 5h-4a5.006 5.006 0 0 1-5-5V9m7 9v3m-3 0h6M11 3h2a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3h-2a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Z"
+      />
+    </svg>
+  )}
+</div>
+
 
         <h3 style={{ margin: "0 0 24px", color: "#000", fontSize: 22, fontWeight: 700 }}>
           {isProcessingRecording ? "Saving..." : isRecording ? "Recording..." : "Voice Recorder"}

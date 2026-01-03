@@ -104,7 +104,7 @@ const recordingIntervalRef = React.useRef(null);
 
   const [currentTime, setCurrentTime] = React.useState(0);
   const [totalDuration, setTotalDuration] = React.useState(0);
-  const [textFont, setTextFont] = React.useState("Chubbo");
+  const [textFont, setTextFont] = React.useState("Kalam");
   const [textColor, setTextColor] = React.useState("#252525ff");
   const [note, setNote] = React.useState("");
   const [isPlaying, setIsPlaying] = React.useState(false);
@@ -2725,7 +2725,7 @@ if (isMobile) {
     gap: 8,
   }}
 >
-  🎙️ Record Voice Message
+  Record Voice Message
 </button>
 
 
@@ -3676,7 +3676,7 @@ if (isMobile) {
     gap: 8,
   }}
 >
-  🎙️ Record Voice Message
+   Record Voice Message
 </button>
 
 
