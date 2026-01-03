@@ -1091,6 +1091,9 @@ const { error: uploadError } = await supabase.storage
   if (input) input.value = "";
 };
 
+console.log("Secure:", window.isSecureContext);
+console.log("MediaRecorder:", !!window.MediaRecorder);
+console.log("getUserMedia:", !!navigator.mediaDevices?.getUserMedia);
 const startRecording = async () => {
   try {
         // Request microphone permission with better desktop compatibility
