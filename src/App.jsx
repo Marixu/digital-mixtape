@@ -95,7 +95,7 @@ const recordingIntervalRef = React.useRef(null);
   const [textColor, setTextColor] = React.useState("#252525ff");
   const [note, setNote] = React.useState("");
   const [isPlaying, setIsPlaying] = React.useState(false);
-  const [mixtapeImage, setMixtapeImage] = React.useState("/transnotape.png");
+  const [mixtapeImage, setMixtapeImage] = React.useState("/transnotape.webp");
   const [isPreviewMode, setIsPreviewMode] = React.useState(false);
   const [currentTrackIndex, setCurrentTrackIndex] = React.useState(0);
   const current = tracks[currentTrackIndex];
@@ -139,9 +139,9 @@ React.useEffect(() => {
 React.useEffect(() => {
   const images = [
     "/label1.webp", "/label2.webp", "/label3.webp", "/label4.webp",
-    "/pinkntape.png", "/greennotape.png", "/transnotape.png",
-    "/whitenotape.png", "/blacknotape1.png", "/purplenotape1.png", 
-    "/bluenotape.png", "/crop.png"
+    "/pinkntape.webp", "/greennotape.webp", "/transnotape.webp",
+    "/whitenotape.webp", "/blacknotape1.webp", "/purplenotape1.webp", 
+    "/bluenotape.webp", "/crop.webp"
   ];
   
   images.forEach(src => {
@@ -184,7 +184,7 @@ const FONT_OPTIONS = [
   { label: "JetBrains Mono", fontFamily: "'JetBrains Mono', sans-serif" },
 ];
 
-// Load PNG frames for iOS on mount
+// Load webp frames for iOS on mount
 React.useEffect(() => {
   if (!isIOS) {
     console.log('Not iOS, skipping frame loading');
@@ -197,7 +197,7 @@ React.useEffect(() => {
     const frames = [];
     for (let i = 1; i <= count; i++) {
       const img = new Image();
-      const src = `/${folder}/${String(i).padStart(4, '0')}.png`;
+      const src = `/${folder}/${String(i).padStart(4, '0')}.webp`;
       img.src = src;
       
       if (i === 1) {
@@ -466,7 +466,7 @@ const formatTime = (sec = 0) => {
 /* ---------- STICKERS ---------- */
 const STICKERS = Array.from({ length: 20 }, (_, i) => {
   const num = String(i + 2).padStart(2, "0");
-  return `/stickers/stickers-${num}.png`;
+  return `/stickers_webp/stickers-${num}.webp`;
 });
 
 
@@ -790,7 +790,7 @@ React.useEffect(() => {
     const s = data.state || {};
 
 setCoverColor(s.coverColor || "#E6CDEB");
-setMixtapeImage(s.mixtapeImage || "/transnotape.png");
+setMixtapeImage(s.mixtapeImage || "/transnotape.webp");
 setLabelOverlay(s.labelOverlay || null);
 setUploadedLabelImage(s.uploadedLabelImage || null);
 
@@ -1669,10 +1669,10 @@ if (isMobile) {
 >
 {/* Hidden preloaded labels for instant switching */}
 <div style={{ position: "absolute", width: 0, height: 0, overflow: "hidden", opacity: 0 }}>
-  <img src="/label1.png" alt="" />
-  <img src="/label2.png" alt="" />
-  <img src="/label3.png" alt="" />
-  <img src="/label4.png" alt="" />
+  <img src="/label1.webp" alt="" />
+  <img src="/label2.webp" alt="" />
+  <img src="/label3.webp" alt="" />
+  <img src="/label4.webp" alt="" />
 </div>
 
 {glowEnabled && (
@@ -1743,7 +1743,7 @@ if (isMobile) {
   ) : (
     // Editor mode: just show first frame as static image
     <img
-      src="/tapeframes/0001.png"
+      src="/tapeframes_webp/0001.webp"
       alt=""
       style={{
         position: "absolute",
@@ -1782,7 +1782,7 @@ if (isMobile) {
 
 {/* 2️⃣ Cover image (NO tape graphics) */}
 <img ref={mixtapeImageRef}
-  src={mixtapeImage} // pinknotape.png etc
+  src={mixtapeImage} // pinknotape.webp etc
   alt="Mixtape cover"
   style={{ zindex: 5,
     position: "absolute",
@@ -1817,7 +1817,7 @@ if (isMobile) {
   ) : (
     // Editor mode: just show first frame as static image
     <img
-      src="/rollerframes/0001.png"
+      src="/rollerframes_webp/0001.webp"
       alt=""
       style={{
         position: "absolute",
@@ -1870,7 +1870,7 @@ if (isMobile) {
   />
 )}
 
-{/* Uploaded image clipped to crop.png shape */}
+{/* Uploaded image clipped to crop.webp shape */}
 {uploadedLabelImage && (
   <div
     data-selectable
@@ -1880,12 +1880,12 @@ if (isMobile) {
       zIndex: activeObject === "label-image" ? 90 : 40,
 
       /* 🔒 MASK LIVES HERE (FIXED) */
-      WebkitMaskImage: "url(/crop.png)",
+      WebkitMaskImage: "url(/crop.webp)",
       WebkitMaskRepeat: "no-repeat",
       WebkitMaskPosition: "center",
       WebkitMaskSize: "contain",
 
-      maskImage: "url(/crop.png)",
+      maskImage: "url(/crop.webp)",
       maskRepeat: "no-repeat",
       maskPosition: "center",
       maskSize: "contain",
@@ -2644,13 +2644,13 @@ if (isMobile) {
   marginBottom: 10,
 }}>
   {[
-    { color: "#FF6FA9", image: "/pinkntape.png" },
-    { color: "#B7FF33", image: "/greennotape.png" },
-    { color: "#C9D3DA", image: "/transnotape.png" },
-    { color: "#FFFFFF", image: "/whitenotape.png" },
-    { color: "#3F3F3F", image: "/blacknotape1.png" },
-    { color: "#AF96E6", image: "/purplenotape1.png" },
-    { color: "#86E3FD", image: "/bluenotape.png" },
+    { color: "#FF6FA9", image: "/pinkntape.webp" },
+    { color: "#B7FF33", image: "/greennotape.webp" },
+    { color: "#C9D3DA", image: "/transnotape.webp" },
+    { color: "#FFFFFF", image: "/whitenotape.webp" },
+    { color: "#3F3F3F", image: "/blacknotape1.webp" },
+    { color: "#AF96E6", image: "/purplenotape1.webp" },
+    { color: "#86E3FD", image: "/bluenotape.webp" },
   ].map((item, i) => (
     <button
       key={i}
@@ -2706,7 +2706,7 @@ if (isMobile) {
   {/* 3 */}
   <button
     onClick={() =>
-     setLabelOverlay("/label3.png")
+     setLabelOverlay("/label3.webp")
   }
     style={styles.labelButton}
   >
@@ -2716,7 +2716,7 @@ if (isMobile) {
   {/* 4 */}
   <button
     onClick={() =>
-   setLabelOverlay("/label4.png")
+   setLabelOverlay("/label4.webp")
   }
     style={styles.labelButton}
   >
@@ -3398,7 +3398,7 @@ if (isMobile) {
       
       <div className="mobile-about-image">
   <img 
-    src="/me2.png" 
+    src="/me2.webp" 
     alt="Maria"
     style={{
       width: 150,
@@ -3727,13 +3727,13 @@ if (isMobile) {
   maxWidth: "100%",
 }}>
   {[
-    { color: "#FF6FA9", image: "/pinkntape.png" },
-    { color: "#B7FF33", image: "/greennotape.png" },
-    { color: "#C9D3DA", image: "/transnotape.png" },
-    { color: "#FFFFFF", image: "/whitenotape.png" },
-    { color: "#3F3F3F", image: "/blacknotape1.png" },
-    { color: "#AF96E6", image: "/purplenotape1.png" },
-    { color: "#86E3FD", image: "/bluenotape.png" },
+    { color: "#FF6FA9", image: "/pinkntape.webp" },
+    { color: "#B7FF33", image: "/greennotape.webp" },
+    { color: "#C9D3DA", image: "/transnotape.webp" },
+    { color: "#FFFFFF", image: "/whitenotape.webp" },
+    { color: "#3F3F3F", image: "/blacknotape1.webp" },
+    { color: "#AF96E6", image: "/purplenotape1.webp" },
+    { color: "#86E3FD", image: "/bluenotape.webp" },
   ].map((item, i) => (
     <button
       key={i}
@@ -3784,7 +3784,7 @@ if (isMobile) {
 
   {/* 3 */}
   <button
-    onClick={() => setLabelOverlay("/label3.png")}
+    onClick={() => setLabelOverlay("/label3.webp")}
     style={styles.labelButton}
   >
     3
@@ -3792,7 +3792,7 @@ if (isMobile) {
 
   {/* 4 */}
   <button
-    onClick={() => setLabelOverlay("/label4.png")}
+    onClick={() => setLabelOverlay("/label4.webp")}
     style={styles.labelButton}
   >
     4
@@ -4304,7 +4304,7 @@ if (isMobile) {
 
 {/* 2️⃣ Cover image (NO tape graphics) */}
 <img ref={mixtapeImageRef}
-  src={mixtapeImage} // pinknotape.png etc
+  src={mixtapeImage} // pinknotape.webp etc
   alt="Mixtape cover"
   style={{
     position: "absolute",
@@ -4358,7 +4358,7 @@ if (isMobile) {
 )}
 
 
-{/* Uploaded image clipped to crop.png shape */}
+{/* Uploaded image clipped to crop.webp shape */}
 {uploadedLabelImage && (
   <div
   style={{
@@ -4378,12 +4378,12 @@ if (isMobile) {
       zIndex: activeObject === "label-image" ? 90 : 40,
 
       /* 🔒 MASK LIVES HERE (FIXED) */
-      WebkitMaskImage: "url(/crop.png)",
+      WebkitMaskImage: "url(/crop.webp)",
       WebkitMaskRepeat: "no-repeat",
       WebkitMaskPosition: "center",
       WebkitMaskSize: "contain",
 
-      maskImage: "url(/crop.png)",
+      maskImage: "url(/crop.webp)",
       maskRepeat: "no-repeat",
       maskPosition: "center",
       maskSize: "contain",
@@ -4922,7 +4922,7 @@ if (isMobile) {
 
     <div style={{ display: "flex", justifyContent: "center", marginBottom: 18 }}>
       <img
-        src="/me2.png"
+        src="/me2.webp"
         alt="Maria"
         style={{
           width: 200,
