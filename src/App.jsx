@@ -1102,18 +1102,18 @@ const startRecording = async () => {
     let mimeType = '';
     let fileExtension = 'webm';
     
-    // Check supported formats in order of preference
+
+        // Check supported formats - prioritize what actually works
     const formats = [
-      { mime: 'audio/webm;codecs=opus', ext: 'webm' },
       { mime: 'audio/webm', ext: 'webm' },
-      { mime: 'audio/mp4', ext: 'm4a' },
+      { mime: 'audio/webm;codecs=opus', ext: 'webm' },
       { mime: 'audio/ogg;codecs=opus', ext: 'ogg' },
+      { mime: 'audio/mp4', ext: 'm4a' },
       { mime: 'audio/wav', ext: 'wav' },
-      { mime: '', ext: 'm4a' }, // Empty string = let browser choose
     ];
     
     for (const format of formats) {
-      if (format.mime === '' || MediaRecorder.isTypeSupported(format.mime)) {
+      if (MediaRecorder.isTypeSupported(format.mime)) {
         mimeType = format.mime;
         fileExtension = format.ext;
         console.log(`Using format: ${mimeType || 'browser default'}`);
