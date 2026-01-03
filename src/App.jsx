@@ -326,7 +326,7 @@ React.useEffect(() => {
 
 // Animation loop when playing
 React.useEffect(() => {
-  if (!isIOS) return;
+  if (!isIOS && appMode !== "preview") return;
   if (tapeFrames.length === 0 || rollerFrames.length === 0) return;
   
   if (!isPlaying) {
@@ -1073,16 +1073,17 @@ const startRecording = async () => {
     let mimeType = 'audio/webm';
     let fileExtension = 'webm';
     
-    // iOS Safari prefers mp4/aac
-    if (MediaRecorder.isTypeSupported('audio/mp4')) {
-      mimeType = 'audio/mp4';
-      fileExtension = 'm4a';
-    } else if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+        // Desktop browsers (Chrome, Edge, Safari desktop) prefer webm
+    if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
       mimeType = 'audio/webm;codecs=opus';
       fileExtension = 'webm';
     } else if (MediaRecorder.isTypeSupported('audio/webm')) {
       mimeType = 'audio/webm';
       fileExtension = 'webm';
+    } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+      // iOS Safari prefers mp4/aac
+      mimeType = 'audio/mp4';
+      fileExtension = 'm4a';
     } else if (MediaRecorder.isTypeSupported('audio/aac')) {
       mimeType = 'audio/aac';
       fileExtension = 'aac';
