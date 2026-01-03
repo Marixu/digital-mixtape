@@ -4268,16 +4268,17 @@ if (isMobile) {
     {/* MIXTAPE */}
 <div className="mixtape-wrapper"
     style={{
-      width: "100%",
-      maxWidth: isPreviewMode || appMode === "receiver" ? "650px" : isTablet ? "500px" : "550px",
+      width: isTablet ? "500px" : "550px",
+      maxWidth: "100%",
       aspectRatio: "4 / 3",
-      position: "relative", // This MUST stay relative - it's the container for absolute children
+      position: "relative",
       background: "transparent",
       overflow: "visible",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       marginTop: isTablet ? 10 : 60,
+      flexShrink: 0,
     }}
 >
      <div
