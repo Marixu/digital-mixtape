@@ -348,7 +348,7 @@ React.useEffect(() => {
   const tapeCtx = tapeCanvas.getContext('2d');
   const rollerCtx = rollerCanvas.getContext('2d');
 
-  const fps = 30;
+  const fps = 60; //speed of animation
   const frameDuration = 1000 / fps;
   let lastTime = 0;
 
@@ -1093,13 +1093,9 @@ const { error: uploadError } = await supabase.storage
 
 const startRecording = async () => {
   try {
-    // Request microphone permission
+        // Request microphone permission with better desktop compatibility
     const stream = await navigator.mediaDevices.getUserMedia({ 
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-        sampleRate: 44100,
-      } 
+      audio: true
     });
     
     // Determine the best supported MIME type for this device
@@ -1189,8 +1185,9 @@ const startRecording = async () => {
       setRecordingTime(0);
     };
     
-    // Start recording - use timeslice for compatibility
-    mediaRecorderRef.current.start(1000);
+        // Start recording - different timeslice for desktop vs mobile
+    const timeslice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? 1000 : 100;
+    mediaRecorderRef.current.start(timeslice);
     setIsRecording(true);
     
     recordingIntervalRef.current = setInterval(() => {
