@@ -1185,9 +1185,8 @@ const startRecording = async () => {
       setRecordingTime(0);
     };
     
-        // Start recording - different timeslice for desktop vs mobile
-    const timeslice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? 1000 : 100;
-    mediaRecorderRef.current.start(timeslice);
+    // Start recording - use 1000ms for all devices (works on both mobile and desktop)
+    mediaRecorderRef.current.start(1000);
     setIsRecording(true);
     
     recordingIntervalRef.current = setInterval(() => {
@@ -3160,7 +3159,7 @@ if (isMobile) {
       target="_blank"
       rel="noopener noreferrer"
     >
-      @softparticle
+      @Softparticle
     </a>
   </div>
 
@@ -3603,7 +3602,7 @@ if (isMobile) {
             rel="noopener noreferrer"
             style={{ color: "#ff69b4", textDecoration: "none" }}
           >
-            @softparticle
+            @Softparticle
           </a>
         </p>
         
@@ -5159,7 +5158,7 @@ if (isMobile) {
           rel="noopener noreferrer"
           style={{ color: "#ff69b4", textDecoration: "none", fontWeight: 600 }}
         >
-          @softparticle
+          @Softparticle
         </a>
       </p>
 
@@ -5344,7 +5343,7 @@ if (isMobile) {
         textDecoration: "none",
       }}
     >
-      @softparticle
+      @Softparticle
     </a>
   </div>
 
