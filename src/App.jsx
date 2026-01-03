@@ -138,7 +138,7 @@ React.useEffect(() => {
 // Preload images and videos
 React.useEffect(() => {
   const images = [
-    "/label1.png", "/label2.png", "/label3.png", "/label4.png",
+    "/label1.webp", "/label2.webp", "/label3.webp", "/label4.webp",
     "/pinkntape.png", "/greennotape.png", "/transnotape.png",
     "/whitenotape.png", "/blacknotape1.png", "/purplenotape1.png", 
     "/bluenotape.png", "/crop.png"
@@ -2688,7 +2688,7 @@ if (isMobile) {
 >
   {/* 1 */}
   <button
-    onClick={() => setLabelOverlay("/label1.png")}
+    onClick={() => setLabelOverlay("/label1.webp")}
     style={styles.labelButton}
   >
     1
@@ -2696,7 +2696,7 @@ if (isMobile) {
 
   {/* 2 */}
   <button
-    onClick={() => setLabelOverlay("/label2.png")
+    onClick={() => setLabelOverlay("/label2.webp")
   }
     style={styles.labelButton}
   >
@@ -3768,7 +3768,7 @@ if (isMobile) {
 >
   {/* 1 */}
   <button
-    onClick={() => setLabelOverlay("/label1.png")}
+    onClick={() => setLabelOverlay("/label1.webp")}
     style={styles.labelButton}
   >
     1
@@ -3776,7 +3776,7 @@ if (isMobile) {
 
   {/* 2 */}
   <button
-    onClick={() => setLabelOverlay("/label2.png")}
+    onClick={() => setLabelOverlay("/label2.webp")}
     style={styles.labelButton}
   >
     2
@@ -4240,10 +4240,10 @@ if (isMobile) {
 >
 {/* Hidden preloaded labels for instant switching */}
 <div style={{ position: "absolute", width: 0, height: 0, overflow: "hidden", opacity: 0 }}>
-  <img src="/label1.png" alt="" />
-  <img src="/label2.png" alt="" />
-  <img src="/label3.png" alt="" />
-  <img src="/label4.png" alt="" />
+  <img src="/label1.webp" alt="" />
+  <img src="/label2.webp" alt="" />
+  <img src="/label3.webp" alt="" />
+  <img src="/label4.webp" alt="" />
 </div>
 
 {glowEnabled && (
