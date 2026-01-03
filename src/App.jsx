@@ -28,6 +28,7 @@ const [deviceInfo, setDeviceInfo] = React.useState({
   isIOS: false,
   isAndroid: false,
   isSafari: false,
+  isIPad: false,
   isMacDesktop: false,
 });
 
@@ -41,16 +42,20 @@ React.useEffect(() => {
     const isMobile = width <= 768; // phones only
 
     // OS / browser flags (for quirks, NOT layout)
-    const isIOS = /iPhone|iPad|iPod/.test(userAgent);
+    const isIOS = /iPhone|iPad|iPod/.test(userAgent) || 
+                  (platform === "MacIntel" && navigator.maxTouchPoints > 1); // iPad on iOS 13+
     const isAndroid = /Android/.test(userAgent);
-    const isSafari = /^((?!chrome|chromium|android).)*safari/i.test(navigator.userAgent);
-    const isMacDesktop = platform === "MacIntel" && !isIOS;
+    const isSafari = /^((?!chrome|chromium|android).)*safari/i.test(userAgent);
+    const isIPad = /iPad/.test(userAgent) || 
+                   (platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    const isMacDesktop = platform === "MacIntel" && !isIOS && navigator.maxTouchPoints === 0;
 
     setDeviceInfo({
       isMobile,        // ✅ phone-only
-      isIOS,           // ⚠️ quirks only
+      isIOS,           // ⚠️ quirks only - now includes iPad
       isAndroid,
-      isSafari,
+      isSafari: isSafari || isIPad,  // ✅ Treat iPad as Safari for audio quirks
+      isIPad,          // ✅ New flag for iPad-specific needs
       isMacDesktop,
     });
   };
@@ -62,7 +67,7 @@ React.useEffect(() => {
 
 
 
-const { isMobile, isTablet, isIOS, isAndroid, isSafari, isMacDesktop } = deviceInfo;
+const { isMobile, isTablet, isIOS, isAndroid, isSafari, isMacDesktop, isIPad } = deviceInfo;
 const nextFrame = () =>
   new Promise(resolve => requestAnimationFrame(resolve));
 
