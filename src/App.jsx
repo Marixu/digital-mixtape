@@ -171,6 +171,20 @@ React.useEffect(() => {
   });
 }, []);
 
+
+
+React.useEffect(() => {
+  if (showVoiceRecorder) {
+    document.body.style.pointerEvents = "none";
+  } else {
+    document.body.style.pointerEvents = "";
+  }
+
+  return () => {
+    document.body.style.pointerEvents = "";
+  };
+}, [showVoiceRecorder]);
+
 // Computed value for checking if there's a next track
 const hasNextTrack = currentTrackIndex < tracks.length - 1;
 
@@ -3184,6 +3198,7 @@ if (isMobile) {
 )} {/* ✅ END mobile-scroll */}
 
 
+
 {/* Voice Recorder Modal - Mobile */}
 {showVoiceRecorder && isMobile && (
   <div
@@ -3351,20 +3366,19 @@ if (isMobile) {
   <div
     style={{
       position: "fixed",
-      top: 0,
-      left: 0,
-      width: "100vw",
-      height: "100vh",
+      inset: 0,
       background: "rgba(0,0,0,0.6)",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      zIndex: 99999,
+      zIndex: 2147483647, // 🔥 force above everything
+      transform: "translate3d(0,0,0)",
+      WebkitTransform: "translate3d(0,0,0)",
+      isolation: "isolate",          // 🔥 important
+      pointerEvents: "auto",
     }}
     onClick={(e) => {
-      if (e.target === e.currentTarget) {
-        cancelRecording();
-      }
+      if (e.target === e.currentTarget) cancelRecording();
     }}
   >
     <div
