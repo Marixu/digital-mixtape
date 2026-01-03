@@ -188,10 +188,11 @@ const FONT_OPTIONS = [
 
 // Load webp frames for iOS and Safari on mount
 React.useEffect(() => {
-  if (!isIOS && !isSafari) {
-    console.log('Not iOS or Safari, skipping frame loading');
-    return;
-  }
+  const shouldLoadFrames = isIOS || isSafari || appMode === "preview";
+  if (!shouldLoadFrames) {
+  console.log('Not iOS/Safari/preview, skipping frame loading');
+  return;
+}
 
   console.log('🎬 iOS detected, starting frame loading...');
 
@@ -238,7 +239,7 @@ React.useEffect(() => {
 React.useEffect(() => {
   console.log('Static frame effect running:', { isIOS, isSafari, tapeFramesCount: tapeFrames.length, rollerFramesCount: rollerFrames.length, isPlaying });
   
-  if (!isIOS && !isSafari) return;
+  if (!isIOS && !isSafari && appMode !== "preview") return;
   if (tapeFrames.length === 0 || rollerFrames.length === 0) return;
 
   const tapeCanvas = tapeCanvasRef.current;
@@ -283,7 +284,7 @@ React.useEffect(() => {
 
 // 🔑 BRIDGE: ensure canvas is NEVER empty in preview / receiver
 React.useEffect(() => {
-  if (!isIOS && !isSafari) return;
+  if (!isIOS && !isSafari && appMode !== "preview") return;
   if (!(isPreviewMode || appMode === "preview" || appMode === "receiver")) return;
   if (isPlaying) return;
   if (!tapeFrames.length || !rollerFrames.length) return;
@@ -329,7 +330,7 @@ React.useEffect(() => {
 
 // Animation loop when playing
 React.useEffect(() => {
-  if (!isIOS && !isSafari) return;
+  if (!isIOS && !isSafari && appMode !== "preview") return;
   if (tapeFrames.length === 0 || rollerFrames.length === 0) return;
   
   if (!isPlaying) {
