@@ -232,7 +232,7 @@ React.useEffect(() => {
     console.log(`✅ Loaded ${frames.length} roller frames`);
     setRollerFrames(frames);
   });
-}, [isIOS]);
+}, [isIOS, isSafari]);
 
 // Draw first frame as static image when not playing
 React.useEffect(() => {
@@ -279,7 +279,7 @@ React.useEffect(() => {
     
     console.log('✅ Drew static frame!');
   }
-}, [isIOS, tapeFrames, rollerFrames, isPlaying]);
+}, [isIOS, isSafari, tapeFrames, rollerFrames, isPlaying]);
 
 // 🔑 BRIDGE: ensure canvas is NEVER empty in preview / receiver
 React.useEffect(() => {
@@ -313,6 +313,7 @@ React.useEffect(() => {
   rollerCtx.drawImage(rollerImg, 0, 0);
 }, [
   isIOS,
+  isSafari,
   isPreviewMode,
   appMode,
   isPlaying,
@@ -373,7 +374,8 @@ React.useEffect(() => {
       cancelAnimationFrame(animationRef.current);
     }
   };
-}, [isIOS, isPlaying, tapeFrames, rollerFrames]);
+}, [isIOS, isSafari, isPlaying, tapeFrames, rollerFrames]);
+
 
 
 
