@@ -45,7 +45,8 @@ React.useEffect(() => {
       isIOS: /iPad|iPhone|iPod/.test(userAgent) || 
         (platform === 'MacIntel' && isTouchDevice),
       isAndroid: /Android/.test(userAgent),
-      isSafari: /^((?!chrome|android).)*safari/i.test(userAgent),
+      isSafari: /^((?!chrome|android).)*safari/i.test(userAgent) || 
+  (platform === 'MacIntel' && !isTouchDevice && /Safari/.test(userAgent) && !/Chrome/.test(userAgent)),
       isMacDesktop: platform === 'MacIntel' && !isTouchDevice,
     });
   };
@@ -2712,7 +2713,7 @@ if (isMobile) {
         aspectRatio: "1",
         width: "100%",
         borderRadius: 10,
-        border: coverColor === item.color ? "2px solid #3a2d3f" : "2px solid #e4e4e7",
+        border: coverColor === item.color ? "2px solid #222" : "2px solid #e4e4e7",
         background: item.color,
         cursor: "pointer",
         padding: 0,
@@ -3000,7 +3001,7 @@ if (isMobile) {
         aspectRatio: "1",
         width: "100%",
         borderRadius: 10,
-        border: siteBackground === item.img ? "2px solid #3a2d3f" : "1px solid #ccc",
+        border: siteBackground === item.img ? "2px solid #222" : "1px solid #ccc",
         background: item.bg,
         cursor: "pointer",
         padding: 0,
@@ -3093,7 +3094,7 @@ if (isMobile) {
     padding: "10px 16px",
     background: shareLink ? "#222" : "transparent",
     color: shareLink ? "#fff" : "#222",
-    border: "1px solid #3a2d3f",
+    border: "1px solid #222",
     borderRadius: 10,
     fontFamily: "'Hoover', sans serif",
     fontSize: 13,
@@ -3245,7 +3246,131 @@ if (isMobile) {
       >
         {formatRecordingTime(recordingTime)}
       </div>
+
+
+      {/* Voice Recorder Modal - Desktop */}
+{showVoiceRecorder && !isMobile && (
+  <div
+    style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      width: "100vw",
+      height: "100vh",
+      background: "rgba(0,0,0,0.6)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 99999,
+    }}
+    onClick={(e) => {
+      if (e.target === e.currentTarget) {
+        cancelRecording();
+      }
+    }}
+  >
+    <div
+      style={{
+        background: "#fff",
+        borderRadius: 20,
+        padding: "40px 50px",
+        textAlign: "center",
+        width: 360,
+        fontFamily: "'Hoover', sans serif",
+        boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+      }}
+    >
+      <div style={{ fontSize: 48, marginBottom: 20 }}>🎙️</div>
       
+      <h3 style={{ margin: "0 0 24px", color: "#000", fontSize: 22, fontWeight: 700 }}>
+        Voice Recorder
+      </h3>
+      
+      <div
+        style={{
+          fontSize: 56,
+          fontFamily: "'Hoover', sans serif",
+          color: isRecording ? "#ff69b4" : "#1a1a1a",
+          marginBottom: 24,
+          fontWeight: 700,
+        }}
+      >
+        {formatRecordingTime(recordingTime)}
+      </div>
+      
+      {isRecording && (
+        <div
+          style={{
+            width: 16,
+            height: 16,
+            background: "#ff69b4",
+            borderRadius: "50%",
+            margin: "0 auto 24px",
+            animation: "pulse 1.5s ease-in-out infinite",
+          }}
+        />
+      )}
+      
+      <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+        {!isRecording ? (
+          <button
+            onClick={startRecording}
+            style={{
+              padding: "14px 32px",
+              background: "#ff69b4",
+              color: "#fff",
+              border: "none",
+              borderRadius: 12,
+              fontSize: 16,
+              fontWeight: 700,
+              cursor: "pointer",
+              fontFamily: "'Hoover', sans serif",
+            }}
+          >
+            Start Recording
+          </button>
+        ) : (
+          <button
+            onClick={stopRecording}
+            style={{
+              padding: "14px 32px",
+              background: "#1a1a1a",
+              color: "#fff",
+              border: "none",
+              borderRadius: 12,
+              fontSize: 16,
+              fontWeight: 700,
+              cursor: "pointer",
+              fontFamily: "'Hoover', sans serif",
+            }}
+          >
+            Stop & Save
+          </button>
+        )}
+        
+        <button
+          onClick={cancelRecording}
+          style={{
+            padding: "14px 32px",
+            background: "#f5f5f5",
+            color: "#333",
+            border: "1px solid #ddd",
+            borderRadius: 12,
+            fontSize: 16,
+            fontWeight: 600,
+            cursor: "pointer",
+            fontFamily: "'Hoover', sans serif",
+          }}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+      
+
+
       {isRecording && (
         <div
           style={{
@@ -3796,7 +3921,7 @@ if (isMobile) {
         height: 36,
         minWidth: 36,
         borderRadius: 10,
-        border: coverColor === item.color ? "2px solid #3a2d3f" : "2px solid #e4e4e7",
+        border: coverColor === item.color ? "2px solid #222" : "2px solid #e4e4e7",
         background: item.color,
         cursor: "pointer",
         padding: 0,
@@ -4112,7 +4237,7 @@ if (isMobile) {
         width: isTablet ? "100%" : 36,
         height: isTablet ? "auto" : 36,
         borderRadius: 8,
-        border: siteBackground === item.img ? "2px solid #3a2d3f" : "1px solid #ccc",
+        border: siteBackground === item.img ? "2px solid #222" : "1px solid #ccc",
         background: item.bg,
         cursor: "pointer",
         padding: 0,
