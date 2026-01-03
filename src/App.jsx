@@ -185,10 +185,11 @@ const FONT_OPTIONS = [
   { label: "JetBrains Mono", fontFamily: "'JetBrains Mono', sans-serif" },
 ];
 
-// Load webp frames for iOS on mount
+
+// Load webp frames for iOS and Safari on mount
 React.useEffect(() => {
-  if (!isIOS) {
-    console.log('Not iOS, skipping frame loading');
+  if (!isIOS && !isSafari) {
+    console.log('Not iOS or Safari, skipping frame loading');
     return;
   }
 
@@ -235,9 +236,9 @@ React.useEffect(() => {
 
 // Draw first frame as static image when not playing
 React.useEffect(() => {
-  console.log('Static frame effect running:', { isIOS, tapeFramesCount: tapeFrames.length, rollerFramesCount: rollerFrames.length, isPlaying });
+  console.log('Static frame effect running:', { isIOS, isSafari, tapeFramesCount: tapeFrames.length, rollerFramesCount: rollerFrames.length, isPlaying });
   
-  if (!isIOS) return;
+  if (!isIOS && !isSafari) return;
   if (tapeFrames.length === 0 || rollerFrames.length === 0) return;
 
   const tapeCanvas = tapeCanvasRef.current;
@@ -282,7 +283,7 @@ React.useEffect(() => {
 
 // 🔑 BRIDGE: ensure canvas is NEVER empty in preview / receiver
 React.useEffect(() => {
-  if (!isIOS) return;
+  if (!isIOS && !isSafari) return;
   if (!(isPreviewMode || appMode === "preview" || appMode === "receiver")) return;
   if (isPlaying) return;
   if (!tapeFrames.length || !rollerFrames.length) return;
@@ -327,7 +328,7 @@ React.useEffect(() => {
 
 // Animation loop when playing
 React.useEffect(() => {
-  if (!isIOS && appMode !== "preview") return;
+  if (!isIOS && !isSafari) return;
   if (tapeFrames.length === 0 || rollerFrames.length === 0) return;
   
   if (!isPlaying) {
@@ -4456,25 +4457,41 @@ if (isMobile) {
 
 
 
-<video
-  ref={tapeVideoRef}
-  src={isSafari ? "/tapeprores.mov" : "/tapenew.webm"}
-  preload="auto"
-  loop
-  muted
-  playsInline
-  style={{
-    position: "absolute",
-    inset: 0,
-    width: "100%",
-    height: "100%",
-    objectFit: "contain",
-    zIndex: 1,
-    pointerEvents: "none",
-    transform: "translateZ(0)",
-    backfaceVisibility: "hidden",
-  }}
-/>
+{/* TAPE LAYER - Canvas for iOS/Safari, Video for others */}
+{(isIOS || isSafari) ? (
+  <canvas
+    ref={tapeCanvasRef}
+    style={{
+      position: "absolute",
+      inset: 0,
+      width: "100%",
+      height: "100%",
+      objectFit: "contain",
+      zIndex: 1,
+      pointerEvents: "none",
+    }}
+  />
+) : (
+  <video
+    ref={tapeVideoRef}
+    src="/tapenew.webm"
+    preload="auto"
+    loop
+    muted
+    playsInline
+    style={{
+      position: "absolute",
+      inset: 0,
+      width: "100%",
+      height: "100%",
+      objectFit: "contain",
+      zIndex: 1,
+      pointerEvents: "none",
+      transform: "translateZ(0)",
+      backfaceVisibility: "hidden",
+    }}
+  />
+)}
 
 
 {/* 2️⃣ Cover image (NO tape graphics) */}
@@ -4493,25 +4510,41 @@ if (isMobile) {
   }}
 />
 
-<video
-  ref={rollerVideoRef}
-  src={isSafari ? "/smallrollersprores.mov" : "/smallrollers.webm"}
-  preload="auto"
-  loop
-  muted
-  playsInline
-  style={{
-    position: "absolute",
-    inset: 0,
-    width: "100%",
-    height: "100%",
-    objectFit: "contain",
-    zIndex: 3,
-    pointerEvents: "none",
-    transform: "translateZ(0)",
-    backfaceVisibility: "hidden",
-  }}
-/>
+{/* ROLLER LAYER - Canvas for iOS/Safari, Video for others */}
+{(isIOS || isSafari) ? (
+  <canvas
+    ref={rollerCanvasRef}
+    style={{
+      position: "absolute",
+      inset: 0,
+      width: "100%",
+      height: "100%",
+      objectFit: "contain",
+      zIndex: 3,
+      pointerEvents: "none",
+    }}
+  />
+) : (
+  <video
+    ref={rollerVideoRef}
+    src="/smallrollers.webm"
+    preload="auto"
+    loop
+    muted
+    playsInline
+    style={{
+      position: "absolute",
+      inset: 0,
+      width: "100%",
+      height: "100%",
+      objectFit: "contain",
+      zIndex: 3,
+      pointerEvents: "none",
+      transform: "translateZ(0)",
+      backfaceVisibility: "hidden",
+    }}
+  />
+)}
 
 
 
