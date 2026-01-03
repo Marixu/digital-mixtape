@@ -1186,7 +1186,7 @@ const startRecording = async () => {
     };
     
     // Start recording - use 1000ms for all devices (works on both mobile and desktop)
-    mediaRecorderRef.current.start(1000);
+    mediaRecorderRef.current.start();
     setIsRecording(true);
     
     recordingIntervalRef.current = setInterval(() => {
@@ -2636,7 +2636,7 @@ if (isMobile) {
     gap: 8,
   }}
 >
-  🎙️ Record Voice Memo
+  🎙️ Record Voice Message
 </button>
 
 
@@ -3817,34 +3817,44 @@ if (isMobile) {
   </div>
   
   {/* Voice Recorder Button */}
-  <button
-    onClick={() => {
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        setShowVoiceRecorder(true);
-      } else {
-        alert("Voice recording is not supported on this device/browser.");
-      }
-    }}
-    style={{
-      marginTop: 25,
-      width: "100%",
-      padding: "14px 16px",
-      background: "#f6f6fa",
-      border: "1px solid #e4e4e7",
-      borderRadius: 14,
-      fontSize: 14,
-      fontWeight: 600,
-      fontFamily: "'Hoover', sans serif",
-      color: "#444",
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: 8,
-    }}
-  >
-     Record Voice Message
-  </button>
+{/* Voice Recorder Button */}
+<button
+  onClick={async () => {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      alert("Voice recording is not supported on this device/browser.");
+      return;
+    }
+
+    try {
+      setShowVoiceRecorder(true);   // show UI
+      await startRecording();       // 🔥 MUST be here (same click)
+    } catch (err) {
+      console.error(err);
+      alert("Could not start voice recording.");
+      setShowVoiceRecorder(false);
+    }
+  }}
+  style={{
+    marginTop: 25,
+    width: "100%",
+    padding: "14px 16px",
+    background: "#f6f6fa",
+    border: "1px solid #e4e4e7",
+    borderRadius: 14,
+    fontSize: 14,
+    fontWeight: 600,
+    fontFamily: "'Hoover', sans-serif",
+    color: "#444",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  }}
+>
+  🎙️ Record Voice Message
+</button>
+
 </div>
 
                 <div style={{ marginTop: 24, display: "grid", gap: 12 }}>
