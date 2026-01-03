@@ -3247,8 +3247,102 @@ if (isMobile) {
         {formatRecordingTime(recordingTime)}
       </div>
 
+      {isRecording && (
+        <div
+          style={{
+            width: 12,
+            height: 12,
+            background: "#ff69b4",
+            borderRadius: "50%",
+            margin: "0 auto 20px",
+            animation: "pulse 1.5s ease-in-out infinite",
+          }}
+        />
+      )}
+      
+      <div style={{ 
+        display: "flex", 
+        flexDirection: "column",
+        gap: 10,
+      }}>
+        {!isRecording ? (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              startRecording();
+            }}
+            style={{
+              padding: "16px 20px",
+              background: "#ff69b4",
+              color: "#fff",
+              border: "none",
+              borderRadius: 12,
+              fontSize: 16,
+              fontWeight: 700,
+              cursor: "pointer",
+              width: "100%",
+              fontFamily: "'Hoover', sans serif",
+              WebkitTapHighlightColor: "transparent",
+            }}
+          >
+            Start Recording
+          </button>
+        ) : (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              stopRecording();
+            }}
+            style={{
+              padding: "16px 20px",
+              background: "#1a1a1a",
+              color: "#fff",
+              border: "none",
+              borderRadius: 12,
+              fontSize: 16,
+              fontWeight: 700,
+              cursor: "pointer",
+              width: "100%",
+              fontFamily: "'Hoover', sans serif",
+              WebkitTapHighlightColor: "transparent",
+            }}
+          >
+            Stop & Save
+          </button>
+        )}
+        
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            cancelRecording();
+          }}
+          style={{
+            padding: "16px 20px",
+            background: "#f5f5f5",
+            color: "#333",
+            border: "1px solid #ddd",
+            borderRadius: 12,
+            fontSize: 16,
+            fontWeight: 600,
+            cursor: "pointer",
+            width: "100%",
+            fontFamily: "'Hoover', sans serif",
+            WebkitTapHighlightColor: "transparent",
+          }}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
-      {/* Voice Recorder Modal - Desktop */}
+
+
+{/* Voice Recorder Modal - Desktop - ADD THIS AS A SEPARATE BLOCK */}
 {showVoiceRecorder && !isMobile && (
   <div
     style={{
@@ -3368,101 +3462,7 @@ if (isMobile) {
     </div>
   </div>
 )}
-      
 
-
-      {isRecording && (
-        <div
-          style={{
-            width: 12,
-            height: 12,
-            background: "#ff69b4",
-            borderRadius: "50%",
-            margin: "0 auto 20px",
-            animation: "pulse 1.5s ease-in-out infinite",
-          }}
-        />
-      )}
-      
-      <div style={{ 
-        display: "flex", 
-        flexDirection: "column",
-        gap: 10,
-      }}>
-        {!isRecording ? (
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              startRecording();
-            }}
-            style={{
-              padding: "16px 20px",
-              background: "#ff69b4",
-              color: "#fff",
-              border: "none",
-              borderRadius: 12,
-              fontSize: 16,
-              fontWeight: 700,
-              cursor: "pointer",
-              width: "100%",
-              fontFamily: "'Hoover', sans serif",
-              WebkitTapHighlightColor: "transparent",
-            }}
-          >
-            Start Recording
-          </button>
-        ) : (
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              stopRecording();
-            }}
-            style={{
-              padding: "16px 20px",
-              background: "#1a1a1a",
-              color: "#fff",
-              border: "none",
-              borderRadius: 12,
-              fontSize: 16,
-              fontWeight: 700,
-              cursor: "pointer",
-              width: "100%",
-              fontFamily: "'Hoover', sans serif",
-              WebkitTapHighlightColor: "transparent",
-            }}
-          >
-            Stop & Save
-          </button>
-        )}
-        
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            cancelRecording();
-          }}
-          style={{
-            padding: "16px 20px",
-            background: "#f5f5f5",
-            color: "#333",
-            border: "1px solid #ddd",
-            borderRadius: 12,
-            fontSize: 16,
-            fontWeight: 600,
-            cursor: "pointer",
-            width: "100%",
-            fontFamily: "'Hoover', sans serif",
-            WebkitTapHighlightColor: "transparent",
-          }}
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
 
  {/* ================= LEGAL PAGES (SEPARATE SCROLL) ================= */}
 {currentPage === "terms" && (
