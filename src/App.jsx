@@ -4180,7 +4180,7 @@ if (isMobile) {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    paddingTop: isTablet ? 30 : 70,
+    paddingTop: isTablet ? 10 : 20,
     gap: 20,
   }}
 >
@@ -4198,7 +4198,7 @@ if (isMobile) {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      marginTop: isTablet ? 10 : 20,
+      marginTop: isTablet ? 10 : 60,
     }}
 >
      <div
