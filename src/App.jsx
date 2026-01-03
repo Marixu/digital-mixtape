@@ -5492,7 +5492,7 @@ card: {
   border: "1px solid #E5E5EA",
   borderRadius: "0 0 20px 20px",
   boxShadow: "0 8px 30px rgba(0,0,0,.06)",
-  overflow: "hidden",
+  overflow: "visible",
   padding: "0px 24px 24px",
   boxSizing: "border-box",
   width: "100%",
@@ -5513,7 +5513,7 @@ panel: {
   paddingBottom: 30, 
   boxSizing: "border-box",
   width: "100%",
-  overflow: "hidden",
+  overflow: "visible",
 },
   h3: { margin: "4px 0 12px", fontSize: 18 },
   input: {
