@@ -221,12 +221,12 @@ React.useEffect(() => {
     return frames;
   };
 
-  loadFrames('tapeframes', 100).then((frames) => {
+  loadFrames('tapeframes_webp', 100).then((frames) => {
     console.log(`✅ Loaded ${frames.length} tape frames`);
     setTapeFrames(frames);
   });
 
-  loadFrames('rollerframes', 100).then((frames) => {
+  loadFrames('rollerframes_webp', 100).then((frames) => {
     console.log(`✅ Loaded ${frames.length} roller frames`);
     setRollerFrames(frames);
   });
