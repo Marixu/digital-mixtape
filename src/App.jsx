@@ -184,18 +184,6 @@ React.useEffect(() => {
 
 
 
-React.useEffect(() => {
-  if (showVoiceRecorder) {
-    document.body.style.pointerEvents = "none";
-  } else {
-    document.body.style.pointerEvents = "";
-  }
-
-  return () => {
-    document.body.style.pointerEvents = "";
-  };
-}, [showVoiceRecorder]);
-
 // Computed value for checking if there's a next track
 const hasNextTrack = currentTrackIndex < tracks.length - 1;
 
