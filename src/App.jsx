@@ -57,7 +57,8 @@ React.useEffect(() => {
 }, []);
 
 const { isMobile, isTablet, isIOS, isAndroid, isSafari, isMacDesktop } = deviceInfo;
-
+const nextFrame = () =>
+  new Promise(resolve => requestAnimationFrame(resolve));
 
   const [isLoadingSharedMixtape, setIsLoadingSharedMixtape] = React.useState(false);
   const [tab, setTab] = React.useState("songs");
@@ -3819,7 +3820,8 @@ if (isMobile) {
     />
   </div>
   
-  {/* Voice Recorder Button */}
+  
+
 {/* Voice Recorder Button */}
 <button
   onClick={async () => {
@@ -3829,8 +3831,9 @@ if (isMobile) {
     }
 
     try {
-      setShowVoiceRecorder(true);   // show UI
-      await startRecording();       // 🔥 MUST be here (same click)
+      setShowVoiceRecorder(true); // 1️⃣ show popup
+      await nextFrame();          // 2️⃣ wait for React to render it
+      await startRecording();     // 3️⃣ start mic recording
     } catch (err) {
       console.error(err);
       alert("Could not start voice recording.");
@@ -3857,6 +3860,7 @@ if (isMobile) {
 >
   🎙️ Record Voice Message
 </button>
+
 
 </div>
 
