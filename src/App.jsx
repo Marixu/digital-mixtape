@@ -675,11 +675,21 @@ React.useEffect(() => {
   if (!audio) return;
 
   const updateTime = () => {
-    // Clamp currentTime to track duration to prevent overshoot on timeline
-    const trackDuration = tracks[currentTrackIndex]?.duration || audio.duration || 0;
-    const clampedTime = Math.min(audio.currentTime || 0, trackDuration);
+    // 🔑 Use the STORED track duration, not audio.duration
+    // Voice recordings often have mismatched metadata
+    const storedDuration = tracks[currentTrackIndex]?.duration || 0;
+    const audioDuration = audio.duration || 0;
+    
+    // Use the smaller of stored duration or actual audio duration
+    // This ensures we never overshoot the timeline marker
+    const effectiveDuration = storedDuration > 0 
+      ? Math.min(storedDuration, audioDuration || Infinity)
+      : audioDuration;
+    
+    // Clamp currentTime to never exceed the effective duration
+    const clampedTime = Math.min(audio.currentTime || 0, effectiveDuration);
     setCurrentTime(clampedTime);
-    setTotalDuration(audio.duration || 0);
+    setTotalDuration(audioDuration);
   };
 
   audio.addEventListener("timeupdate", updateTime);
@@ -959,7 +969,7 @@ const safeUUID = () =>
 const getDurationSafe = (url) =>
   new Promise((resolve) => {
     const a = new Audio();
-    a.preload = "metadata";
+    a.preload = "auto"; // Load more than just metadata
 
     const done = (val) => {
       cleanup();
@@ -968,18 +978,41 @@ const getDurationSafe = (url) =>
 
     const cleanup = () => {
       a.onloadedmetadata = null;
+      a.ondurationchange = null;
+      a.oncanplaythrough = null;
       a.onerror = null;
       clearTimeout(t);
     };
 
+    // Sometimes duration is available on loadedmetadata
     a.onloadedmetadata = () => {
+      if (Number.isFinite(a.duration) && a.duration > 0) {
+        done(a.duration);
+      }
+      // Otherwise wait for durationchange or canplaythrough
+    };
+
+    // Duration might update after initial load
+    a.ondurationchange = () => {
+      if (Number.isFinite(a.duration) && a.duration > 0) {
+        done(a.duration);
+      }
+    };
+
+    // Final fallback - should have duration by now
+    a.oncanplaythrough = () => {
       const d = Number.isFinite(a.duration) ? a.duration : 0;
       done(d);
     };
 
     a.onerror = () => done(0);
 
-    const t = setTimeout(() => done(0), 4000);
+    const t = setTimeout(() => {
+      // Last resort - use whatever we have
+      const d = Number.isFinite(a.duration) ? a.duration : 0;
+      done(d);
+    }, 5000);
+    
     a.src = url;
   });
 
@@ -1353,21 +1386,30 @@ React.useEffect(() => {
     }
     
     if (currentTrackIndex < tracks.length - 1) {
-      // Reset currentTime FIRST to prevent timeline overshoot
-      setCurrentTime(0);
+      // 🔑 Set currentTime to EXACTLY the track's stored duration
+      // This prevents overshoot on the timeline
+      const trackDuration = tracks[currentTrackIndex]?.duration || 0;
+      setCurrentTime(trackDuration);
       
       // Go to next track
       const nextIndex = currentTrackIndex + 1;
       audio.pause();
       audio.currentTime = 0;
-      setCurrentTrackIndex(nextIndex);
       
-      // Small delay for iOS before playing next track
+      // 🔑 Use setTimeout to batch the state updates
+      // First we show the timeline at the exact end of current track
+      // Then we switch to next track (which resets currentTime to 0)
       setTimeout(() => {
-        if (isPlaying) {
-          audio.play().catch(e => console.log('Auto-play next failed:', e));
-        }
-      }, 100);
+        setCurrentTime(0);
+        setCurrentTrackIndex(nextIndex);
+        
+        // Small delay for iOS before playing next track
+        setTimeout(() => {
+          if (isPlaying) {
+            audio.play().catch(e => console.log('Auto-play next failed:', e));
+          }
+        }, 50);
+      }, 50);
     } else {
       finishMixtape();
     }
@@ -1375,7 +1417,7 @@ React.useEffect(() => {
   
   audio.addEventListener("ended", onEnded);
   return () => audio.removeEventListener("ended", onEnded);
-}, [currentTrackIndex, tracks.length, isPlaying]);
+}, [currentTrackIndex, tracks.length, isPlaying, tracks]);
 
   const play = () => {
   if (!current || (current.type !== "mp3" && current.type !== "audio") || !current.src) return;
@@ -2384,17 +2426,17 @@ if (isMobile) {
       }}
     >
       {/* Time stamps */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          fontSize: 11,
-          marginBottom: 4,
-        }}
-      >
-        <span>{formatTime(currentTime)}</span>
-        <span>{formatTime(totalMixtapeDuration)}</span>
-      </div>
+<div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    fontSize: 11,
+    marginBottom: 4,
+  }}
+>
+  <span>{formatTime(mixtapeTime)}</span>
+  <span>{formatTime(totalMixtapeDuration)}</span>
+</div>
 
       {/* Progress bar */}
       <div
@@ -4844,17 +4886,17 @@ if (isMobile) {
     }}
   >
     {/* time stamps */}
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        fontSize: 12,
-        marginBottom: 4,
-      }}
-    >
-      <span>{formatTime(currentTime)}</span>
-      <span>{formatTime(totalMixtapeDuration)}</span>
-    </div>
+<div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    fontSize: 12,
+    marginBottom: 4,
+  }}
+>
+  <span>{formatTime(mixtapeTime)}</span>
+  <span>{formatTime(totalMixtapeDuration)}</span>
+</div>
 
     {/* progress bar */}
     <div
