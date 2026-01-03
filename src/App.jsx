@@ -743,14 +743,41 @@ const payload = {
     const link = `${window.location.origin}/?mixtape=${data.id}`;
     setShareLink(link);
 
-    // auto-copy (with fallback for mobile)
-try {
+// auto-copy with iOS fallback
+const copyToClipboard = async (text) => {
+  // Try modern clipboard API first
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    await navigator.clipboard.writeText(link);
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (e) {
+      // Fall through to fallback
+    }
   }
-} catch (e) {
-  console.log("Clipboard not available");
-}
+  
+  // Fallback for iOS Safari
+  const textArea = document.createElement('textarea');
+  textArea.value = text;
+  textArea.style.position = 'fixed';
+  textArea.style.left = '-9999px';
+  textArea.style.top = '0';
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  
+  try {
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    return true;
+  } catch (e) {
+    document.body.removeChild(textArea);
+    return false;
+  }
+};
+
+await copyToClipboard(link);
+
+
   } catch (err) {
     console.error("GENERATE LINK ERROR:", err);
   alert(err?.message || JSON.stringify(err));
@@ -1061,57 +1088,68 @@ const { error: uploadError } = await supabase.storage
 
 const startRecording = async () => {
   try {
-    // Request microphone permission - this must happen on user gesture (button click)
+    // Request microphone permission
     const stream = await navigator.mediaDevices.getUserMedia({ 
       audio: {
         echoCancellation: true,
         noiseSuppression: true,
+        sampleRate: 44100,
       } 
     });
     
     // Determine the best supported MIME type for this device
-    let mimeType = 'audio/webm';
+    let mimeType = '';
     let fileExtension = 'webm';
     
-        // Desktop browsers (Chrome, Edge, Safari desktop) prefer webm
-    if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
-      mimeType = 'audio/webm;codecs=opus';
-      fileExtension = 'webm';
-    } else if (MediaRecorder.isTypeSupported('audio/webm')) {
-      mimeType = 'audio/webm';
-      fileExtension = 'webm';
-    } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
-      // iOS Safari prefers mp4/aac
-      mimeType = 'audio/mp4';
-      fileExtension = 'm4a';
-    } else if (MediaRecorder.isTypeSupported('audio/aac')) {
-      mimeType = 'audio/aac';
-      fileExtension = 'aac';
+    // Check supported formats in order of preference
+    const formats = [
+      { mime: 'audio/webm;codecs=opus', ext: 'webm' },
+      { mime: 'audio/webm', ext: 'webm' },
+      { mime: 'audio/mp4', ext: 'm4a' },
+      { mime: 'audio/ogg;codecs=opus', ext: 'ogg' },
+      { mime: 'audio/wav', ext: 'wav' },
+      { mime: '', ext: 'm4a' }, // Empty string = let browser choose
+    ];
+    
+    for (const format of formats) {
+      if (format.mime === '' || MediaRecorder.isTypeSupported(format.mime)) {
+        mimeType = format.mime;
+        fileExtension = format.ext;
+        console.log(`Using format: ${mimeType || 'browser default'}`);
+        break;
+      }
     }
     
     // Store file extension for later use
     audioChunksRef.current = [];
     audioChunksRef.current.fileExtension = fileExtension;
     
-    const options = { mimeType };
-    
+    // Create MediaRecorder with or without explicit mimeType
     try {
-      mediaRecorderRef.current = new MediaRecorder(stream, options);
+      if (mimeType) {
+        mediaRecorderRef.current = new MediaRecorder(stream, { mimeType });
+      } else {
+        mediaRecorderRef.current = new MediaRecorder(stream);
+      }
     } catch (e) {
-      // Fallback: let browser choose format
-      console.log('Using default MediaRecorder format');
+      console.log('MediaRecorder creation failed, trying without options:', e);
       mediaRecorderRef.current = new MediaRecorder(stream);
-      audioChunksRef.current.fileExtension = 'm4a'; // iOS default
+      audioChunksRef.current.fileExtension = 'm4a';
     }
+    
+    console.log('MediaRecorder created with mimeType:', mediaRecorderRef.current.mimeType);
     
     mediaRecorderRef.current.ondataavailable = (e) => {
       if (e.data && e.data.size > 0) {
         audioChunksRef.current.push(e.data);
+        console.log('Chunk received:', e.data.size, 'bytes');
       }
     };
     
     mediaRecorderRef.current.onstop = async () => {
       const ext = audioChunksRef.current.fileExtension || 'm4a';
+      
+      console.log('Recording stopped. Chunks:', audioChunksRef.current.length);
       
       if (audioChunksRef.current.length === 0 || 
           (audioChunksRef.current.length === 1 && audioChunksRef.current[0].size === 0)) {
@@ -1122,8 +1160,10 @@ const startRecording = async () => {
         return;
       }
       
-      const recordedMimeType = mediaRecorderRef.current.mimeType || mimeType;
+      const recordedMimeType = mediaRecorderRef.current.mimeType || 'audio/mp4';
       const audioBlob = new Blob(audioChunksRef.current.filter(c => c.size > 0), { type: recordedMimeType });
+      
+      console.log('Created blob:', audioBlob.size, 'bytes, type:', audioBlob.type);
       
       const fileName = `voice-memo-${Date.now()}.${ext}`;
       const file = new File([audioBlob], fileName, { type: recordedMimeType });
@@ -1136,8 +1176,16 @@ const startRecording = async () => {
       setRecordingTime(0);
     };
     
-    // Start recording - use timeslice for iOS compatibility
-    mediaRecorderRef.current.start(1000); // Collect data every second
+    mediaRecorderRef.current.onerror = (e) => {
+      console.error('MediaRecorder error:', e);
+      alert('Recording error occurred. Please try again.');
+      stream.getTracks().forEach(track => track.stop());
+      setShowVoiceRecorder(false);
+      setRecordingTime(0);
+    };
+    
+    // Start recording - use timeslice for compatibility
+    mediaRecorderRef.current.start(1000);
     setIsRecording(true);
     
     recordingIntervalRef.current = setInterval(() => {
@@ -1149,11 +1197,13 @@ const startRecording = async () => {
     
     let errorMessage = "Could not start recording.";
     if (err.name === 'NotAllowedError') {
-      errorMessage = "Microphone access denied. Please allow microphone access in your browser/device settings.";
+      errorMessage = "Microphone access denied. Please allow microphone access in your browser settings.";
     } else if (err.name === 'NotFoundError') {
       errorMessage = "No microphone found on this device.";
     } else if (err.name === 'NotReadableError') {
       errorMessage = "Microphone is being used by another app. Please close other apps and try again.";
+    } else if (err.name === 'NotSupportedError') {
+      errorMessage = "Voice recording is not supported in this browser. Please try Chrome or Firefox.";
     }
     
     alert(errorMessage);
@@ -2301,7 +2351,7 @@ if (isMobile) {
           style={{
             height: "100%",
             width: `${(mixtapeTime / totalMixtapeDuration) * 100 || 0}%`,
-            background: isDarkBg ? "#9ae6b4" : "#3a2d3f",
+            background: isDarkBg ? "#9ae6b4" : "#222",
             transition: "width 100ms linear",
           }}
         />
@@ -2967,7 +3017,7 @@ if (isMobile) {
     onClick={() => { setGlowEnabled(true); console.log("Glow ON"); }}
     style={{
       padding: "10px 14px",
-      background: glowEnabled ? "#3a2d3f" : "#ddd",
+      background: glowEnabled ? "#222" : "#ddd",
       color: glowEnabled ? "#fff" : "#000",
       borderRadius: 10,
       border: "none",
@@ -2982,7 +3032,7 @@ if (isMobile) {
     onClick={() => { setGlowEnabled(false); console.log("Glow OFF"); }}
     style={{
       padding: "10px 14px",
-      background: !glowEnabled ? "#3a2d3f" : "#ddd",
+      background: !glowEnabled ? "#222" : "#ddd",
       color: !glowEnabled ? "#fff" : "#000",
       borderRadius: 10,
       border: "none",
@@ -3041,8 +3091,8 @@ if (isMobile) {
   onClick={generateShareLink}
   style={{
     padding: "10px 16px",
-    background: shareLink ? "#3a2d3f" : "transparent",
-    color: shareLink ? "#fff" : "#3a2d3f",
+    background: shareLink ? "#222" : "transparent",
+    color: shareLink ? "#fff" : "#222",
     border: "1px solid #3a2d3f",
     borderRadius: 10,
     fontFamily: "'Hoover', sans serif",
@@ -4079,7 +4129,7 @@ if (isMobile) {
     onClick={() => setGlowEnabled(true)}
     style={{
       ...styles.cta,
-      background: glowEnabled ? "#3a2d3f" : "#ddd",
+      background: glowEnabled ? "#222" : "#ddd",
       color: glowEnabled ? "#fff" : "#000",
     }}
   >
@@ -4090,7 +4140,7 @@ if (isMobile) {
     onClick={() => setGlowEnabled(false)}
     style={{
       ...styles.cta,
-      background: !glowEnabled ? "#3a2d3f" : "#ddd",
+      background: !glowEnabled ? "#222" : "#ddd",
       color: !glowEnabled ? "#fff" : "#000",
     }}
   >
@@ -4831,7 +4881,7 @@ if (isMobile) {
         style={{
           height: "100%",
           width: `${(mixtapeTime / totalMixtapeDuration) * 100 || 0}%`,
-          background: isDarkBg ? "#9ae6b4" : "#3a2d3f",
+          background: isDarkBg ? "#9ae6b4" : "#222",
           transition: "width 100ms linear",
         }}
       />
