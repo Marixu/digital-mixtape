@@ -93,7 +93,7 @@ const nextFrame = () =>
   const [tracks, setTracks] = React.useState([]);
   const [shareLink, setShareLink] = React.useState("");
   const [isSaving, setIsSaving] = React.useState(false);
-
+const [isProcessingRecording, setIsProcessingRecording] = React.useState(false);
   const [showVoiceRecorder, setShowVoiceRecorder] = React.useState(false);
 const [isRecording, setIsRecording] = React.useState(false);
 const [recordingTime, setRecordingTime] = React.useState(0);
@@ -1193,35 +1193,36 @@ const startRecording = async () => {
     };
     
     recorder.onstop = async () => {
-      console.log('Recording stopped, chunks:', audioChunksRef.current.length);
-      const ext = audioChunksRef.current.fileExtension || 'm4a';
-      
-      // Stop all tracks
-      stream.getTracks().forEach(track => track.stop());
-      
-      if (audioChunksRef.current.length === 0) {
-        alert('No audio was recorded. Please try again.');
-        setShowVoiceRecorder(false);
-        setRecordingTime(0);
-        return;
-      }
-      
-      const audioBlob = new Blob(audioChunksRef.current, { 
-        type: recorder.mimeType || 'audio/mp4' 
-      });
-      
-      console.log('Created blob:', audioBlob.size, 'bytes');
-      
-      const fileName = `voice-memo-${Date.now()}.${ext}`;
-      const file = new File([audioBlob], fileName, { 
-        type: recorder.mimeType || 'audio/mp4' 
-      });
-      
-      await handleSongFiles([file]);
-      
-      setShowVoiceRecorder(false);
-      setRecordingTime(0);
-    };
+  console.log('Recording stopped, chunks:', audioChunksRef.current.length);
+  const ext = audioChunksRef.current.fileExtension || 'm4a';
+  
+  stream.getTracks().forEach(track => track.stop());
+  
+  if (audioChunksRef.current.length === 0) {
+    alert('No audio was recorded. Please try again.');
+    setShowVoiceRecorder(false);
+    setRecordingTime(0);
+    setIsProcessingRecording(false);  // ← ADD THIS
+    return;
+  }
+  
+  const audioBlob = new Blob(audioChunksRef.current, { 
+    type: recorder.mimeType || 'audio/mp4' 
+  });
+  
+  console.log('Created blob:', audioBlob.size, 'bytes');
+  
+  const fileName = `voice-memo-${Date.now()}.${ext}`;
+  const file = new File([audioBlob], fileName, { 
+    type: recorder.mimeType || 'audio/mp4' 
+  });
+  
+  await handleSongFiles([file]);
+  
+  setShowVoiceRecorder(false);
+  setRecordingTime(0);
+  setIsProcessingRecording(false);  // ← ADD THIS
+};
     
     recorder.onerror = (e) => {
       console.error('MediaRecorder error:', e);
@@ -1261,6 +1262,7 @@ const startRecording = async () => {
 
 const stopRecording = () => {
   if (mediaRecorderRef.current && isRecording) {
+    setIsProcessingRecording(true);
     mediaRecorderRef.current.stop();
     setIsRecording(false);
     clearInterval(recordingIntervalRef.current);
@@ -1277,6 +1279,7 @@ const cancelRecording = () => {
   setIsRecording(false);
   setShowVoiceRecorder(false);
   setRecordingTime(0);
+  setIsProcessingRecording(false);
   clearInterval(recordingIntervalRef.current);
   audioChunksRef.current = [];
 };
@@ -3399,15 +3402,16 @@ if (isMobile) {
   </div>
 )}
    <VoiceModal
-        showVoiceRecorder={showVoiceRecorder}
-        isMobile={isMobile}
-        isRecording={isRecording}
-        recordingTime={recordingTime}
-        startRecording={startRecording}
-        stopRecording={stopRecording}
-        cancelRecording={cancelRecording}
-        formatRecordingTime={formatRecordingTime}
-      />
+  showVoiceRecorder={showVoiceRecorder}
+  isMobile={isMobile}
+  isRecording={isRecording}
+  isProcessingRecording={isProcessingRecording}
+  recordingTime={recordingTime}
+  startRecording={startRecording}
+  stopRecording={stopRecording}
+  cancelRecording={cancelRecording}
+  formatRecordingTime={formatRecordingTime}
+/>
 
       </div>
   );
@@ -3595,21 +3599,20 @@ if (isMobile) {
 
 {/* Voice Recorder Button */}
 <button
-  onClick={async () => {
+  onClick={() => {
     if (!navigator.mediaDevices?.getUserMedia) {
       alert("Voice recording is not supported on this device/browser.");
       return;
     }
 
-    try {
-      setShowVoiceRecorder(true); // 1️⃣ show popup
-      await nextFrame();          // 2️⃣ wait for React to render it
-      await startRecording();     // 3️⃣ start mic recording
-    } catch (err) {
-      console.error(err);
-      alert("Could not start voice recording.");
-      setShowVoiceRecorder(false);
+    // Check if max tracks reached
+    if (tracks.length >= MAX_TRACKS) {
+      alert("Maximum of 5 tracks reached!");
+      return;
     }
+
+    // Just show the modal - user will click Start Recording
+    setShowVoiceRecorder(true);
   }}
   style={{
     marginTop: 25,

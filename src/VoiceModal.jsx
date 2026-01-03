@@ -4,16 +4,15 @@ export default function VoiceModal({
   showVoiceRecorder,
   isMobile,
   isRecording,
+  isProcessingRecording,
   recordingTime,
   startRecording,
   stopRecording,
   cancelRecording,
   formatRecordingTime,
 }) {
-  // 🔑 If not visible, render nothing
   if (!showVoiceRecorder) return null;
 
-  // 📱 MOBILE
   if (isMobile) {
     return (
       <div
@@ -33,7 +32,7 @@ export default function VoiceModal({
           transform: "translate3d(0,0,0)",
         }}
         onClick={(e) => {
-          if (e.target === e.currentTarget) cancelRecording();
+          if (e.target === e.currentTarget && !isProcessingRecording) cancelRecording();
         }}
       >
         <div
@@ -46,24 +45,16 @@ export default function VoiceModal({
             maxWidth: 300,
             fontFamily: "'Hoover', sans-serif",
             boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
-            position: "relative",
-            WebkitTransform: "translate3d(0,0,0)",
-            transform: "translate3d(0,0,0)",
             pointerEvents: "auto",
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div style={{ fontSize: 28, marginBottom: 15 }}>🎙️</div>
+          <div style={{ fontSize: 28, marginBottom: 15 }}>
+            {isProcessingRecording ? "⏳" : "🎙️"}
+          </div>
 
-          <h3
-            style={{
-              margin: "0 0 20px",
-              color: "#000",
-              fontSize: 18,
-              fontWeight: 700,
-            }}
-          >
-            Voice Recorder
+          <h3 style={{ margin: "0 0 20px", color: "#000", fontSize: 18, fontWeight: 700 }}>
+            {isProcessingRecording ? "Saving..." : isRecording ? "Recording..." : "Voice Recorder"}
           </h3>
 
           <div
@@ -78,12 +69,12 @@ export default function VoiceModal({
             {formatRecordingTime(recordingTime)}
           </div>
 
-          {isRecording && (
+          {(isRecording || isProcessingRecording) && (
             <div
               style={{
                 width: 12,
                 height: 12,
-                background: "#ff69b4",
+                background: isRecording ? "#ff69b4" : "#888",
                 borderRadius: "50%",
                 margin: "0 auto 20px",
                 animation: "pulse 1.5s ease-in-out infinite",
@@ -91,14 +82,22 @@ export default function VoiceModal({
             />
           )}
 
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 10,
-            }}
-          >
-            {!isRecording ? (
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {isProcessingRecording ? (
+              <div
+                style={{
+                  padding: "16px 20px",
+                  background: "#e0e0e0",
+                  color: "#666",
+                  borderRadius: 12,
+                  fontSize: 16,
+                  fontWeight: 700,
+                  fontFamily: "'Hoover', sans-serif",
+                }}
+              >
+                Saving your recording...
+              </div>
+            ) : !isRecording ? (
               <button
                 onClick={startRecording}
                 style={{
@@ -113,7 +112,6 @@ export default function VoiceModal({
                   width: "100%",
                   fontFamily: "'Hoover', sans-serif",
                   WebkitTapHighlightColor: "transparent",
-                  WebkitAppearance: "none",
                 }}
               >
                 Start Recording
@@ -133,32 +131,32 @@ export default function VoiceModal({
                   width: "100%",
                   fontFamily: "'Hoover', sans-serif",
                   WebkitTapHighlightColor: "transparent",
-                  WebkitAppearance: "none",
                 }}
               >
                 Stop & Save
               </button>
             )}
 
-            <button
-              onClick={cancelRecording}
-              style={{
-                padding: "16px 20px",
-                background: "#f5f5f5",
-                color: "#333",
-                border: "1px solid #ddd",
-                borderRadius: 12,
-                fontSize: 16,
-                fontWeight: 600,
-                cursor: "pointer",
-                width: "100%",
-                fontFamily: "'Hoover', sans-serif",
-                WebkitTapHighlightColor: "transparent",
-                WebkitAppearance: "none",
-              }}
-            >
-              Cancel
-            </button>
+            {!isProcessingRecording && (
+              <button
+                onClick={cancelRecording}
+                style={{
+                  padding: "16px 20px",
+                  background: "#f5f5f5",
+                  color: "#333",
+                  border: "1px solid #ddd",
+                  borderRadius: 12,
+                  fontSize: 16,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  width: "100%",
+                  fontFamily: "'Hoover', sans-serif",
+                  WebkitTapHighlightColor: "transparent",
+                }}
+              >
+                Cancel
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -182,7 +180,7 @@ export default function VoiceModal({
         pointerEvents: "auto",
       }}
       onClick={(e) => {
-        if (e.target === e.currentTarget) cancelRecording();
+        if (e.target === e.currentTarget && !isProcessingRecording) cancelRecording();
       }}
     >
       <div
@@ -198,17 +196,12 @@ export default function VoiceModal({
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div style={{ fontSize: 48, marginBottom: 20 }}>🎙️</div>
+        <div style={{ fontSize: 48, marginBottom: 20 }}>
+          {isProcessingRecording ? "⏳" : "🎙️"}
+        </div>
 
-        <h3
-          style={{
-            margin: "0 0 24px",
-            color: "#000",
-            fontSize: 22,
-            fontWeight: 700,
-          }}
-        >
-          Voice Recorder
+        <h3 style={{ margin: "0 0 24px", color: "#000", fontSize: 22, fontWeight: 700 }}>
+          {isProcessingRecording ? "Saving..." : isRecording ? "Recording..." : "Voice Recorder"}
         </h3>
 
         <div
@@ -223,12 +216,12 @@ export default function VoiceModal({
           {formatRecordingTime(recordingTime)}
         </div>
 
-        {isRecording && (
+        {(isRecording || isProcessingRecording) && (
           <div
             style={{
               width: 16,
               height: 16,
-              background: "#ff69b4",
+              background: isRecording ? "#ff69b4" : "#888",
               borderRadius: "50%",
               margin: "0 auto 24px",
               animation: "pulse 1.5s ease-in-out infinite",
@@ -237,7 +230,21 @@ export default function VoiceModal({
         )}
 
         <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
-          {!isRecording ? (
+          {isProcessingRecording ? (
+            <div
+              style={{
+                padding: "14px 32px",
+                background: "#e0e0e0",
+                color: "#666",
+                borderRadius: 12,
+                fontSize: 16,
+                fontWeight: 700,
+                fontFamily: "'Hoover', sans-serif",
+              }}
+            >
+              Saving...
+            </div>
+          ) : !isRecording ? (
             <button
               onClick={startRecording}
               style={{
@@ -273,22 +280,24 @@ export default function VoiceModal({
             </button>
           )}
 
-          <button
-            onClick={cancelRecording}
-            style={{
-              padding: "14px 32px",
-              background: "#f5f5f5",
-              color: "#333",
-              border: "1px solid #ddd",
-              borderRadius: 12,
-              fontSize: 16,
-              fontWeight: 600,
-              cursor: "pointer",
-              fontFamily: "'Hoover', sans-serif",
-            }}
-          >
-            Cancel
-          </button>
+          {!isProcessingRecording && (
+            <button
+              onClick={cancelRecording}
+              style={{
+                padding: "14px 32px",
+                background: "#f5f5f5",
+                color: "#333",
+                border: "1px solid #ddd",
+                borderRadius: 12,
+                fontSize: 16,
+                fontWeight: 600,
+                cursor: "pointer",
+                fontFamily: "'Hoover', sans-serif",
+              }}
+            >
+              Cancel
+            </button>
+          )}
         </div>
       </div>
     </div>
