@@ -3520,7 +3520,12 @@ if (isMobile) {
 
 
 {currentPage === "home" && (
-  <div style={{ width: "85%", display: "flex", justifyContent: "flex-start", alignItems: "flex-start" }}> 
+  <div style={{ 
+    width: "100%", 
+    display: "flex", 
+    justifyContent: isPreviewMode || appMode === "receiver" ? "center" : "flex-start", 
+    alignItems: "flex-start" 
+  }}>
   <div
   style={{
     ...styles.main,
@@ -3529,12 +3534,14 @@ if (isMobile) {
       : isTablet
         ? "minmax(200px, 320px) minmax(350px, 500px)"
         : "minmax(220px, 380px) minmax(400px, 600px)",
-    width: isTablet ? "95%" : "min(1500px, 80vw)",
+    width: isPreviewMode || appMode === "receiver" 
+      ? "100%" 
+      : isTablet ? "95%" : "min(1500px, 80vw)",
     padding: isTablet ? "0 15px" : 0,
     boxSizing: "border-box",
-    justifyContent: "flex-start",
+    justifyContent: isPreviewMode || appMode === "receiver" ? "center" : "flex-start",
     justifyItems: "center",
-    alignSelf: "flex-start",
+    alignSelf: isPreviewMode || appMode === "receiver" ? "center" : "flex-start",
     marginLeft: "auto",
     marginRight: "auto",
     gap: isTablet ? 40 : 70,
@@ -4170,8 +4177,6 @@ if (isMobile) {
     width: "100%",
     maxWidth: 650,
     margin: "0 auto",
-    marginLeft: isPreviewMode ? "auto" : undefined,
-    marginRight: isPreviewMode ? "auto" : undefined,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
