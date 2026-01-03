@@ -4858,21 +4858,21 @@ if (isMobile) {
     </div>
   </div>
 
+  <div style={{ minHeight: 40 }}>
   {mixtapeFinished && (
-  <div
-    style={{
-      marginTop: 10,
-      marginBottom: 5,
-      textAlign: "center",
-      fontFamily: "'Hoover', sans-serif",
-      fontSize: 20,
-      fontWeight: 700,
-      color: isDarkBg ? "#fff" : "#000",
-    }}
-  >
-    🎉 Congratulations! You finished listening to the mixtape! 
-  </div>
-)}
+    <div
+      style={{
+        textAlign: "center",
+        fontFamily: "'Hoover', sans-serif",
+        fontSize: 20,
+        fontWeight: 700,
+        color: isDarkBg ? "#fff" : "#000",
+      }}
+    >
+      🎉 Congratulations! You finished listening to the mixtape! 
+    </div>
+  )}
+</div>
 
 
 {isPreviewMode && isMP3 && (
