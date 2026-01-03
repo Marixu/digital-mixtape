@@ -2635,7 +2635,6 @@ if (isMobile) {
 {/* Voice Recorder Button */}
 <button
   onClick={() => {
-
     // Check if max tracks reached
     if (tracks.length >= MAX_TRACKS) {
       alert("Maximum of 5 tracks reached!");
@@ -2664,9 +2663,9 @@ if (isMobile) {
       return;
     }
     
-    // Just show the modal - let startRecording handle the permission request
-    // This is important for iOS which has strict requirements about user gesture timing
+    // 🔑 iOS CRITICAL: Show modal AND start recording in the SAME tap
     setShowVoiceRecorder(true);
+    startRecording();  // ← ADD THIS LINE!
   }}
   style={{
     marginBottom: 20,
