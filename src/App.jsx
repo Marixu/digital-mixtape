@@ -2428,7 +2428,7 @@ if (isMobile) {
       </div>
     </div>
 
-    {/* Player buttons */}
+ {/* Player buttons */}
 <div
   style={{
     display: "flex",
@@ -2443,81 +2443,105 @@ if (isMobile) {
     onClick={rewind}
     style={{
       flex: 1,
-      height: 40,
-      borderRadius: 6,
+      height: 44,
+      borderRadius: 8,
       border: "1px solid #8a8a8a",
       background: activeButton === "rewind" ? "#8e8e8e" : "#cfcfcf",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       cursor: "pointer",
+      position: "relative",
+      boxShadow: activeButton === "rewind"
+        ? "inset 0 3px 6px rgba(0,0,0,0.4)"
+        : "inset 0 -2px 3px rgba(255,255,255,0.4)",
     }}
   >
     <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff">
       <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
     </svg>
+    <div style={{ position: "absolute", bottom: 5, left: "50%", transform: "translateX(-50%)", width: "60%", height: 3, background: "#fff", borderRadius: 2 }} />
   </button>
+  
   <button
     onClick={pauseCassette}
     style={{
       flex: 1,
-      height: 40,
-      borderRadius: 6,
+      height: 44,
+      borderRadius: 8,
       border: "1px solid #8a8a8a",
       background: activeButton === "pause" ? "#8e8e8e" : "#cfcfcf",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       cursor: "pointer",
+      position: "relative",
+      boxShadow: activeButton === "pause"
+        ? "inset 0 3px 6px rgba(0,0,0,0.4)"
+        : "inset 0 -2px 3px rgba(255,255,255,0.4)",
     }}
   >
     <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff">
       <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
     </svg>
+    <div style={{ position: "absolute", bottom: 5, left: "50%", transform: "translateX(-50%)", width: "60%", height: 3, background: "#fff", borderRadius: 2 }} />
   </button>
+  
   <button
     onClick={playCassette}
     style={{
       flex: 1,
-      height: 40,
-      borderRadius: 6,
+      height: 44,
+      borderRadius: 8,
       border: "1px solid #8a8a8a",
       background: activeButton === "play" ? "#8e8e8e" : "#cfcfcf",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       cursor: "pointer",
+      position: "relative",
+      boxShadow: activeButton === "play"
+        ? "inset 0 3px 6px rgba(0,0,0,0.4)"
+        : "inset 0 -2px 3px rgba(255,255,255,0.4)",
     }}
   >
     <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff">
       <path d="M8 5v14l11-7z"/>
     </svg>
+    <div style={{ position: "absolute", bottom: 5, left: "50%", transform: "translateX(-50%)", width: "60%", height: 3, background: "#fff", borderRadius: 2 }} />
   </button>
+  
   <button
     onClick={fastForward}
     style={{
       flex: 1,
-      height: 40,
-      borderRadius: 6,
+      height: 44,
+      borderRadius: 8,
       border: "1px solid #8a8a8a",
       background: activeButton === "ff" ? "#8e8e8e" : "#cfcfcf",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
       cursor: "pointer",
+      position: "relative",
+      boxShadow: activeButton === "ff"
+        ? "inset 0 3px 6px rgba(0,0,0,0.4)"
+        : "inset 0 -2px 3px rgba(255,255,255,0.4)",
     }}
   >
     <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff">
       <path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/>
     </svg>
+    <div style={{ position: "absolute", bottom: 5, left: "50%", transform: "translateX(-50%)", width: "60%", height: 3, background: "#fff", borderRadius: 2 }} />
   </button>
+  
   <button
     onClick={skipToNextTrack}
     disabled={!canSkipForward}
     style={{
       flex: 1,
-      height: 40,
-      borderRadius: 6,
+      height: 44,
+      borderRadius: 8,
       border: "1px solid #8a8a8a",
       background: !canSkipForward ? "#d6d6d6" : activeButton === "next" ? "#8e8e8e" : "#cfcfcf",
       display: "flex",
@@ -2525,11 +2549,18 @@ if (isMobile) {
       justifyContent: "center",
       cursor: !canSkipForward ? "not-allowed" : "pointer",
       opacity: !canSkipForward ? 0.5 : 1,
+      position: "relative",
+      boxShadow: !canSkipForward
+        ? "none"
+        : activeButton === "next"
+          ? "inset 0 3px 6px rgba(0,0,0,0.4)"
+          : "inset 0 -2px 3px rgba(255,255,255,0.4)",
     }}
   >
     <svg width="18" height="18" viewBox="0 0 24 24" fill={!canSkipForward ? "#999" : "#fff"}>
       <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
     </svg>
+    <div style={{ position: "absolute", bottom: 5, left: "50%", transform: "translateX(-50%)", width: "60%", height: 3, background: "#fff", opacity: !canSkipForward ? 0.3 : 1, borderRadius: 2 }} />
   </button>
 </div>
 {/* Congratulations message */}
@@ -4180,7 +4211,7 @@ if (isMobile) {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    paddingTop: isTablet ? 10 : 20,
+    paddingTop: isTablet ? 0 : 10,
     gap: 20,
   }}
 >
@@ -4868,36 +4899,134 @@ if (isMobile) {
       marginTop: 18,
     }}
   >
-    <CassetteButton
-      label="⏮"
-      active={activeButton === "rewind"}
+    {/* Rewind */}
+    <button
       onClick={rewind}
-    />
+      style={{
+        width: 78,
+        height: 54,
+        borderRadius: 8,
+        border: "1px solid #8a8a8a",
+        background: activeButton === "rewind" ? "#8e8e8e" : "#cfcfcf",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+        position: "relative",
+        boxShadow: activeButton === "rewind"
+          ? "inset 0 3px 6px rgba(0,0,0,0.4)"
+          : "inset 0 -2px 3px rgba(255,255,255,0.4)",
+      }}
+    >
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff">
+        <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+      </svg>
+      <div style={{ position: "absolute", bottom: 6, left: "50%", transform: "translateX(-50%)", width: "60%", height: 3, background: "#fff", borderRadius: 2 }} />
+    </button>
 
-    <CassetteButton
-      label="⏸"
-      active={activeButton === "pause"}
+    {/* Pause */}
+    <button
       onClick={pauseCassette}
-    />
+      style={{
+        width: 78,
+        height: 54,
+        borderRadius: 8,
+        border: "1px solid #8a8a8a",
+        background: activeButton === "pause" ? "#8e8e8e" : "#cfcfcf",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+        position: "relative",
+        boxShadow: activeButton === "pause"
+          ? "inset 0 3px 6px rgba(0,0,0,0.4)"
+          : "inset 0 -2px 3px rgba(255,255,255,0.4)",
+      }}
+    >
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff">
+        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+      </svg>
+      <div style={{ position: "absolute", bottom: 6, left: "50%", transform: "translateX(-50%)", width: "60%", height: 3, background: "#fff", borderRadius: 2 }} />
+    </button>
 
-    <CassetteButton
-      label="▶"
-      active={activeButton === "play"}
+    {/* Play */}
+    <button
       onClick={playCassette}
-    />
+      style={{
+        width: 78,
+        height: 54,
+        borderRadius: 8,
+        border: "1px solid #8a8a8a",
+        background: activeButton === "play" ? "#8e8e8e" : "#cfcfcf",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+        position: "relative",
+        boxShadow: activeButton === "play"
+          ? "inset 0 3px 6px rgba(0,0,0,0.4)"
+          : "inset 0 -2px 3px rgba(255,255,255,0.4)",
+      }}
+    >
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff">
+        <path d="M8 5v14l11-7z"/>
+      </svg>
+      <div style={{ position: "absolute", bottom: 6, left: "50%", transform: "translateX(-50%)", width: "60%", height: 3, background: "#fff", borderRadius: 2 }} />
+    </button>
 
-        <CassetteButton
-      label="▶|"
-      active={activeButton === "ff"}
+    {/* Fast Forward */}
+    <button
       onClick={fastForward}
-    />
+      style={{
+        width: 78,
+        height: 54,
+        borderRadius: 8,
+        border: "1px solid #8a8a8a",
+        background: activeButton === "ff" ? "#8e8e8e" : "#cfcfcf",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+        position: "relative",
+        boxShadow: activeButton === "ff"
+          ? "inset 0 3px 6px rgba(0,0,0,0.4)"
+          : "inset 0 -2px 3px rgba(255,255,255,0.4)",
+      }}
+    >
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="#fff">
+        <path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/>
+      </svg>
+      <div style={{ position: "absolute", bottom: 6, left: "50%", transform: "translateX(-50%)", width: "60%", height: 3, background: "#fff", borderRadius: 2 }} />
+    </button>
 
-    <CassetteButton
-      label="⏭"
-      active={activeButton === "next"}
+    {/* Skip to Next */}
+    <button
       onClick={skipToNextTrack}
       disabled={!canSkipForward}
-    />
+      style={{
+        width: 78,
+        height: 54,
+        borderRadius: 8,
+        border: "1px solid #8a8a8a",
+        background: !canSkipForward ? "#d6d6d6" : activeButton === "next" ? "#8e8e8e" : "#cfcfcf",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: !canSkipForward ? "not-allowed" : "pointer",
+        opacity: !canSkipForward ? 0.5 : 1,
+        position: "relative",
+        boxShadow: !canSkipForward
+          ? "none"
+          : activeButton === "next"
+            ? "inset 0 3px 6px rgba(0,0,0,0.4)"
+            : "inset 0 -2px 3px rgba(255,255,255,0.4)",
+      }}
+    >
+      <svg width="22" height="22" viewBox="0 0 24 24" fill={!canSkipForward ? "#999" : "#fff"}>
+        <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+      </svg>
+      <div style={{ position: "absolute", bottom: 6, left: "50%", transform: "translateX(-50%)", width: "60%", height: 3, background: "#fff", opacity: !canSkipForward ? 0.3 : 1, borderRadius: 2 }} />
+    </button>
   </div>
 )}
  {/* ===================== PREVIEW STACK END ===================== */}
