@@ -2217,10 +2217,10 @@ if (isMobile) {
           />
 
           {/* Corner anchors - positioned relative to the 80px image */}
-          <div style={{ position: "absolute", width: "8%", minWidth: 6, height: "8%", minHeight: 6, background: "#fff", border: "1px solid #3b82f6", left: 3, top: 3, transform: "translate(-50%, -50%)", pointerEvents: "none" }} />
-          <div style={{ position: "absolute", width: "8%", minWidth: 6, height: "8%", minHeight: 6, background: "#fff", border: "1px solid #3b82f6", right: 3, top: 3, transform: "translate(50%, -50%)", pointerEvents: "none" }} />
-          <div style={{ position: "absolute", width: "8%", minWidth: 6, height: "8%", minHeight: 6, background: "#fff", border: "1px solid #3b82f6", left: 3, bottom: 3, transform: "translate(-50%, 50%)", pointerEvents: "none" }} />
-          <div style={{ position: "absolute", width: "8%", minWidth: 6, height: "8%", minHeight: 6, background: "#fff", border: "1px solid #3b82f6", right: 3, bottom: 3, transform: "translate(50%, 50%)", pointerEvents: "none" }} />
+           <div style={{ position: "absolute", width: isMobile ? "8%" : 10, minWidth: 6, height: isMobile ? "8%" : 10, minHeight: 6, background: "#fff", border: "1px solid #3b82f6", left: 3, top: 3, transform: "translate(-50%, -50%)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", width: isMobile ? "8%" : 10, minWidth: 6, height: isMobile ? "8%" : 10, minHeight: 6, background: "#fff", border: "1px solid #3b82f6", right: 3, top: 3, transform: "translate(50%, -50%)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", width: isMobile ? "8%" : 10, minWidth: 6, height: isMobile ? "8%" : 10, minHeight: 6, background: "#fff", border: "1px solid #3b82f6", left: 3, bottom: 3, transform: "translate(-50%, 50%)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", width: isMobile ? "8%" : 10, minWidth: 6, height: isMobile ? "8%" : 10, minHeight: 6, background: "#fff", border: "1px solid #3b82f6", right: 3, bottom: 3, transform: "translate(50%, 50%)", pointerEvents: "none" }} />
 
           {/* Scale control (right arrow) */}
           <div
@@ -2243,7 +2243,7 @@ if (isMobile) {
               cursor: isEditable ? "ew-resize": "default",
               padding: "3px 8px",
               color: "#202020ff",
-              fontSize: 19,
+              fontSize: 18,
               fontWeight: 800,
               userSelect: "none",
               pointerEvents: "auto",
@@ -2357,13 +2357,10 @@ if (isMobile) {
 
 
         src={s.src}
+        className ="sticker"
         alt=""
         draggable={false}
         style={{
-          width: 50,
-          right: "-35%",
-          top: "-30%",
-          height: 50,
           display: "block",
           cursor: activeObject === s.id ? "move" : "pointer",
           userSelect: "none",
@@ -4649,7 +4646,7 @@ if (isMobile) {
             right: 20,
             top: "46%",
             cursor: isEditable ? "ew-resize": "default",
-            fontSize: 22,
+            fontSize: 18,
             userSelect: "none",
             pointerEvents: "auto",
             zIndex: 200,
@@ -4672,17 +4669,20 @@ if (isMobile) {
               startMouseY: e.clientY,
             };
           }}
-          style={{
-            position: "absolute",
-            top: 46,
-            left: "50%",
-            transform: "translateX(-50%)",
-            cursor: isEditable ? "grab": "default",
-            fontSize: 20,
-            userSelect: "none",
-            pointerEvents: "auto",
-            zIndex: 200,
-          }}
+            style={{
+              position: "absolute",
+              left: "-5%",
+              top: "-30%",
+              transform: "translateX(-50%) rotate(-220deg)",
+              cursor: isEditable ? "grab": "default",
+              padding: "3px 8px",
+              color: "#202020ff",
+              fontSize: 18,
+              fontWeight: 700,
+              userSelect: "none",
+              pointerEvents: "auto",
+            }}
+
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="#202020">
   <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
@@ -4803,19 +4803,19 @@ if (isMobile) {
             }}
             style={{
               position: "absolute",
-              right: "-35%",
+              right: "-43%",
               top: "50%",
               transform: "translateY(-50%)",
               cursor: isEditable ? "ew-resize": "default",
               padding: "3px 8px",
               color: "#202020",
-              fontSize: 19,
+              fontSize: 10,
               fontWeight: 800,
               userSelect: "none",
               pointerEvents: "auto",
             }}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="#202020">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#202020">
   <path d="M9.5 13.09l1.41 1.41-4.5 4.5H10v2H3v-7h2v3.59l4.5-4.5zm1.41-3.59L9.5 10.91 5 6.41V10H3V3h7v2H6.41l4.5 4.5zm3.59 3.59l4.5 4.5V14h2v7h-7v-2h3.59l-4.5-4.5 1.41-1.41zM14.5 10.91l-1.41-1.41 4.5-4.5H14V3h7v7h-2V6.41l-4.5 4.5z"/>
 </svg>
           </div>
@@ -4835,13 +4835,13 @@ if (isMobile) {
             }}
             style={{
               position: "absolute",
-              left: "-5%",
-              top: "-30%",
+              left: "-10%",
+              top: "-47%",
               transform: "translateX(-50%) rotate(-220deg)",
               cursor: isEditable ? "grab": "default",
               padding: "3px 8px",
               color: "#202020ff",
-              fontSize: 18,
+              fontSize: 14,
               fontWeight: 700,
               userSelect: "none",
               pointerEvents: "auto",
@@ -4861,18 +4861,18 @@ if (isMobile) {
             }}
             style={{
               position: "absolute",
-              right: "-25%",
-              top: "-25%",
+              right: "-26%",
+              top: "-35%",
               cursor: isEditable ? "pointer": "default",
-              width: 19,
-              height: 19,
+              width: 14,
+              height: 14,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               background: "#ef4444",
-              borderRadius: 6,
+              borderRadius: 4,
               color: "#fff",
-              fontSize: 24,
+              fontSize: 15,
               fontWeight: 700,
               userSelect: "none",
               pointerEvents: "auto",
