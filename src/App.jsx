@@ -865,7 +865,7 @@ setLabelImagePos(s.labelImagePos || { x: 50, y: 50 });
 setLabelImageScale(s.labelImageScale || 1);
 setLabelImageRotation(s.labelImageRotation || 0);
 
-setTextFont(s.textFont || "Chubbo");
+setTextFont(s.textFont || "Kalam");
 setTextSize(s.textSize || 24);
 setTextColor(s.textColor || "#000");
 
@@ -3576,7 +3576,13 @@ if (isMobile) {
         padding: 0,
       }}
     >
+      <a
+      href="https://www.instagram.com/softparticle/"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
       @Softparticle
+    </a>
     </button>
 
     <button

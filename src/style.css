@@ -741,3 +741,9 @@ canvas {
   overflow: visible !important;
   padding-bottom: 30px;
 }
+
+.sticker {
+width: 75px;
+height: 75px;
+display: block;
+}
