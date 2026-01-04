@@ -484,7 +484,7 @@ const formatTime = (sec = 0) => {
 
 /* ---------- STICKERS ---------- */
 const STICKERS = Array.from({ length: 20 }, (_, i) => {
-  const num = String(i + 2).padStart(2, "0");
+  const num = String(i + 1).padStart(2, "0");
   return `/stickers_webp/stickers-${num}.webp`;
 });
 
@@ -2360,10 +2360,10 @@ if (isMobile) {
         alt=""
         draggable={false}
         style={{
-          width: "20vw",
+          width: 50,
           right: "-35%",
           top: "-30%",
-          height: "auto",
+          height: 50,
           display: "block",
           cursor: activeObject === s.id ? "move" : "pointer",
           userSelect: "none",
@@ -2453,7 +2453,7 @@ if (isMobile) {
           style={{
             height: "100%",
             width: `${(mixtapeTime / totalMixtapeDuration) * 100 || 0}%`,
-            background: isDarkBg ? "#9ae6b4" : "#222",
+            background: isDarkBg ? "#e69ae2ff" : "#222",
             transition: "width 100ms linear",
           }}
         />
@@ -4247,6 +4247,7 @@ if (isMobile) {
     display: "flex",
     justifyContent: isPreviewMode ? "flex-start" : "center",
     width: "100%",
+    overflow: "visible",
   }}
   >
     {/* ===================== PREVIEW STACK START ===================== */}
@@ -4261,9 +4262,10 @@ if (isMobile) {
     alignItems: "center",
     paddingTop: isTablet ? 0 : 10,
     gap: 20,
+    overflow: "visible",
   }}
 >
-  <div style={{ display: "flex", gap: 20, alignItems: "center", justifyContent: "center", width: "100%"
+  <div style={{ display: "flex", gap: 20, alignItems: "center", justifyContent: "center", width: "100%", overflow: "visible"
  }}>
     {/* MIXTAPE */}
 <div className="mixtape-wrapper"
@@ -4298,38 +4300,52 @@ if (isMobile) {
 </div>
 
 {glowEnabled && (
-  <div
-    style={{
-      position: "absolute",
-      inset: 0,
-      zIndex: 0,
-      pointerEvents: "none",
-      ...(isIOS || isSafari
-        ? {
-            WebkitFilter: isTablet
-              ? `drop-shadow(0 0 10px ${glowColor}) drop-shadow(0 0 20px ${glowColor}) drop-shadow(0 0 30px ${glowColor})`
-              : `drop-shadow(0 0 20px ${glowColor}) drop-shadow(0 0 40px ${glowColor}) drop-shadow(0 0 60px ${glowColor})`,
-          }
-        : {
-            filter: isTablet
-              ? `drop-shadow(0 0 8px ${glowColor}) drop-shadow(0 0 16px ${glowColor})`
-              : `drop-shadow(0 0 14px ${glowColor}) drop-shadow(0 0 28px ${glowColor})`,
-          }
-      ),
-    }}
-  >
-    <img
-      src={mixtapeImage}
-      alt=""
-      style={{
-        width: "100%",
-        height: "100%",
-        objectFit: "contain",
-      }}
-    />
-  </div>
+  <>
+    {/* Safari/iOS: box-shadow glow (doesn't get clipped) */}
+    {(isIOS || isSafari) && (
+      <div
+        style={{
+          position: "absolute",
+          top: "19%",
+          left: "15%",
+          width: "74%",
+          height: "61%",
+          borderRadius: "12px",
+          background: "transparent",
+          boxShadow: isTablet
+            ? `0 0 25px 0px ${glowColor}, 0 0 30px 0px ${glowColor}, 0 0 45px 0px ${glowColor}`
+            : `0 0 25px 0px ${glowColor}, 0 0 30px 0px ${glowColor}, 0 0 45px 0px ${glowColor}`,
+          zIndex: 0,
+          pointerEvents: "none",
+        }}
+      />
+    )}
+    {/* Chrome/Firefox: drop-shadow filter (works fine) */}
+    {!(isIOS || isSafari) && (
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          zIndex: 0,
+          pointerEvents: "none",
+          filter: isTablet
+            ? `drop-shadow(0 0 8px ${glowColor}) drop-shadow(0 0 16px ${glowColor})`
+            : `drop-shadow(0 0 14px ${glowColor}) drop-shadow(0 0 28px ${glowColor})`,
+        }}
+      >
+        <img
+          src={mixtapeImage}
+          alt=""
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+          }}
+        />
+      </div>
+    )}
+  </>
 )}
-
 
 
 {/* TAPE LAYER - Canvas for iOS/Safari, Video for others */}
@@ -4811,10 +4827,8 @@ if (isMobile) {
         alt=""
         draggable={false}
         style={{
-          width: "20vw",
-          maxWidth: 80,
-          minWidth: 50,
-          height: "auto",
+          width: 50,
+          height: 50,
           display: "block",
           cursor: activeObject === s.id ? "move" : "pointer",
           userSelect: "none",
@@ -4914,7 +4928,7 @@ if (isMobile) {
         style={{
           height: "100%",
           width: `${(mixtapeTime / totalMixtapeDuration) * 100 || 0}%`,
-          background: isDarkBg ? "#9ae6b4" : "#222",
+          background: isDarkBg ? "#E6E6E6" : "#222",
           transition: "width 100ms linear",
         }}
       />
@@ -5374,6 +5388,7 @@ if (isMobile) {
   showVoiceRecorder={showVoiceRecorder}
   isMobile={isMobile}
   isRecording={isRecording}
+  isProcessingRecording={isProcessingRecording}
   recordingTime={recordingTime}
   startRecording={startRecording}
   stopRecording={stopRecording}
@@ -5492,7 +5507,7 @@ card: {
   border: "1px solid #E5E5EA",
   borderRadius: "0 0 20px 20px",
   boxShadow: "0 8px 30px rgba(0,0,0,.06)",
-  overflow: "visible",
+  overflow: "hidden",
   padding: "0px 24px 24px",
   boxSizing: "border-box",
   width: "100%",
@@ -5513,7 +5528,7 @@ panel: {
   paddingBottom: 30, 
   boxSizing: "border-box",
   width: "100%",
-  overflow: "visible",
+  overflow: "hidden",
 },
   h3: { margin: "4px 0 12px", fontSize: 18 },
   input: {
