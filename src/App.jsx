@@ -2633,9 +2633,19 @@ if (isMobile) {
       marginRight: "auto",
     }}
   >
-    🎉 Congratulations!
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill={isDarkBg ? "#fff" : "#000"} viewBox="0 0 24 24">
+        <path fillRule="evenodd" d="M20.337 3.664c.213.212.354.486.404.782.294 1.711.657 5.195-.906 6.76-1.77 1.768-8.485 5.517-10.611 6.683a.987.987 0 0 1-1.176-.173l-.882-.88-.877-.884a.988.988 0 0 1-.173-1.177c1.165-2.126 4.913-8.841 6.682-10.611 1.562-1.563 5.046-1.198 6.757-.904.296.05.57.191.782.404ZM5.407 7.576l4-.341-2.69 4.48-2.857-.334a.996.996 0 0 1-.565-1.694l2.112-2.111Zm11.357 7.02-.34 4-2.111 2.113a.996.996 0 0 1-1.69-.565l-.422-2.807 4.563-2.74Zm.84-6.21a1.99 1.99 0 1 1-3.98 0 1.99 1.99 0 0 1 3.98 0Z" clipRule="evenodd"/>
+      </svg>
+      Congratulations!
+    </span>
     <br />
-    You finished the mixtape!
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+      You finished the mixtape!
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill={isDarkBg ? "#fff" : "#000"} viewBox="0 0 24 24">
+        <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z"/>
+      </svg>
+    </span>
   </div>
 )}
  {/* Back button (editor only) */}
@@ -3261,7 +3271,7 @@ if (isMobile) {
                     
                     }}
                   >
-                    Start preview →
+                    Preview →
                   </button>
                 </div>
               )}
@@ -3321,12 +3331,12 @@ if (isMobile) {
       
       <h3>1. About Digital Mixtape</h3>
       <p>
-        Digital Mixtape is a tool for creating and sharing music as virtual gifts through customizing cassette tapes.
+        Digital Mixtape is a tool for creating and sharing music as virtual gifts by customizing personal cassette tapes.
       </p>
       
       <h3>2. User Content & Ownership</h3>
       <p>
-        All content added by users remains the property of its respective owners. Digital Mixtape does not claim ownership of user content.
+       Anything you upload to Digital Mixtape remains fully yours. I don't claim ownership of any user content.
       </p>
       <p>
         By using the service, you confirm that you own the rights to the content you upload or have permission to use it.
@@ -3337,15 +3347,15 @@ if (isMobile) {
         Users are responsible for ensuring their content does not infringe on copyright or other rights.
       </p>
       <p>
-        We encourage the use of original or royalty-free music. Digital Mixtape does not sell or monetize uploaded music.
+        I encourage the use of voice messages, original or royalty-free music. Digital Mixtape does not sell or monetize uploaded audio files.
       </p>
       
       <h3>4. Content Removal & Contact</h3>
       <p>
-        We may remove content that violates these Terms or applicable laws.
+        I may remove content that violates these terms or applicable laws.
       </p>
       <p>
-        If you believe your copyrighted work has been used improperly, please contact us.
+        If you believe your copyrighted work has been used improperly, please contact me.
       </p>
       
       <button
@@ -3374,23 +3384,40 @@ if (isMobile) {
     <div className="mobile-legal">
       <h2>Privacy Policy</h2>
       
-      <p>We respect your privacy.</p>
+      <p>I have full respect for your privacy.</p>
       
       <p>
-        The only data we store is user-generated content, including uploaded audio files, music links, images, and mixtape configuration data.
+        I only store data that is needed to provide the Digital Mixtape experience,
+        <br/> 
+        so users can send customized mixtapes.
+        </p>
+        <p>
+        This includes: mixtape customization data, uploaded audio files, voice recordings and
+        <br/> 
+        images.
+      </p>
+      <p>
+        All data uploaded is solely used to provide the Digital Mixtape experience.
       </p>
       
       <p>
-        This data is used solely to provide the Digital Mixtape service.
+        I do not sell or share user data.
+        </p>
+        <p>
+        Uploaded content is stored safely using reliable third-party providers for
+        <br/>
+        hosting and storage.
       </p>
       
       <p>
-        We do not sell or share user data.<br />
-        Content is stored securely using third-party infrastructure providers for hosting and storage.
-      </p>
-      
-      <p>
-        Users may request deletion of their content at any time by contacting us.
+        You are welcome to at any time request deletion of your content by contacting me.
+        </p>
+        <p>
+        In the future, I might delete stored data after 30 days to save storage
+        space. 
+        </p>
+        <p>
+        If I do I will update this policy.
       </p>
       
       <button
@@ -3433,11 +3460,13 @@ if (isMobile) {
       
       <div className="mobile-about-text">
         <p>
-          Hello! I'm Maria, an interaction designer who builds experimental human-computer driven experiences.
+          Hello! I'm Maria, a designer and creative technologist exploring experimental 
+          <br/>
+          human-computer experiences.
         </p>
         
         <p>
-          I created this website with a wish to make the internet a more fun and magical place, through sharing personal, intentional and special music, like the times of cassette tapes! 
+          I created this website with the wish to make the internet a bit more fun and magical, by sharing personal, intentional and special audio, like the era of cassette tapes! 
           
         </p>
         
@@ -4227,7 +4256,7 @@ if (isMobile) {
                     
                     }}
                   >
-                    Start preview →
+                    Preview →
                   </button>
                 </div>
               )}
@@ -4348,20 +4377,36 @@ if (isMobile) {
 )}
 
 
-{/* TAPE LAYER - Canvas for iOS/Safari, Video for others */}
+{/* TAPE LAYER - Canvas for iOS/Safari in preview, static image in editor, Video for others */}
 {(isIOS || isSafari) ? (
-  <canvas
-    ref={tapeCanvasRef}
-    style={{
-      position: "absolute",
-      inset: 0,
-      width: "100%",
-      height: "100%",
-      objectFit: "contain",
-      zIndex: 1,
-      pointerEvents: "none",
-    }}
-  />
+  (isPreviewMode || appMode === "receiver") ? (
+    <canvas
+      ref={tapeCanvasRef}
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        objectFit: "contain",
+        zIndex: 1,
+        pointerEvents: "none",
+      }}
+    />
+  ) : (
+    <img
+      src="/tapeframes_webp/0001.webp"
+      alt=""
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        objectFit: "contain",
+        zIndex: 1,
+        pointerEvents: "none",
+      }}
+    />
+  )
 ) : (
   <video
     ref={tapeVideoRef}
@@ -4401,20 +4446,36 @@ if (isMobile) {
   }}
 />
 
-{/* ROLLER LAYER - Canvas for iOS/Safari, Video for others */}
+{/* ROLLER LAYER - Canvas for iOS/Safari in preview, static image in editor, Video for others */}
 {(isIOS || isSafari) ? (
-  <canvas
-    ref={rollerCanvasRef}
-    style={{
-      position: "absolute",
-      inset: 0,
-      width: "100%",
-      height: "100%",
-      objectFit: "contain",
-      zIndex: 3,
-      pointerEvents: "none",
-    }}
-  />
+  (isPreviewMode || appMode === "receiver") ? (
+    <canvas
+      ref={rollerCanvasRef}
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        objectFit: "contain",
+        zIndex: 3,
+        pointerEvents: "none",
+      }}
+    />
+  ) : (
+    <img
+      src="/rollerframes_webp/0001.webp"
+      alt=""
+      style={{
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        objectFit: "contain",
+        zIndex: 3,
+        pointerEvents: "none",
+      }}
+    />
+  )
 ) : (
   <video
     ref={rollerVideoRef}
@@ -4879,12 +4940,22 @@ if (isMobile) {
       style={{
         textAlign: "center",
         fontFamily: "'Hoover', sans-serif",
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 700,
         color: isDarkBg ? "#fff" : "#000",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 8,
       }}
     >
-      🎉 Congratulations! You finished listening to the mixtape! 
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill={isDarkBg ? "#fff" : "#000"} viewBox="0 0 24 24">
+        <path fillRule="evenodd" d="M20.337 3.664c.213.212.354.486.404.782.294 1.711.657 5.195-.906 6.76-1.77 1.768-8.485 5.517-10.611 6.683a.987.987 0 0 1-1.176-.173l-.882-.88-.877-.884a.988.988 0 0 1-.173-1.177c1.165-2.126 4.913-8.841 6.682-10.611 1.562-1.563 5.046-1.198 6.757-.904.296.05.57.191.782.404ZM5.407 7.576l4-.341-2.69 4.48-2.857-.334a.996.996 0 0 1-.565-1.694l2.112-2.111Zm11.357 7.02-.34 4-2.111 2.113a.996.996 0 0 1-1.69-.565l-.422-2.807 4.563-2.74Zm.84-6.21a1.99 1.99 0 1 1-3.98 0 1.99 1.99 0 0 1 3.98 0Z" clipRule="evenodd"/>
+      </svg>
+      Congratulations! You finished listening to the mixtape!
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill={isDarkBg ? "#fff" : "#000"} viewBox="0 0 24 24">
+        <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z"/>
+      </svg>
     </div>
   )}
 </div>
@@ -5128,18 +5199,25 @@ if (isMobile) {
       />
     </div>
 
-    <div style={{ fontSize: 14, marginTop: "40px", lineHeight: 1.2 }}>
+    <div style={{ fontSize: 14, marginTop: "40px", lineHeight: 1.3 }}>
       <p>
-        Hello! I'm Maria, an interaction designer who builds experimental human-computer driven experiences.
+        Hello! I'm Maria, a designer and creative technologist 
+        <br/>
+        exploring experimental human-computer experiences.
       </p>
 
       <p>
-        I created this website with a wish to make the internet a more fun and magical place, through sharing
-        personal, intentional and special music, like the times of cassette tapes!
+        I created this website with the wish to make the internet
+        <br/> 
+        a bit more fun and magical, by sharing personal, intentional 
+        <br/>
+        and special audio, like the era of cassette tapes!
       </p>
 
       <p>
-        If you're interested in my journey of exploring creative technology, find me at{" "}
+        If you're interested in my journey of exploring 
+        <br/>
+        creative technology, find me at{" "}
         <a
           href="https://instagram.com/softparticle"
           target="_blank"
@@ -5177,7 +5255,7 @@ if (isMobile) {
   <div style={{ maxWidth: "700px", margin: "40px auto", padding: "0 20px" }}>
     <h1 style={{ 
       fontFamily: "'Hoover', sans-serif", 
-      fontSize: 40, 
+      fontSize: 24, 
       marginBottom: 40,
       marginTop: 10,
       color: isDarkBg ? "#fff" : "#000",
@@ -5187,37 +5265,46 @@ if (isMobile) {
     
     <div style={{ 
       fontFamily: "'Hoover', sans serif", 
-      fontSize: 18, 
-      lineHeight: 1.7,
+      fontSize: 14, 
+      lineHeight: 1.3,
       color: isDarkBg ? "#fff" : "#000",
     }}>
       <h3 style={{ marginTop: 24, marginBottom: 8 }}>1. About Digital Mixtape</h3>
       <p>
-        Digital Mixtape is a tool for creating and sharing music as virtual gifts through customizing cassette tapes.
+        Digital Mixtape is a tool for creating and sharing music as virtual gifts,
+        <br/>
+        by customizing personal cassette tapes.
       </p>
       
       <h3 style={{ marginTop: 24, marginBottom: 8 }}>2. User Content & Ownership</h3>
       <p>
-        All content added by users remains the property of its respective owners. Digital Mixtape does not claim ownership of user content.
+        Anything you upload to Digital Mixtape remains fully yours.
+        <br/>
+        I don't claim ownership of any user content.
       </p>
       <p>
-        By using the service, you confirm that you own the rights to the content you upload or have permission to use it.
+        By using this service, you confirm that you own the rights what you upload
+        <br/>
+        or that you have permission to use it.
       </p>
       
       <h3 style={{ marginTop: 24, marginBottom: 8 }}>3. Copyright Responsibility</h3>
       <p>
-        Users are responsible for ensuring their content does not infringe on copyright or other rights.
+        Users are responsible for ensuring their content does not infringe on copyright
+        <br/>
+        or other rights.
       </p>
       <p>
-        We encourage the use of original or royalty-free music. Digital Mixtape does not sell or monetize uploaded music.
+        I encourage the use of voice messages, original or royalty-free music. 7
+        <br/>
+        Digital Mixtape does not sell or monetize uploaded music.
       </p>
       
       <h3 style={{ marginTop: 24, marginBottom: 8 }}>4. Content Removal & Contact</h3>
       <p>
-        We may remove content that violates these Terms or applicable laws.
-      </p>
-      <p>
-        If you believe your copyrighted work has been used improperly, please contact us.
+        I may remove content that violates these terms or applicable laws.
+      <br/>
+        If you believe your copyrighted work has been used improperly, please contact me.
       </p>
     </div>
     
@@ -5244,7 +5331,7 @@ if (isMobile) {
   <div style={{ maxWidth: "700px", margin: "40px auto", padding: "0 20px" }}>
     <h1 style={{ 
       fontFamily: "'Hoover', sans-serif", 
-      fontSize: 40, 
+      fontSize: 24, 
       marginBottom: 40,
       marginTop: 10,
       color: isDarkBg ? "#fff" : "#000",
@@ -5254,31 +5341,43 @@ if (isMobile) {
     
     <div style={{ 
       fontFamily: "'Hoover', sans serif", 
-      fontSize: 18, 
-      lineHeight: 1.7,
+      fontSize: 14, 
+      lineHeight: 1.3,
       color: isDarkBg ? "#fff" : "#000",
     }}>
-      <p>We respect your privacy.</p>
+      <p>I have full respect for your privacy.</p>
       
       <p>
-        We do not require user accounts and do not collect personal information such as names or email addresses.
+        I only store data that is needed to provide the Digital Mixtape
+        <br/> 
+        experience, so users can send each other customized mixtapes.
+        </p>
+        <p>
+        This includes: mixtape customization data, uploaded
+        <br/> 
+        audio files, voice recordings and images.
       </p>
       
       <p>
-        The only data we store is user-generated content, including uploaded audio files, music links, images, and mixtape configuration data.
+        All data uploaded is solely used to provide the Digital Mixtape experience.
       </p>
       
       <p>
-        This data is used solely to provide the Digital Mixtape service.
+        I do not sell or share user data.
+        </p>
+        <p>
+        Uploaded Content is stored safely using reliable third-party providers
+        <br/>
+        for hosting and storage.
       </p>
       
       <p>
-        We do not sell or share user data.<br />
-        Content is stored securely using third-party infrastructure providers for hosting and storage.
-      </p>
-      
-      <p>
-        Users may request deletion of their content at any time by contacting us.
+        You are welcome to at any time request deletion of your content by contacting me.
+        </p>
+        <p>
+        In the future, I might automatically delete stored information after 30 days
+        <br/> 
+        to save storage space. If I do I will update this policy.
       </p>
     </div>
     
@@ -5659,6 +5758,14 @@ select: {
   fontFamily: "'Hoover', sans-serif",
   boxSizing: "border-box",
   maxWidth: "100%",
+  WebkitAppearance: "none",
+  MozAppearance: "none",
+  appearance: "none",
+  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
+  backgroundRepeat: "no-repeat",
+  backgroundPosition: "right 10px center",
+  paddingRight: 30,
+  cursor: "pointer",
 },
 
 stickerPanel: {
