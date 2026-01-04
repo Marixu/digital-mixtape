@@ -3665,6 +3665,17 @@ if (isMobile) {
       setMixtapeFinished(false);
       setShowConfetti(false);
     }}
+    style={{
+        marginTop: 80,
+        padding: "12px 24px",
+        background: "transparent",
+        color: isDarkBg ? "#fff" : "#000",
+        border: `1px solid ${isDarkBg ? "#fff" : "#000"}`,
+        borderRadius: 20,
+        fontSize: 13,
+        fontWeight: 600,
+        cursor: "pointer",
+      }}
   >
     ← Back
   </button>
