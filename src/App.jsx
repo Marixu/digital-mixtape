@@ -2236,23 +2236,26 @@ if (isMobile) {
               };
             }}
             style={{
-              position: "absolute",
-              right: -28,
-              top: "50%",
-              transform: "translateY(-50%)",
-              cursor: isEditable ? "ew-resize": "default",
-              padding: "3px 8px",
-              color: "#202020ff",
-              fontSize: 18,
-              fontWeight: 800,
-              userSelect: "none",
-              pointerEvents: "auto",
-            }}
-          >
-           <svg width="16" height="16" viewBox="0 0 24 24" fill="#202020">
-  <path d="M9.5 13.09l1.41 1.41-4.5 4.5H10v2H3v-7h2v3.59l4.5-4.5zm1.41-3.59L9.5 10.91 5 6.41V10H3V3h7v2H6.41l4.5 4.5zm3.59 3.59l4.5 4.5V14h2v7h-7v-2h3.59l-4.5-4.5 1.41-1.41zM14.5 10.91l-1.41-1.41 4.5-4.5H14V3h7v7h-2V6.41l-4.5 4.5z"/>
-</svg>
-          </div>
+    position: "absolute",
+    right: -17,
+    top: "50%",
+    transform: "translateY(-50%)",
+    width: 22,
+    height: 22,
+    borderRadius: "50%",
+    color: "#202020ff",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "ew-resize",
+    userSelect: "none",
+    pointerEvents: "auto",
+  }}
+>
+  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24">
+    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 4H4m0 0v4m0-4 5 5m7-5h4m0 0v4m0-4-5 5M8 20H4m0 0v-4m0 4 5-5m7 5h4m0 0v-4m0 4-5-5"/>
+  </svg>
+</div>
 
           {/* Rotate control (top arrow) */}
           <div
@@ -2268,23 +2271,23 @@ if (isMobile) {
               };
             }}
             style={{
-              position: "absolute",
-              left: "-5%",
-              top: "-30%",
-              transform: "translateX(-50%) rotate(-220deg)",
-              cursor: isEditable ? "grab": "default",
-              padding: "3px 8px",
-              color: "#202020ff",
-              fontSize: 18,
-              fontWeight: 700,
-              userSelect: "none",
-              pointerEvents: "auto",
-            }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="#202020">
-  <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-</svg>
-          </div>
+    position: "absolute",
+    left: "-9%",
+    top: "-41%",
+    transform: "translateX(-50%) rotate(-220deg)",
+    cursor: "grab",
+    padding: "3px 8px",
+    color: "#202020",
+    fontSize: 14,
+    fontWeight: 700,
+    userSelect: "none",
+    pointerEvents: "auto",
+  }}
+>
+  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24">
+    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.651 7.65a7.131 7.131 0 0 0-12.68 3.15M18.001 4v4h-4m-7.652 8.35a7.13 7.13 0 0 0 12.68-3.15M6 20v-4h4"/>
+  </svg>
+</div>
 
           {/* Delete button */}
           <div
@@ -2294,26 +2297,26 @@ if (isMobile) {
               setActiveObject(null);
             }}
             style={{
-              position: "absolute",
-              right: -20,
-              top: -20,
-              cursor: isEditable ? "pointer": "default",
-              width: 19,
-              height: 19,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background: "#ef4444",
-              borderRadius: 6,
-              color: "#fff",
-              fontSize: 24,
-              fontWeight: 700,
-              userSelect: "none",
-              pointerEvents: "auto",
-            }}
-          >
-            ×
-          </div>
+    position: "absolute",
+    right: "-23%",
+    top: "-25%",
+    cursor: "pointer",
+    width: 16,
+    height: 16,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "#000",
+    fontSize: 15,
+    fontWeight: 700,
+    userSelect: "none",
+    pointerEvents: "auto",
+  }}
+>
+  <svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" fill="currentColor" viewBox="0 0 24 24">
+    <path fillRule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm7.707-3.707a1 1 0 0 0-1.414 1.414L10.586 12l-2.293 2.293a1 1 0 1 0 1.414 1.414L12 13.414l2.293 2.293a1 1 0 0 0 1.414-1.414L13.414 12l2.293-2.293a1 1 0 0 0-1.414-1.414L12 10.586 9.707 8.293Z" clipRule="evenodd"/>
+  </svg>
+</div>
         </>
       )}
 
@@ -2757,6 +2760,7 @@ if (isMobile) {
     startRecording();  // ← ADD THIS LINE!
   }}
   style={{
+    marginTop: 20,  
     marginBottom: 20,
     width: "100%",
     padding: "14px 16px",
@@ -2774,6 +2778,10 @@ if (isMobile) {
     gap: 8,
   }}
 >
+  <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" viewBox="0 0 27 27">
+  <path fill-rule="evenodd" d="M5 8a1 1 0 0 1 1 1v3a4.006 4.006 0 0 0 4 4h4a4.006 4.006 0 0 0 4-4V9a1 1 0 1 1 2 0v3.001A6.006 6.006 0 0 1 14.001 18H13v2h2a1 1 0 1 1 0 2H9a1 1 0 1 1 0-2h2v-2H9.999A6.006 6.006 0 0 1 4 12.001V9a1 1 0 0 1 1-1Z" clip-rule="evenodd"/>
+  <path d="M7 6a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v5a4 4 0 0 1-4 4h-2a4 4 0 0 1-4-4V6Z"/>
+</svg>
   Record Voice Message
 </button>
 
@@ -3055,7 +3063,7 @@ if (isMobile) {
       src,
       x: 27,
       y: 35,
-      scale: 0.9,
+      scale: 1,
       rotation: 0,
     },
   ])
@@ -3744,7 +3752,7 @@ if (isMobile) {
     setShowVoiceRecorder(true);
   }}
   style={{
-    marginTop: 25,
+    marginTop: 20,
     width: "100%",
     padding: "14px 16px",
     background: "#f6f6fa",
@@ -3761,6 +3769,11 @@ if (isMobile) {
     gap: 8,
   }}
 >
+  <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" fill="currentColor" viewBox="0 0 26 26">
+  <path fill-rule="evenodd" d="M5 8a1 1 0 0 1 1 1v3a4.006 4.006 0 0 0 4 4h4a4.006 4.006 0 0 0 4-4V9a1 1 0 1 1 2 0v3.001A6.006 6.006 0 0 1 14.001 18H13v2h2a1 1 0 1 1 0 2H9a1 1 0 1 1 0-2h2v-2H9.999A6.006 6.006 0 0 1 4 12.001V9a1 1 0 0 1 1-1Z" clip-rule="evenodd"/>
+  <path d="M7 6a4 4 0 0 1 4-4h2a4 4 0 0 1 4 4v5a4 4 0 0 1-4 4h-2a4 4 0 0 1-4-4V6Z"/>
+</svg>
+
    Record Voice Message
 </button>
 
@@ -4072,7 +4085,7 @@ if (isMobile) {
       src,
       x: 27,
       y: 35,
-      scale: 1.4,
+      scale: 1,
       rotation: 0,
     },
   ])
@@ -4802,23 +4815,26 @@ if (isMobile) {
               };
             }}
             style={{
-              position: "absolute",
-              right: "-43%",
-              top: "50%",
-              transform: "translateY(-50%)",
-              cursor: isEditable ? "ew-resize": "default",
-              padding: "3px 8px",
-              color: "#202020",
-              fontSize: 10,
-              fontWeight: 800,
-              userSelect: "none",
-              pointerEvents: "auto",
-            }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="#202020">
-  <path d="M9.5 13.09l1.41 1.41-4.5 4.5H10v2H3v-7h2v3.59l4.5-4.5zm1.41-3.59L9.5 10.91 5 6.41V10H3V3h7v2H6.41l4.5 4.5zm3.59 3.59l4.5 4.5V14h2v7h-7v-2h3.59l-4.5-4.5 1.41-1.41zM14.5 10.91l-1.41-1.41 4.5-4.5H14V3h7v7h-2V6.41l-4.5 4.5z"/>
+    position: "absolute",
+    right: -17,
+    top: "50%",
+    transform: "translateY(-50%)",
+    width: 22,
+    height: 22,
+    borderRadius: "50%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "ew-resize",
+    userSelect: "none",
+    pointerEvents: "auto",
+  }}
+>
+  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24">
+  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H4m0 0v4m0-4 5 5m7-5h4m0 0v4m0-4-5 5M8 20H4m0 0v-4m0 4 5-5m7 5h4m0 0v-4m0 4-5-5"/>
 </svg>
-          </div>
+
+</div>
 
           {/* Rotate control (top arrow) */}
           <div
@@ -4835,8 +4851,8 @@ if (isMobile) {
             }}
             style={{
               position: "absolute",
-              left: "-10%",
-              top: "-47%",
+              left: "-9%",
+              top: "-41%",
               transform: "translateX(-50%) rotate(-220deg)",
               cursor: isEditable ? "grab": "default",
               padding: "3px 8px",
@@ -4847,10 +4863,11 @@ if (isMobile) {
               pointerEvents: "auto",
             }}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="#202020">
-  <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24">
+  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.651 7.65a7.131 7.131 0 0 0-12.68 3.15M18.001 4v4h-4m-7.652 8.35a7.13 7.13 0 0 0 12.68-3.15M6 20v-4h4"/>
 </svg>
           </div>
+
 
           {/* Delete button */}
           <div
@@ -4861,24 +4878,25 @@ if (isMobile) {
             }}
             style={{
               position: "absolute",
-              right: "-26%",
-              top: "-35%",
+              right: "-23%",
+              top: "-25%",
               cursor: isEditable ? "pointer": "default",
-              width: 14,
-              height: 14,
+              width: 16,
+              height: 16,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              background: "#ef4444",
-              borderRadius: 4,
-              color: "#fff",
+              color: "#000000ff",
               fontSize: 15,
               fontWeight: 700,
               userSelect: "none",
               pointerEvents: "auto",
             }}
           >
-            ×
+           <svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" fill="currentColor" viewBox="0 0 24 24">
+  <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm7.707-3.707a1 1 0 0 0-1.414 1.414L10.586 12l-2.293 2.293a1 1 0 1 0 1.414 1.414L12 13.414l2.293 2.293a1 1 0 0 0 1.414-1.414L13.414 12l2.293-2.293a1 1 0 0 0-1.414-1.414L12 10.586 9.707 8.293Z" clip-rule="evenodd"/>
+</svg>
+
           </div>
         </>
       )}
@@ -4905,8 +4923,8 @@ if (isMobile) {
         alt=""
         draggable={false}
         style={{
-          width: 50,
-          height: 50,
+          width: 60,
+          height: 60,
           display: "block",
           cursor: activeObject === s.id ? "move" : "pointer",
           userSelect: "none",
