@@ -514,10 +514,7 @@ button:focus {
 
 /* PREVIEW FOOTER - NOT fixed, flows with content */
 .mobile-footer.preview {
-  position: fixed;
-  bottom: -5px;
-  left: 0;
-  right: 0;
+  position: relative;
   background: transparent;
   padding: 12px 10px 20px;
   z-index: 50;

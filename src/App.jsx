@@ -1748,6 +1748,10 @@ if (isMobile) {
       href="https://www.instagram.com/softparticle/"
       target="_blank"
       rel="noopener noreferrer"
+      style={{
+        color: isDarkBg ? "#fff" : "#000",
+        textDecoration: "none",
+      }}
     >
       @Softparticle
     </a>
@@ -2453,7 +2457,7 @@ if (isMobile) {
           style={{
             height: "100%",
             width: `${(mixtapeTime / totalMixtapeDuration) * 100 || 0}%`,
-            background: isDarkBg ? "#e69ae2ff" : "#222",
+            background: isDarkBg ? "#fff" : "#222",
             transition: "width 100ms linear",
           }}
         />
@@ -3135,7 +3139,7 @@ if (isMobile) {
     { bg: "#FFFFFF", img: "/bgwhite.jpg", dark: false },
     { bg: "#000000", img: "/bgblack.jpg", dark: true },
     { bg: "#AF96E6", img: "/bgpurple.jpg", dark: false },
-    { bg: "#86E3FD", img: "/bgblu.jpg", dark: false },
+    { bg: "#86E3FD", img: "/bgblu.jpg", dark: true },
   ].map((item, i) => (
     <button
       key={i}
@@ -3298,25 +3302,26 @@ if (isMobile) {
     className={`mobile-footer ${isPreviewMode ? "preview" : "editor"}`}
     style={{ marginTop: isPreviewMode ? 50: 30 }}
   >
-  <div className="mobile-footer-line">
+  <div className="mobile-footer-line" style={{ color: isDarkBg ? "#fff" : "#111" }}>
     Created by{" "}
     <a
       href="https://www.instagram.com/softparticle/"
       target="_blank"
       rel="noopener noreferrer"
+      style={{ color: isDarkBg ? "#fff" : "#111", textDecoration: "none" }}
     >
       @Softparticle
     </a>
   </div>
 
-  <div className="mobile-footer-line">
+  <div className="mobile-footer-line" style={{ color: isDarkBg ? "#fff" : "#111" }}>
     Copyright © 2025 Softparticle
   </div>
 
-  <div className="mobile-footer-legal">
-    <button onClick={() => setCurrentPage("terms")}>Terms of Use</button>
+  <div className="mobile-footer-legal" style={{ color: isDarkBg ? "#fff" : "#111" }}>
+    <button onClick={() => setCurrentPage("terms")} style={{ color: isDarkBg ? "#fff" : "#111", background: "none", border: "none", padding: 0, fontFamily: "inherit", fontSize: "inherit", cursor: "pointer" }}>Terms of Use</button>
     <span>·</span>
-    <button onClick={() => setCurrentPage("privacy")}>Privacy Policy</button>
+    <button onClick={() => setCurrentPage("privacy")} style={{ color: isDarkBg ? "#fff" : "#111", background: "none", border: "none", padding: 0, fontFamily: "inherit", fontSize: "inherit", cursor: "pointer" }}>Privacy Policy</button>
   </div>
 </div>
 
@@ -3585,6 +3590,10 @@ if (isMobile) {
       href="https://www.instagram.com/softparticle/"
       target="_blank"
       rel="noopener noreferrer"
+      style={{
+        color: isDarkBg ? "#fff" : "#000",
+        textDecoration: "none",
+      }}
     >
       @Softparticle
     </a>
