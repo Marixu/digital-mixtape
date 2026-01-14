@@ -777,37 +777,67 @@ const payload = {
 
 // auto-copy with iOS fallback
 const copyToClipboard = async (text) => {
-  // Try modern clipboard API first
+  // Try modern clipboard API first (works on most browsers)
   if (navigator.clipboard && navigator.clipboard.writeText) {
     try {
       await navigator.clipboard.writeText(text);
       return true;
     } catch (e) {
-      // Fall through to fallback
+      console.log('Clipboard API failed, trying fallback:', e);
     }
   }
   
-  // Fallback for iOS Safari
+  // Fallback for iOS Safari - must be visible and use setSelectionRange
   const textArea = document.createElement('textarea');
   textArea.value = text;
-  textArea.style.position = 'fixed';
-  textArea.style.left = '-9999px';
-  textArea.style.top = '0';
-  document.body.appendChild(textArea);
-  textArea.focus();
-  textArea.select();
   
+  // Make it visible but off-screen (iOS requires visibility)
+  textArea.style.position = 'fixed';
+  textArea.style.top = '50%';
+  textArea.style.left = '50%';
+  textArea.style.transform = 'translate(-50%, -50%)';
+  textArea.style.width = '1px';
+  textArea.style.height = '1px';
+  textArea.style.padding = '0';
+  textArea.style.border = 'none';
+  textArea.style.outline = 'none';
+  textArea.style.boxShadow = 'none';
+  textArea.style.background = 'transparent';
+  textArea.style.opacity = '0.01'; // Nearly invisible but not hidden
+  textArea.style.zIndex = '99999';
+  textArea.setAttribute('readonly', ''); // Prevents keyboard on iOS
+  
+  document.body.appendChild(textArea);
+  
+  // iOS-specific selection method
+  const range = document.createRange();
+  range.selectNodeContents(textArea);
+  
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  
+  // Use setSelectionRange for iOS
+  textArea.setSelectionRange(0, text.length);
+  selection.addRange(range);
+  
+  let success = false;
   try {
-    document.execCommand('copy');
-    document.body.removeChild(textArea);
-    return true;
+    success = document.execCommand('copy');
   } catch (e) {
-    document.body.removeChild(textArea);
-    return false;
+    console.log('execCommand failed:', e);
   }
+  
+  document.body.removeChild(textArea);
+  selection.removeAllRanges();
+  
+  return success;
 };
 
-await copyToClipboard(link);
+const copied = await copyToClipboard(link);
+if (!copied) {
+  // If copy failed, at least the link is in the input field
+  console.log('Auto-copy failed, link available in input field');
+}
 
 
   } catch (err) {
@@ -2025,66 +2055,94 @@ if (isMobile) {
     }}
   />
 )}
-
 {/* Uploaded image clipped to crop.webp shape */}
 {uploadedLabelImage && (
   <div
-    data-selectable
     style={{
       position: "absolute",
       inset: 0,
       zIndex: activeObject === "label-image" ? 90 : 40,
-
-      /* 🔒 MASK LIVES HERE (FIXED) */
-      WebkitMaskImage: "url(/crop.webp)",
-      WebkitMaskRepeat: "no-repeat",
-      WebkitMaskPosition: "center",
-      WebkitMaskSize: "contain",
-
-      maskImage: "url(/crop.webp)",
-      maskRepeat: "no-repeat",
-      maskPosition: "center",
-      maskSize: "contain",
-
-      pointerEvents: "auto",
+      pointerEvents: "none",
     }}
   >
-    {/* IMAGE (MOVES INSIDE MASK) */}
-    <img
-      data-selectable
-      src={uploadedLabelImage}
-      draggable={false}
-      onPointerDown={(e) => {
-        if (!isEditable) return;
-        e.stopPropagation();
-        e.preventDefault();
-        setActiveObject("label-image");
-        dragRef.current = {
-          type: "move-label",
-          startX: labelImagePos.x,
-          startY: labelImagePos.y,
-          startMouseX: e.clientX,
-          startMouseY: e.clientY,
-        };
-      }}
+    {/* Clickable touch target - only covers the label area */}
+    {isEditable && (
+      <div
+        data-selectable
+        onPointerDown={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          setActiveObject("label-image");
+          dragRef.current = {
+            type: "move-label",
+            startX: labelImagePos.x,
+            startY: labelImagePos.y,
+            startMouseX: e.clientX,
+            startMouseY: e.clientY,
+          };
+        }}
+        onTouchStart={(e) => {
+          e.stopPropagation();
+          setActiveObject("label-image");
+          const touch = e.touches[0];
+          dragRef.current = {
+            type: "move-label",
+            startX: labelImagePos.x,
+            startY: labelImagePos.y,
+            startMouseX: touch.clientX,
+            startMouseY: touch.clientY,
+          };
+        }}
+        style={{
+          position: "absolute",
+          top: "22%",
+          left: "18%",
+          width: "64%",
+          height: "35%",
+          pointerEvents: "auto",
+          cursor: "move",
+          zIndex: 100,
+        }}
+      />
+    )}
+
+    {/* Visual image with mask */}
+    <div
       style={{
         position: "absolute",
-        left: "50%",
-        top: "50%",
-        width: "140%",
-        height: "140%",
-        objectFit: "cover",
-        transform: `
-          translate(-50%, -50%)
-          translate(${labelImagePos.x - 50}%, ${labelImagePos.y - 50}%)
-          scale(${labelImageScale})
-          rotate(${labelImageRotation}deg)
-        `,
-        cursor: isEditable ? "move" : "default",
-        userSelect: "none",
-        pointerEvents: "auto",
+        inset: 0,
+        WebkitMaskImage: "url(/crop.webp)",
+        WebkitMaskRepeat: "no-repeat",
+        WebkitMaskPosition: "center",
+        WebkitMaskSize: "contain",
+        maskImage: "url(/crop.webp)",
+        maskRepeat: "no-repeat",
+        maskPosition: "center",
+        maskSize: "contain",
+        pointerEvents: "none",
       }}
-    />
+    >
+      <img
+        src={uploadedLabelImage}
+        draggable={false}
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "50%",
+          width: "140%",
+          height: "140%",
+          objectFit: "cover",
+          transform: `
+            translate(-50%, -50%)
+            translate(${labelImagePos.x - 50}%, ${labelImagePos.y - 50}%)
+            scale(${labelImageScale})
+            rotate(${labelImageRotation}deg)
+          `,
+          userSelect: "none",
+          pointerEvents: "none",
+        }}
+      />
+    </div>
 
     {/* Pinch hint for mobile */}
     {isEditable && activeObject === "label-image" && (
