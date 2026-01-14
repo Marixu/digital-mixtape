@@ -65,14 +65,7 @@ React.useEffect(() => {
   return () => window.removeEventListener("resize", checkDevice);
 }, []);
 
-// Clear label image selection when leaving decorate tab
-React.useEffect(() => {
-  if (tab !== "decorate" && activeObject === "label-image") {
-    setActiveObject(null);
-  }
-}, [tab, activeObject]);
 
-const { isMobile, isTablet, isIOS, isAndroid, isSafari, isMacDesktop, isIPad } = deviceInfo;
 const nextFrame = () =>
   new Promise(resolve => requestAnimationFrame(resolve));
 
@@ -134,7 +127,14 @@ const recordingIntervalRef = React.useRef(null);
 
   const [activeObject, setActiveObject] = React.useState(null);
   const [isReceiverReady, setIsReceiverReady] = React.useState(false);
+// Clear label image selection when leaving decorate tab
+React.useEffect(() => {
+  if (tab !== "decorate" && activeObject === "label-image") {
+    setActiveObject(null);
+  }
+}, [tab, activeObject]);
 
+const { isMobile, isTablet, isIOS, isAndroid, isSafari, isMacDesktop, isIPad } = deviceInfo;
 const [tapeFrames, setTapeFrames] = React.useState([]);
 const [rollerFrames, setRollerFrames] = React.useState([]);
 const tapeCanvasRef = React.useRef(null);
