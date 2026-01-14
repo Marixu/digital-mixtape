@@ -65,7 +65,12 @@ React.useEffect(() => {
   return () => window.removeEventListener("resize", checkDevice);
 }, []);
 
-
+// Clear label image selection when leaving decorate tab
+React.useEffect(() => {
+  if (tab !== "decorate" && activeObject === "label-image") {
+    setActiveObject(null);
+  }
+}, [tab, activeObject]);
 
 const { isMobile, isTablet, isIOS, isAndroid, isSafari, isMacDesktop, isIPad } = deviceInfo;
 const nextFrame = () =>
@@ -400,7 +405,7 @@ React.useEffect(() => {
   if (!isMobile) return;
   
   const handleTouchStart = (e) => {
-    if (e.touches.length === 2 && activeObject === "label-image") {
+    if (e.touches.length === 2 && activeObject === "label-image" && tab === "decorate") {
       e.preventDefault();
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
@@ -448,7 +453,7 @@ React.useEffect(() => {
     document.removeEventListener('touchmove', handleTouchMove);
     document.removeEventListener('touchend', handleTouchEnd);
   };
-}, [isMobile, activeObject, pinchData, labelImageScale, labelImageRotation]);
+}, [isMobile, activeObject, pinchData, labelImageScale, labelImageRotation, tab]);
 /* ---------- CALCULATE TOTAL MIXTAPE LENGHT + SONG MARKERS ---------- */
 const totalMixtapeDuration = tracks.reduce(
   (sum, t) => sum + (t.duration || 0),
@@ -2061,12 +2066,13 @@ if (isMobile) {
     style={{
       position: "absolute",
       inset: 0,
-      zIndex: activeObject === "label-image" ? 90 : 40,
+      zIndex: 4,
       pointerEvents: "none",
     }}
   >
-    {/* Clickable touch target - only covers the label area */}
-    {isEditable && (
+  
+    {/* Clickable touch target - ONLY in decorate tab */}
+    {isEditable && tab === "decorate" && (
       <div
         data-selectable
         onPointerDown={(e) => {
@@ -2101,12 +2107,12 @@ if (isMobile) {
           height: "35%",
           pointerEvents: "auto",
           cursor: "move",
-          zIndex: 100,
+          zIndex: 5,
         }}
       />
     )}
 
-    {/* Visual image with mask */}
+    {/* Visual image with mask - never captures events */}
     <div
       style={{
         position: "absolute",
@@ -2144,8 +2150,8 @@ if (isMobile) {
       />
     </div>
 
-    {/* Pinch hint for mobile */}
-    {isEditable && activeObject === "label-image" && (
+    {/* Pinch hint - only show in decorate tab */}
+    {isEditable && tab === "decorate" && activeObject === "label-image" && (
       <div
         style={{
           position: "absolute",
