@@ -399,31 +399,53 @@ React.useEffect(() => {
 
 
 
-
 // Pinch-to-zoom for label image on mobile
 React.useEffect(() => {
   if (!isMobile) return;
   
   const handleTouchStart = (e) => {
-    if (e.touches.length === 2 && activeObject === "label-image" && tab === "decorate") {
-      e.preventDefault();
+    if (e.touches.length === 2 && tab === "decorate" && uploadedLabelImage) {
+      const tapeRect = tapeRef.current?.getBoundingClientRect();
+      if (!tapeRect) return;
+      
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
-      const distance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
-      const angle = Math.atan2(touch2.clientY - touch1.clientY, touch2.clientX - touch1.clientX) * (180 / Math.PI);
+      const centerX = (touch1.clientX + touch2.clientX) / 2;
+      const centerY = (touch1.clientY + touch2.clientY) / 2;
       
-      setPinchData({
-        initialDistance: distance,
-        initialScale: labelImageScale,
-        initialAngle: angle,
-        initialRotation: labelImageRotation,
-      });
+      // Check if center of pinch is within tape area
+      if (
+        centerX >= tapeRect.left &&
+        centerX <= tapeRect.right &&
+        centerY >= tapeRect.top &&
+        centerY <= tapeRect.bottom
+      ) {
+        e.preventDefault();
+        
+        // Cancel any move drag that might be in progress
+        if (dragRef.current?.type === "move-label") {
+          dragRef.current = null;
+        }
+        
+        setActiveObject("label-image");
+        
+        const distance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
+        const angle = Math.atan2(touch2.clientY - touch1.clientY, touch2.clientX - touch1.clientX) * (180 / Math.PI);
+        
+        setPinchData({
+          initialDistance: distance,
+          initialScale: labelImageScale,
+          initialAngle: angle,
+          initialRotation: labelImageRotation,
+        });
+      }
     }
   };
   
   const handleTouchMove = (e) => {
-    if (e.touches.length === 2 && pinchData) {
+    if (e.touches.length === 2 && pinchData && tab === "decorate") {
       e.preventDefault();
+      
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
       const distance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
@@ -438,10 +460,51 @@ React.useEffect(() => {
       const rotationChange = angle - pinchData.initialAngle;
       setLabelImageRotation((pinchData.initialRotation + rotationChange) % 360);
     }
+    // If we have 2 fingers but started with 1, start pinch now
+    else if (e.touches.length === 2 && !pinchData && tab === "decorate" && uploadedLabelImage) {
+      const tapeRect = tapeRef.current?.getBoundingClientRect();
+      if (!tapeRect) return;
+      
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const centerX = (touch1.clientX + touch2.clientX) / 2;
+      const centerY = (touch1.clientY + touch2.clientY) / 2;
+      
+      if (
+        centerX >= tapeRect.left &&
+        centerX <= tapeRect.right &&
+        centerY >= tapeRect.top &&
+        centerY <= tapeRect.bottom
+      ) {
+        e.preventDefault();
+        
+        // Cancel move drag
+        if (dragRef.current?.type === "move-label") {
+          dragRef.current = null;
+        }
+        
+        const distance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
+        const angle = Math.atan2(touch2.clientY - touch1.clientY, touch2.clientX - touch1.clientX) * (180 / Math.PI);
+        
+        setPinchData({
+          initialDistance: distance,
+          initialScale: labelImageScale,
+          initialAngle: angle,
+          initialRotation: labelImageRotation,
+        });
+      }
+    }
   };
   
-  const handleTouchEnd = () => {
-    setPinchData(null);
+  const handleTouchEnd = (e) => {
+    // Only clear pinch data when ALL fingers are lifted
+    if (e.touches.length === 0) {
+      setPinchData(null);
+    }
+    // If going from 2 fingers to 1, end pinch but could start move
+    else if (e.touches.length === 1 && pinchData) {
+      setPinchData(null);
+    }
   };
   
   document.addEventListener('touchstart', handleTouchStart, { passive: false });
@@ -453,7 +516,10 @@ React.useEffect(() => {
     document.removeEventListener('touchmove', handleTouchMove);
     document.removeEventListener('touchend', handleTouchEnd);
   };
-}, [isMobile, activeObject, pinchData, labelImageScale, labelImageRotation, tab]);
+}, [isMobile, pinchData, labelImageScale, labelImageRotation, tab, uploadedLabelImage]);
+
+
+
 /* ---------- CALCULATE TOTAL MIXTAPE LENGHT + SONG MARKERS ---------- */
 const totalMixtapeDuration = tracks.reduce(
   (sum, t) => sum + (t.duration || 0),
@@ -2070,12 +2136,39 @@ if (isMobile) {
       pointerEvents: "none",
     }}
   >
-  
     {/* Clickable touch target - ONLY in decorate tab */}
     {isEditable && tab === "decorate" && (
       <div
         data-selectable
+        onTouchStart={(e) => {
+          e.stopPropagation();
+          setActiveObject("label-image");
+          
+          // If 2 fingers, let the global pinch handler deal with it
+          if (e.touches.length >= 2) {
+            return;
+          }
+          
+          // Single finger = move
+          const touch = e.touches[0];
+          dragRef.current = {
+            type: "move-label",
+            startX: labelImagePos.x,
+            startY: labelImagePos.y,
+            startMouseX: touch.clientX,
+            startMouseY: touch.clientY,
+          };
+        }}
+        onTouchMove={(e) => {
+          // If user adds a second finger mid-drag, cancel the move drag
+          if (e.touches.length >= 2 && dragRef.current?.type === "move-label") {
+            dragRef.current = null;
+          }
+        }}
         onPointerDown={(e) => {
+          // Desktop only - mobile uses onTouchStart
+          if (e.pointerType === "touch") return;
+          
           e.stopPropagation();
           e.preventDefault();
           setActiveObject("label-image");
@@ -2085,18 +2178,6 @@ if (isMobile) {
             startY: labelImagePos.y,
             startMouseX: e.clientX,
             startMouseY: e.clientY,
-          };
-        }}
-        onTouchStart={(e) => {
-          e.stopPropagation();
-          setActiveObject("label-image");
-          const touch = e.touches[0];
-          dragRef.current = {
-            type: "move-label",
-            startX: labelImagePos.x,
-            startY: labelImagePos.y,
-            startMouseX: touch.clientX,
-            startMouseY: touch.clientY,
           };
         }}
         style={{
@@ -2149,29 +2230,6 @@ if (isMobile) {
         }}
       />
     </div>
-
-    {/* Pinch hint - only show in decorate tab */}
-    {isEditable && tab === "decorate" && activeObject === "label-image" && (
-      <div
-        style={{
-          position: "absolute",
-          bottom: "5%",
-          left: "50%",
-          transform: "translateX(-50%)",
-          background: "rgba(0,0,0,0.7)",
-          color: "#fff",
-          padding: "6px 12px",
-          borderRadius: 8,
-          fontSize: 11,
-          fontWeight: 600,
-          whiteSpace: "nowrap",
-          pointerEvents: "none",
-          zIndex: 200,
-        }}
-      >
-        👆 Drag to move · 🤏 Pinch to scale & rotate
-      </div>
-    )}
   </div>
 )}
 
