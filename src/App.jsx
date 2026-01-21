@@ -68,7 +68,7 @@ React.useEffect(() => {
 
 const nextFrame = () =>
   new Promise(resolve => requestAnimationFrame(resolve));
-
+const [copied, setCopied] = React.useState(false);
   const [isLoadingSharedMixtape, setIsLoadingSharedMixtape] = React.useState(false);
   const [tab, setTab] = React.useState("songs");
   const [coverColor, setCoverColor] = React.useState("#E6CDEB");
@@ -806,34 +806,18 @@ async function generateShareLink() {
   try {
     setIsSaving(true);
 
-const payload = {
-  tracks,
-  note,
-
-  state: {
-    coverColor,
-    mixtapeImage,
-    labelOverlay,
-    uploadedLabelImage,
-    siteBackground,
-    glowEnabled,
-    glowColor,
-    isDarkBg,
-
-    stickersOnTape,
-    labelMessage,
-    labelMessagePos,
-    labelImagePos,
-    labelImageScale,
-    labelImageRotation,
-    textFont,
-    textSize,
-    textColor,
-  },
-
-  created_at: new Date().toISOString(),
-};
-
+    const payload = {
+      tracks,
+      note,
+      state: {
+        coverColor,
+        mixtapeImage,
+        labelOverlay,
+        uploadedLabelImage,
+        // ... add all your state here
+      },
+      created_at: new Date().toISOString(),
+    };
 
     const { data, error } = await supabase
       .from("Mixtapes")
@@ -845,51 +829,49 @@ const payload = {
 
     const link = `${window.location.origin}/?mixtape=${data.id}`;
     setShareLink(link);
+  } catch (err) {
+    console.error("Error generating share link:", err);
+    setErrorPopup("Failed to generate share link");
+  } finally {
+    setIsSaving(false);
+  }
+}
 
-// auto-copy with iOS fallback
+
 const copyToClipboard = async (text) => {
-  // Try modern clipboard API first (works on most browsers)
-  if (navigator.clipboard && navigator.clipboard.writeText) {
+  // Method 1: Modern Clipboard API
+  if (navigator.clipboard && window.isSecureContext) {
     try {
       await navigator.clipboard.writeText(text);
       return true;
     } catch (e) {
-      console.log('Clipboard API failed, trying fallback:', e);
+      console.log('Clipboard API failed:', e);
     }
   }
   
-  // Fallback for iOS Safari - must be visible and use setSelectionRange
-  const textArea = document.createElement('textarea');
-  textArea.value = text;
+  // Method 2: iOS Safari fallback using input element
+  const input = document.createElement('input');
+  input.setAttribute('readonly', '');
+  input.setAttribute('contenteditable', 'true');
+  input.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.01;width:100px;height:40px;padding:10px;border:none;outline:none;background:transparent;z-index:99999;font-size:16px;';
+  input.value = text;
   
-  // Make it visible but off-screen (iOS requires visibility)
-  textArea.style.position = 'fixed';
-  textArea.style.top = '50%';
-  textArea.style.left = '50%';
-  textArea.style.transform = 'translate(-50%, -50%)';
-  textArea.style.width = '1px';
-  textArea.style.height = '1px';
-  textArea.style.padding = '0';
-  textArea.style.border = 'none';
-  textArea.style.outline = 'none';
-  textArea.style.boxShadow = 'none';
-  textArea.style.background = 'transparent';
-  textArea.style.opacity = '0.01'; // Nearly invisible but not hidden
-  textArea.style.zIndex = '99999';
-  textArea.setAttribute('readonly', ''); // Prevents keyboard on iOS
+  document.body.appendChild(input);
   
-  document.body.appendChild(textArea);
-  
-  // iOS-specific selection method
-  const range = document.createRange();
-  range.selectNodeContents(textArea);
-  
-  const selection = window.getSelection();
-  selection.removeAllRanges();
-  
-  // Use setSelectionRange for iOS
-  textArea.setSelectionRange(0, text.length);
-  selection.addRange(range);
+  // iOS-specific selection
+  if (/ipad|ipod|iphone/i.test(navigator.userAgent)) {
+    input.contentEditable = true;
+    input.readOnly = false;
+    const range = document.createRange();
+    range.selectNodeContents(input);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    input.setSelectionRange(0, text.length);
+  } else {
+    input.focus();
+    input.select();
+  }
   
   let success = false;
   try {
@@ -898,27 +880,11 @@ const copyToClipboard = async (text) => {
     console.log('execCommand failed:', e);
   }
   
-  document.body.removeChild(textArea);
-  selection.removeAllRanges();
+  document.body.removeChild(input);
+  window.getSelection()?.removeAllRanges();
   
   return success;
 };
-
-const copied = await copyToClipboard(link);
-if (!copied) {
-  // If copy failed, at least the link is in the input field
-  console.log('Auto-copy failed, link available in input field');
-}
-
-
-  } catch (err) {
-    console.error("GENERATE LINK ERROR:", err);
-  alert(err?.message || JSON.stringify(err));
-  } finally {
-    setIsSaving(false);
-  }
-}
-
 
 
 React.useEffect(() => {
@@ -3359,9 +3325,21 @@ if (isMobile) {
     onClick={(e) => e.target.select()}
   />
 
-  <button
+<button
   disabled={isSaving}
-  onClick={generateShareLink}
+  onClick={async () => {
+    if (shareLink) {
+      // Just copy existing link
+      const success = await copyToClipboard(shareLink);
+      if (success) {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }
+    } else {
+      // Generate new link
+      await generateShareLink();
+    }
+  }}
   style={{
     padding: "10px 16px",
     background: shareLink ? "#222" : "transparent",
@@ -3377,7 +3355,7 @@ if (isMobile) {
     whiteSpace: "nowrap",
   }}
 >
-  {isSaving ? "Saving…" : shareLink ? "✓ Copy" : "Generate"}
+  {isSaving ? "Saving…" : copied ? "✓ Copied!" : shareLink ? "Copy" : "Generate"}
 </button>
 </div>
 
@@ -4379,18 +4357,28 @@ if (isMobile) {
     onClick={(e) => e.target.select()}
   />
 
-  <button
-    style={{
-      ...styles.cta,
-      whiteSpace: "nowrap",
-      opacity: isSaving ? 0.6 : 1,
-      cursor: isSaving ? "not-allowed" : "pointer",
-    }}
-    disabled={isSaving}
-    onClick={generateShareLink}
-  >
-    {isSaving ? "Saving…" : shareLink ? "Copy" : "Generate"}
-  </button>
+<button
+  style={{
+    ...styles.cta,
+    whiteSpace: "nowrap",
+    opacity: isSaving ? 0.6 : 1,
+    cursor: isSaving ? "not-allowed" : "pointer",
+  }}
+  disabled={isSaving}
+  onClick={async () => {
+    if (shareLink) {
+      const success = await copyToClipboard(shareLink);
+      if (success) {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }
+    } else {
+      await generateShareLink();
+    }
+  }}
+>
+  {isSaving ? "Saving…" : copied ? "✓ Copied!" : shareLink ? "Copy" : "Generate"}
+</button>
 </div>
 
 
