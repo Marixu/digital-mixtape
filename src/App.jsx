@@ -99,7 +99,6 @@ const mediaRecorderRef = React.useRef(null);
 const audioChunksRef = React.useRef([]);
 const recordingIntervalRef = React.useRef(null);
 
-
   const [currentTime, setCurrentTime] = React.useState(0);
   const [totalDuration, setTotalDuration] = React.useState(0);
   const [textFont, setTextFont] = React.useState("Kalam");
@@ -153,39 +152,62 @@ React.useEffect(() => {
   }
 }, [isMobile]);
 
-// Preload images and videos
+// Preload images and videos - OPTIMIZED
 React.useEffect(() => {
-  const images = [
-    "/label1.webp", "/label2.webp", "/label3.webp", "/label4.webp",
-    "/pinkntape.webp", "/greennotape.webp", "/transnotape.webp",
-    "/whitenotape.webp", "/blacknotape1.webp", "/purplenotape1.webp", 
-    "/bluenotape.webp", "/crop.webp"
+  // CRITICAL: Only preload what's visible immediately
+  const criticalImages = [
+    "/transnotape.webp", // Default tape image
   ];
   
-  images.forEach(src => {
-    const img = new Image();
-    img.loading = "eager";
-    img.decoding = "async";
-    img.src = src;
-  });
-
-  images.forEach(src => {
+  // Add frame images only for iOS/Safari
+  if (isSafari || isIOS) {
+    criticalImages.push("/tapeframes_webp/0001.webp", "/rollerframes_webp/0001.webp");
+  }
+  
+  // Preload critical images with high priority
+  criticalImages.forEach(src => {
     const link = document.createElement('link');
     link.rel = 'preload';
     link.as = 'image';
+    link.fetchPriority = 'high';
     link.href = src;
     document.head.appendChild(link);
   });
 
-  const videos = ["/tapeprores.mov", "/smallrollersprores.mov", "/tapenew.webm", "/smallrollers.webm"];
-  videos.forEach(src => {
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = 'video';
-    link.href = src;
-    document.head.appendChild(link);
-  });
-}, []);
+  // Lazy load non-critical images when browser is idle
+  const lazyImages = [
+    "/label1.webp", "/label2.webp", "/label3.webp", "/label4.webp",
+    "/pinkntape.webp", "/greennotape.webp", "/whitenotape.webp",
+    "/blacknotape1.webp", "/purplenotape1.webp", "/bluenotape.webp",
+    "/crop.webp"
+  ];
+  
+  const loadLazyImages = () => {
+    lazyImages.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+  };
+
+  // Use requestIdleCallback if available, otherwise setTimeout
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(loadLazyImages, { timeout: 2000 });
+  } else {
+    setTimeout(loadLazyImages, 1000);
+  }
+
+  // Only preload videos for non-iOS (iOS uses canvas frames)
+  if (!isIOS && !isSafari) {
+    const videos = ["/tapenew.webm", "/smallrollers.webm"];
+    videos.forEach(src => {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'video';
+      link.href = src;
+      document.head.appendChild(link);
+    });
+  }
+}, [isIOS, isSafari]);
 
 
 
@@ -204,53 +226,62 @@ const FONT_OPTIONS = [
   { label: "JetBrains Mono", fontFamily: "'JetBrains Mono', sans-serif" },
 ];
 
-
-// Load webp frames for iOS and Safari on mount
+// Load webp frames for iOS and Safari on mount - OPTIMIZED
 React.useEffect(() => {
-  const shouldLoadFrames = isSafari || appMode === "preview";
+  const shouldLoadFrames = isSafari || isIOS;
   if (!shouldLoadFrames) {
-  console.log('Not iOS/Safari/preview, skipping frame loading');
-  return;
-}
+    console.log('Not iOS/Safari, skipping frame loading');
+    return;
+  }
 
-  console.log('🎬 iOS detected, starting frame loading...');
+  console.log('🎬 iOS/Safari detected, starting optimized frame loading...');
 
-  const loadFrames = async (folder, count) => {
-    const frames = [];
-    for (let i = 1; i <= count; i++) {
+  const loadFramesBatched = async (folder, count) => {
+    const frames = new Array(count).fill(null);
+    const FIRST_BATCH = 10; // Load first 10 immediately for instant display
+    
+    // Load first batch synchronously (blocking) - these are needed immediately
+    const firstBatchPromises = [];
+    for (let i = 1; i <= FIRST_BATCH; i++) {
       const img = new Image();
       const src = `/${folder}/${String(i).padStart(4, '0')}.webp`;
       img.src = src;
       
-      if (i === 1) {
-        console.log(`Loading first frame: ${src}`);
-      }
-      
-      await new Promise((resolve) => {
-        img.onload = () => {
-          frames.push(img);
-          if (i === 1) {
-            console.log(`✅ First frame loaded! Size: ${img.naturalWidth}x${img.naturalHeight}`);
-          }
-          resolve();
-        };
-        img.onerror = () => {
-          console.error(`❌ Failed to load: ${src}`);
-          resolve();
-        };
-      });
+      firstBatchPromises.push(
+        new Promise((resolve) => {
+          img.onload = () => {
+            frames[i - 1] = img;
+            resolve();
+          };
+          img.onerror = () => resolve();
+        })
+      );
     }
+    
+    await Promise.all(firstBatchPromises);
+    console.log(`✅ First ${FIRST_BATCH} ${folder} frames loaded`);
+    
+    // Load remaining frames in background (non-blocking)
+    for (let i = FIRST_BATCH + 1; i <= count; i++) {
+      const img = new Image();
+      const src = `/${folder}/${String(i).padStart(4, '0')}.webp`;
+      img.src = src;
+      img.onload = () => {
+        frames[i - 1] = img;
+      };
+    }
+    
     return frames;
   };
 
-  loadFrames('tapeframes_webp', 100).then((frames) => {
-    console.log(`✅ Loaded ${frames.length} tape frames`);
-    setTapeFrames(frames);
-  });
-
-  loadFrames('rollerframes_webp', 100).then((frames) => {
-    console.log(`✅ Loaded ${frames.length} roller frames`);
-    setRollerFrames(frames);
+  // Load both in parallel
+  Promise.all([
+    loadFramesBatched('tapeframes_webp', 100),
+    loadFramesBatched('rollerframes_webp', 100),
+  ]).then(([tape, roller]) => {
+    setTapeFrames(tape);
+    setRollerFrames(roller);
+    console.log('✅ All frames initiated');
   });
 }, [isIOS, isSafari]);
 
@@ -886,14 +917,13 @@ const copyToClipboard = async (text) => {
   return success;
 };
 
-
 React.useEffect(() => {
   const params = new URLSearchParams(window.location.search);
   const mixtapeId = params.get("mixtape");
 
   if (!mixtapeId) return;
 
-  // 👇 IMPORTANT: lock mode BEFORE render settles
+  // Lock mode BEFORE render settles
   setAppMode("receiver");
   setIsPreviewMode(true);
   setIsLoadingSharedMixtape(true);
@@ -901,51 +931,50 @@ React.useEffect(() => {
   (async () => {
     const { data, error } = await supabase
       .from("Mixtapes")
-      .select("*")
+      .select("tracks, note, state") // Only select needed columns
       .eq("id", mixtapeId)
       .single();
 
     if (error) {
       console.error(error);
+      setIsLoadingSharedMixtape(false);
       return;
     }
 
-    setTracks(data.tracks || []);
-    setNote(data.note || "");
-    
     const s = data.state || {};
 
-setCoverColor(s.coverColor || "#E6CDEB");
-setMixtapeImage(s.mixtapeImage || "/transnotape.webp");
-setLabelOverlay(s.labelOverlay || null);
-setUploadedLabelImage(s.uploadedLabelImage || null);
-
-setSiteBackground(s.siteBackground || null);
-setGlowEnabled(s.glowEnabled || false);
-setGlowColor(s.glowColor || "#f1aedcff");
-setIsDarkBg(s.isDarkBg || false);
-
-setStickersOnTape(s.stickersOnTape || []);
-setLabelMessage(s.labelMessage || "");
-setLabelMessagePos(s.labelMessagePos || { x: 50, y: 30 });
-setLabelImagePos(s.labelImagePos || { x: 50, y: 50 });
-setLabelImageScale(s.labelImageScale || 1);
-setLabelImageRotation(s.labelImageRotation || 0);
-
-setTextFont(s.textFont || "Kalam");
-setTextSize(s.textSize || 24);
-setTextColor(s.textColor || "#000");
-
-
-    setIsPreviewMode(true);
+    // 🚀 PHASE 1: Set visual state FIRST (what user sees immediately)
+    setCoverColor(s.coverColor || "#E6CDEB");
+    setMixtapeImage(s.mixtapeImage || "/transnotape.webp");
+    setSiteBackground(s.siteBackground || null);
+    setIsDarkBg(s.isDarkBg || false);
+    setGlowEnabled(s.glowEnabled || false);
+    setGlowColor(s.glowColor || "#f1aedcff");
+    
+    // Show the mixtape NOW (don't wait for everything)
     setIsLoadingSharedMixtape(false);
-
     setIsReceiverReady(true);
 
-    setIsHydrated(true);
+    // 🚀 PHASE 2: Load secondary data in next frame (non-blocking)
+    requestAnimationFrame(() => {
+      setTracks(data.tracks || []);
+      setNote(data.note || "");
+      setLabelOverlay(s.labelOverlay || null);
+      setUploadedLabelImage(s.uploadedLabelImage || null);
+      setStickersOnTape(s.stickersOnTape || []);
+      setLabelMessage(s.labelMessage || "");
+      setLabelMessagePos(s.labelMessagePos || { x: 50, y: 30 });
+      setLabelImagePos(s.labelImagePos || { x: 50, y: 50 });
+      setLabelImageScale(s.labelImageScale || 1);
+      setLabelImageRotation(s.labelImageRotation || 0);
+      setTextFont(s.textFont || "Kalam");
+      setTextSize(s.textSize || 24);
+      setTextColor(s.textColor || "#000");
+      setIsPreviewMode(true);
+      setIsHydrated(true);
+    });
   })();
 }, []);
-
 
 
 //----------------------------------------------------------------
@@ -1005,16 +1034,40 @@ function ReceiverLoading() {
         minHeight: "100vh",
         width: "100%",
         display: "flex",
+        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
         background: "#ffffff",
         fontFamily: "'Hoover', sans-serif",
-        fontSize: 18,
-        letterSpacing: 1,
-        opacity: 0.6,
+        gap: 24,
       }}
     >
-      Loading mixtape…
+      {/* Skeleton tape shape */}
+      <div
+        style={{
+          width: "min(350px, 80vw)",
+          aspectRatio: "4/3",
+          borderRadius: 16,
+          background: "linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%)",
+          backgroundSize: "200% 100%",
+          animation: "shimmer 1.5s infinite linear",
+        }}
+      />
+      <div
+        style={{
+          fontSize: 16,
+          letterSpacing: 1,
+          color: "#888",
+        }}
+      >
+        Loading mixtape…
+      </div>
+      <style>{`
+        @keyframes shimmer {
+          0% { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
+        }
+      `}</style>
     </div>
   );
 }
@@ -1980,12 +2033,12 @@ if (isMobile) {
     />
   )
 ) : (
-  <video
-    ref={tapeVideoRef}
-    loop
-    preload="auto"
-    muted
-    playsInline
+ <video
+  ref={tapeVideoRef}
+  loop
+  preload="metadata"
+  muted
+  playsInline
     webkit-playsinline="true"
     x5-playsinline="true"
     style={{
@@ -2005,9 +2058,13 @@ if (isMobile) {
 
 {/* 2️⃣ Cover image (NO tape graphics) */}
 <img ref={mixtapeImageRef}
-  src={mixtapeImage} // pinknotape.webp etc
+  src={mixtapeImage}
   alt="Mixtape cover"
-  style={{ zindex: 5,
+  width={550}
+  height={412}
+  loading="eager"
+  decoding="async"
+  style={{
     position: "absolute",
     inset: 0,
     width: "100%",
@@ -2015,7 +2072,6 @@ if (isMobile) {
     objectFit: "contain",
     zIndex: 2,
     pointerEvents: "none",
-
   }}
 />
 
@@ -3619,17 +3675,40 @@ if (isMobile) {
     </div>
   </div>
 )}
-   <VoiceModal
-  showVoiceRecorder={showVoiceRecorder}
-  isMobile={isMobile}
-  isRecording={isRecording}
-  isProcessingRecording={isProcessingRecording}
-  recordingTime={recordingTime}
-  startRecording={startRecording}
-  stopRecording={stopRecording}
-  cancelRecording={cancelRecording}
-  formatRecordingTime={formatRecordingTime}
-/>
+{showVoiceRecorder && (
+  <React.Suspense fallback={
+    <div style={{
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,0.5)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 9999,
+    }}>
+      <div style={{
+        background: "#fff",
+        padding: 24,
+        borderRadius: 16,
+        fontFamily: "'Hoover', sans-serif",
+      }}>
+        Loading recorder...
+      </div>
+    </div>
+  }>
+    <VoiceModal
+      showVoiceRecorder={showVoiceRecorder}
+      isMobile={isMobile}
+      isRecording={isRecording}
+      isProcessingRecording={isProcessingRecording}
+      recordingTime={recordingTime}
+      startRecording={startRecording}
+      stopRecording={stopRecording}
+      cancelRecording={cancelRecording}
+      formatRecordingTime={formatRecordingTime}
+    />
+  </React.Suspense>
+)}
 
       </div>
   );
