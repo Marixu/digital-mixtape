@@ -251,9 +251,10 @@ const FONT_OPTIONS = [
 
 // Load webp frames for iOS and Safari on mount - OPTIMIZED
 React.useEffect(() => {
-  const shouldLoadFrames = isSafari || isIOS;
+  // Load frames for iOS, Safari, OR receiver mode (shared links)
+  const shouldLoadFrames = isSafari || isIOS || appMode === "receiver";
   if (!shouldLoadFrames) {
-    console.log('Not iOS/Safari, skipping frame loading');
+    console.log('Not iOS/Safari/receiver, skipping frame loading');
     return;
   }
 
@@ -310,50 +311,44 @@ React.useEffect(() => {
 
 // Draw first frame as static image when not playing
 React.useEffect(() => {
-  console.log('Static frame effect running:', { isIOS, isSafari, tapeFramesCount: tapeFrames.length, rollerFramesCount: rollerFrames.length, isPlaying });
+  // For receiver mode, we need frames to load even if not iOS/Safari
+  const needsFrames = isIOS || isSafari || appMode === "receiver";
   
-  if (!isIOS && !isSafari && appMode !== "preview") return;
+  if (!needsFrames) return;
   if (tapeFrames.length === 0 || rollerFrames.length === 0) return;
+  if (isPlaying) return; // Don't draw static when playing
 
   const tapeCanvas = tapeCanvasRef.current;
   const rollerCanvas = rollerCanvasRef.current;
-  
-  console.log('Canvas refs:', { tapeCanvas: !!tapeCanvas, rollerCanvas: !!rollerCanvas });
   
   if (!tapeCanvas || !rollerCanvas) return;
 
   // Get the first frame images
   const tapeImg = tapeFrames[0];
   const rollerImg = rollerFrames[0];
+  
+  if (!tapeImg || !rollerImg) return;
 
+  // Set canvas dimensions
   tapeCanvas.width = tapeImg.naturalWidth || tapeImg.width;
   tapeCanvas.height = tapeImg.naturalHeight || tapeImg.height;
-  
   rollerCanvas.width = rollerImg.naturalWidth || rollerImg.width;
   rollerCanvas.height = rollerImg.naturalHeight || rollerImg.height;
-
-  console.log('Canvas sizes set:', { 
-    tape: `${tapeCanvas.width}x${tapeCanvas.height}`,
-    roller: `${rollerCanvas.width}x${rollerCanvas.height}`
-  });
 
   const tapeCtx = tapeCanvas.getContext('2d');
   const rollerCtx = rollerCanvas.getContext('2d');
 
-  // Only draw when NOT playing
-  if (!isPlaying) {
-    tapeCtx.clearRect(0, 0, tapeCanvas.width, tapeCanvas.height);
-    rollerCtx.clearRect(0, 0, rollerCanvas.width, rollerCanvas.height);
+  // Draw the first frame
+  tapeCtx.clearRect(0, 0, tapeCanvas.width, tapeCanvas.height);
+  rollerCtx.clearRect(0, 0, rollerCanvas.width, rollerCanvas.height);
+  tapeCtx.drawImage(tapeImg, 0, 0, tapeCanvas.width, tapeCanvas.height);
+  rollerCtx.drawImage(rollerImg, 0, 0, rollerCanvas.width, rollerCanvas.height);
 
-    tapeCtx.drawImage(tapeFrames[0], 0, 0, tapeCanvas.width, tapeCanvas.height);
-    rollerCtx.drawImage(rollerFrames[0], 0, 0, rollerCanvas.width, rollerCanvas.height);
-
-    tapeFrameIndex.current = 0;
-    rollerFrameIndex.current = 0;
-    
-    console.log('✅ Drew static frame!');
-  }
-}, [isIOS, isSafari, tapeFrames, rollerFrames, isPlaying]);
+  tapeFrameIndex.current = 0;
+  rollerFrameIndex.current = 0;
+  
+  console.log('✅ Drew static frame!');
+}, [isIOS, isSafari, tapeFrames, rollerFrames, isPlaying, appMode, isReceiverReady]);
 
 // 🔑 BRIDGE: ensure canvas is NEVER empty in preview / receiver
 React.useEffect(() => {
