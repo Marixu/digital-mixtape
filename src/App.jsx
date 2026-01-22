@@ -903,58 +903,48 @@ async function generateShareLink() {
   }
 }
 
-const copyToClipboard = async (text) => {
-  // Method 1: Modern Clipboard API (works on most browsers)
-  if (navigator.clipboard && window.isSecureContext) {
-    try {
-      await navigator.clipboard.writeText(text);
-      return true;
-    } catch (e) {
-      console.log('Clipboard API failed, trying fallback:', e);
-    }
+const copyToClipboard = (text) => {
+  // Try the modern clipboard API first (works on newer iOS)
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      console.log('Clipboard API succeeded');
+    }).catch(err => {
+      console.log('Clipboard API failed:', err);
+    });
+    // Return true optimistically - the API is async but we can't wait
+    return true;
   }
   
-  // Method 2: iOS Safari fallback using textarea (more reliable than input)
-  return new Promise((resolve) => {
-    const textarea = document.createElement('textarea');
-    textarea.value = text;
-    textarea.style.cssText = 'position:fixed;top:0;left:0;width:2em;height:2em;padding:0;border:none;outline:none;box-shadow:none;background:transparent;font-size:16px;';
-    document.body.appendChild(textarea);
-    
-    if (/ipad|ipod|iphone/i.test(navigator.userAgent)) {
-      // iOS specific handling
-      textarea.contentEditable = true;
-      textarea.readOnly = false;
-      
-      // Create a range and selection
-      const range = document.createRange();
-      range.selectNodeContents(textarea);
-      
-      const selection = window.getSelection();
-      selection.removeAllRanges();
-      selection.addRange(range);
-      
-      // Set selection range for iOS
-      textarea.setSelectionRange(0, 999999);
-    } else {
-      textarea.focus();
-      textarea.select();
-    }
-    
-    let success = false;
-    try {
-      success = document.execCommand('copy');
-    } catch (e) {
-      console.log('execCommand failed:', e);
-    }
-    
-    document.body.removeChild(textarea);
-    window.getSelection()?.removeAllRanges();
-    
-    resolve(success);
-  });
+  // Fallback for older iOS - use a textarea (more reliable than input)
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.style.position = 'fixed';
+  textarea.style.left = '-9999px';
+  textarea.style.top = '0';
+  textarea.style.fontSize = '16px'; // Prevent iOS zoom
+  textarea.setAttribute('readonly', ''); // Prevent keyboard on mobile
+  
+  document.body.appendChild(textarea);
+  
+  // iOS specific selection method
+  const range = document.createRange();
+  const selection = window.getSelection();
+  
+  textarea.focus();
+  textarea.setSelectionRange(0, text.length);
+  
+  let success = false;
+  try {
+    success = document.execCommand('copy');
+    console.log('execCommand result:', success);
+  } catch (err) {
+    console.error('execCommand error:', err);
+  }
+  
+  document.body.removeChild(textarea);
+  
+  return success;
 };
-
 
 React.useEffect(() => {
   const params = new URLSearchParams(window.location.search);
@@ -3452,23 +3442,20 @@ if (isMobile) {
 
 <button
   disabled={isSaving}
-  onClick={async () => {
+  onClick={() => {
     if (!shareLink) {
-      // No link yet - generate one
-      await generateShareLink();
+      generateShareLink();
     } else if (copied) {
-      // Just copied - now generate new link
       setCopied(false);
       setShareLink("");
-      await generateShareLink();
+      generateShareLink();
     } else {
-      // Link exists, not yet copied - copy it
-      const success = await copyToClipboard(shareLink);
-      // Always set copied to true so user knows it worked (or can try New link)
+      // Copy and always show success (iOS often copies even when returning false)
+      copyToClipboard(shareLink);
       setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
   }}
-  
   style={{
     padding: "10px 16px",
     background: shareLink ? "#222" : "transparent",
@@ -3484,7 +3471,7 @@ if (isMobile) {
     whiteSpace: "nowrap",
   }}
 >
-  {isSaving ? "Saving…" : copied ? "New link" : shareLink ? "Copy" : "Generate"}
+  {isSaving ? "Saving…" : copied ? "✓ Copied!" : shareLink ? "Copy" : "Generate"}
 </button>
 
   {shareLink && !copied && (
@@ -4536,35 +4523,46 @@ if (isMobile) {
     onClick={(e) => e.target.select()}
   />
 
-  <button
-    disabled={isSaving}
-    onClick={async () => {
-      if (!shareLink) {
-        await generateShareLink();
+<button
+  disabled={isSaving}
+  onClick={() => {
+    if (!shareLink) {
+      // No link yet - generate one
+      generateShareLink();
+    } else if (copied) {
+      // Just copied - now generate new link
+      setCopied(false);
+      setShareLink("");
+      generateShareLink();
+    } else {
+      // Link exists - copy it NOW (synchronously)
+      const success = copyToClipboard(shareLink);
+      if (success) {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
       } else {
-        const success = await copyToClipboard(shareLink);
-        if (success) {
-          setCopied(true);
-          setTimeout(() => setCopied(false), 1500);
-        }
+        // Show the link is selected so user can manually copy
+        alert('Please manually copy the link above');
       }
-    }}
-    style={{
-      padding: "10px 16px",
-      background: "#222",
-      color: "#fff",
-      border: "1px solid #222",
-      borderRadius: 10,
-      fontFamily: "'Hoover', sans serif",
-      fontSize: 13,
-      fontWeight: 600,
-      cursor: isSaving ? "not-allowed" : "pointer",
-      opacity: isSaving ? 0.6 : 1,
-      whiteSpace: "nowrap",
-    }}
-  >
-    {isSaving ? "Saving…" : copied ? "✓ Copied!" : shareLink ? "Copy" : "Generate"}
-  </button>
+    }
+  }}
+  style={{
+    padding: "10px 16px",
+    background: shareLink ? "#222" : "transparent",
+    color: shareLink ? "#fff" : "#222",
+    border: "1px solid #222",
+    borderRadius: 10,
+    fontFamily: "'Hoover', sans serif",
+    fontSize: 13,
+    fontWeight: 600,
+    cursor: isSaving ? "not-allowed" : "pointer",
+    opacity: isSaving ? 0.6 : 1,
+    transition: "all 0.2s ease",
+    whiteSpace: "nowrap",
+  }}
+>
+  {isSaving ? "Saving…" : copied ? "✓ Copied!" : shareLink ? "Copy" : "Generate"}
+</button>
 
   {shareLink && !copied && (
     <button
