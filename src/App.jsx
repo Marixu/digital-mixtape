@@ -1411,17 +1411,23 @@ const startRecording = async () => {
     console.log('MediaRecorder created, state:', recorder.state, 'mimeType:', recorder.mimeType);
     
     recorder.ondataavailable = (e) => {
-      console.log('Data available event, size:', e.data?.size);
-      if (e.data && e.data.size > 0) {
-        audioChunksRef.current.push(e.data);
-      }
-    };
+  console.log('Data available event, size:', e.data?.size, 'type:', e.data?.type);
+  if (e.data && e.data.size > 0) {
+    audioChunksRef.current.push(e.data);
+    console.log('Total chunks now:', audioChunksRef.current.length);
+  }
+};
     
    recorder.onstop = async () => {
   console.log('Recording stopped, chunks:', audioChunksRef.current.length);
   const ext = audioChunksRef.current.fileExtension || 'm4a';
   
   stream.getTracks().forEach(track => track.stop());
+  
+  // Give a small delay for any final ondataavailable to fire (desktop fix)
+  await new Promise(resolve => setTimeout(resolve, 100));
+  
+  console.log('After delay, chunks:', audioChunksRef.current.length);
   
   if (audioChunksRef.current.length === 0) {
     alert('No audio was recorded. Please try again.');
@@ -1435,7 +1441,7 @@ const startRecording = async () => {
     type: recorder.mimeType || 'audio/mp4' 
   });
   
-  console.log('Created blob:', audioBlob.size, 'bytes');
+  console.log('Created blob:', audioBlob.size, 'bytes, type:', audioBlob.type);
   
   // Use recording time as fallback duration (in seconds)
   const fallbackDuration = recordingTime;
@@ -1463,8 +1469,12 @@ const startRecording = async () => {
       setRecordingTime(0);
     };
     
-    // Start recording - iOS needs timeslice for ondataavailable to fire
+    // Start recording
+    // iOS needs timeslice, desktop works better with it too for consistent behavior
+    // But we also need to handle the final chunk on stop
     recorder.start(1000); // Get data every 1 second
+    
+    console.log('Recording started, state:', recorder.state, 'mimeType:', recorder.mimeType);
     setIsRecording(true);
     
     console.log('Recording started, state:', recorder.state);
@@ -1494,6 +1504,12 @@ const startRecording = async () => {
 const stopRecording = () => {
   if (mediaRecorderRef.current && isRecording) {
     setIsProcessingRecording(true);
+    
+    // Request any remaining data before stopping (important for desktop!)
+    if (mediaRecorderRef.current.state === 'recording') {
+      mediaRecorderRef.current.requestData();
+    }
+    
     mediaRecorderRef.current.stop();
     setIsRecording(false);
     clearInterval(recordingIntervalRef.current);
