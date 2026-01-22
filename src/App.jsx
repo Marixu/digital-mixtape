@@ -224,6 +224,27 @@ const FONT_OPTIONS = [
   { label: "Comico", fontFamily: "'Comico', cursive" },
   { label: "Melodrama", fontFamily: "'Melodrama', serif" },
   { label: "JetBrains Mono", fontFamily: "'JetBrains Mono', sans-serif" },
+  { label: "Hoover", fontFamily: "'Hoover', sans-serif"},
+  { label: "Array", fontFamily: "'Array', sans-serif"},
+  { label: "Clash Display", fontFamily: "'Clash Display', sans-serif"},
+  { label: "Poppins", fontFamily: "'Poppins', sans-serif"},
+{ label: "Teko", fontFamily: "'Teko', sans-serif"},
+{ label: "Archivo", fontFamily: "'Archivo', sans-serif"},
+{ label: "Manrope", fontFamily: "'Manrope', sans-serif"},
+{ label: "New Title",fontFamily: "'New Title', serif"},
+{ label: "Kihim", fontFamily: "'Kihim', sans-serif"},
+{ label: "Kola", fontFamily: "'Kola', sans-serif"},
+{ label: "Bebas Neue", fontFamily: "'Bebas Neue', sans-serif"},
+{ label: "Chillax", fontFamily: "'Chillax', sans-serif"},
+{ label: "Britney", fontFamily: "'Britney', cursive"},
+{ label: "Bonny", fontFamily: "'Bonny', serif"},
+{ label: "Pramukh Rounded", fontFamily: "'Pramukh Rounded', sans-serif"},
+{ label: "Pencerio", fontFamily: "'Pencerio', cursive"},
+{ label: "Quilon", fontFamily: "'Quilon', sans-serif"},
+{ label: "Gambarino", fontFamily: "'Gambarino', serif"},
+{ label: "Zodiak", fontFamily: "'Zodiak', serif"},
+{ label: "Panchang", fontFamily: "'Panchang', sans-serif"},
+
 ];
 
 // Load webp frames for iOS and Safari on mount - OPTIMIZED
@@ -1839,6 +1860,9 @@ if (isMobile) {
 
 
 
+if (appMode === "receiver" && !isReceiverReady) {
+  return <ReceiverLoading />;
+}
 
   return (
     <div 
@@ -3138,7 +3162,7 @@ if (isMobile) {
     onChange={(e) => setTextSize(Number(e.target.value))}
     style={{ ...styles.select, flex: "0 1 70px", minWidth: 60 }}
   >
-    {[20, 24, 32, 36, 40].map(size => (
+    {[14, 16, 20, 24, 32, 36, 40].map(size => (
       <option key={size} value={size}>{size}px</option>
     ))}
   </select>
@@ -4200,7 +4224,7 @@ if (isMobile) {
     onChange={(e) => setTextSize(Number(e.target.value))}
     style={{ ...styles.select, flex: "0 1 70px", minWidth: 60 }}
   >
-    {[20, 24, 32, 36, 40].map(size => (
+    {[14, 16, 20, 24, 32, 36, 40].map(size => (
       <option key={size} value={size}>{size}px</option>
     ))}
   </select>
