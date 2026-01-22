@@ -1140,7 +1140,7 @@ const safeUUID = () =>
 const getDurationSafe = (url) =>
   new Promise((resolve) => {
     const a = new Audio();
-    a.preload = "auto"; // Load more than just metadata
+    a.preload = "auto";
 
     const done = (val) => {
       cleanup();
@@ -1151,26 +1151,29 @@ const getDurationSafe = (url) =>
       a.onloadedmetadata = null;
       a.ondurationchange = null;
       a.oncanplaythrough = null;
+      a.onloadeddata = null;
       a.onerror = null;
       clearTimeout(t);
     };
 
-    // Sometimes duration is available on loadedmetadata
     a.onloadedmetadata = () => {
       if (Number.isFinite(a.duration) && a.duration > 0) {
         done(a.duration);
       }
-      // Otherwise wait for durationchange or canplaythrough
     };
 
-    // Duration might update after initial load
     a.ondurationchange = () => {
       if (Number.isFinite(a.duration) && a.duration > 0) {
         done(a.duration);
       }
     };
 
-    // Final fallback - should have duration by now
+    a.onloadeddata = () => {
+      if (Number.isFinite(a.duration) && a.duration > 0) {
+        done(a.duration);
+      }
+    };
+
     a.oncanplaythrough = () => {
       const d = Number.isFinite(a.duration) ? a.duration : 0;
       done(d);
@@ -1179,12 +1182,21 @@ const getDurationSafe = (url) =>
     a.onerror = () => done(0);
 
     const t = setTimeout(() => {
-      // Last resort - use whatever we have
-      const d = Number.isFinite(a.duration) ? a.duration : 0;
-      done(d);
-    }, 5000);
+      // For voice recordings, use the actual audio duration or estimate
+      if (Number.isFinite(a.duration) && a.duration > 0) {
+        done(a.duration);
+      } else {
+        // Force load and try one more time
+        a.load();
+        setTimeout(() => {
+          const d = Number.isFinite(a.duration) ? a.duration : 0;
+          done(d);
+        }, 500);
+      }
+    }, 3000);
     
     a.src = url;
+    a.load();
   });
 
 
@@ -1281,7 +1293,7 @@ const { error: uploadError } = await supabase.storage
         continue;
       }
 
-      const { data: pub } = supabase.storage.from("Mixtape").getPublicUrl(uploadFileName);
+     const { data: pub } = supabase.storage.from("Mixtape").getPublicUrl(uploadFileName);
       const audioUrl = pub?.publicUrl;
 
       if (!audioUrl) {
@@ -1289,7 +1301,13 @@ const { error: uploadError } = await supabase.storage
         continue;
       }
 
-      const duration = await getDurationSafe(audioUrl);
+      let duration = await getDurationSafe(audioUrl);
+      
+      // Use fallback duration from voice recording if getDurationSafe failed
+      if ((!duration || duration === 0) && file.fallbackDuration) {
+        duration = file.fallbackDuration;
+        console.log('Using fallback duration:', duration);
+      }
 
       setTracks((prev) => [
         ...prev,
@@ -1399,7 +1417,7 @@ const startRecording = async () => {
       }
     };
     
-    recorder.onstop = async () => {
+   recorder.onstop = async () => {
   console.log('Recording stopped, chunks:', audioChunksRef.current.length);
   const ext = audioChunksRef.current.fileExtension || 'm4a';
   
@@ -1409,7 +1427,7 @@ const startRecording = async () => {
     alert('No audio was recorded. Please try again.');
     setShowVoiceRecorder(false);
     setRecordingTime(0);
-    setIsProcessingRecording(false);  // ← ADD THIS
+    setIsProcessingRecording(false);
     return;
   }
   
@@ -1419,16 +1437,22 @@ const startRecording = async () => {
   
   console.log('Created blob:', audioBlob.size, 'bytes');
   
+  // Use recording time as fallback duration (in seconds)
+  const fallbackDuration = recordingTime;
+  
   const fileName = `voice-memo-${Date.now()}.${ext}`;
   const file = new File([audioBlob], fileName, { 
     type: recorder.mimeType || 'audio/mp4' 
   });
   
+  // Store fallback duration before calling handleSongFiles
+  file.fallbackDuration = fallbackDuration;
+  
   await handleSongFiles([file]);
   
   setShowVoiceRecorder(false);
   setRecordingTime(0);
-  setIsProcessingRecording(false);  // ← ADD THIS
+  setIsProcessingRecording(false);
 };
     
     recorder.onerror = (e) => {
@@ -4001,8 +4025,6 @@ if (isMobile) {
   </div>
   
   
-
-// Voice Recorder Button
 <button
   onClick={() => {
     if (!navigator.mediaDevices?.getUserMedia) {
