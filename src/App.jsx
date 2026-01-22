@@ -903,54 +903,58 @@ async function generateShareLink() {
   }
 }
 
-
 const copyToClipboard = async (text) => {
-  // Method 1: Modern Clipboard API
+  // Method 1: Modern Clipboard API (works on most browsers)
   if (navigator.clipboard && window.isSecureContext) {
     try {
       await navigator.clipboard.writeText(text);
       return true;
     } catch (e) {
-      console.log('Clipboard API failed:', e);
+      console.log('Clipboard API failed, trying fallback:', e);
     }
   }
   
-  // Method 2: iOS Safari fallback using input element
-  const input = document.createElement('input');
-  input.setAttribute('readonly', '');
-  input.setAttribute('contenteditable', 'true');
-  input.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.01;width:100px;height:40px;padding:10px;border:none;outline:none;background:transparent;z-index:99999;font-size:16px;';
-  input.value = text;
-  
-  document.body.appendChild(input);
-  
-  // iOS-specific selection
-  if (/ipad|ipod|iphone/i.test(navigator.userAgent)) {
-    input.contentEditable = true;
-    input.readOnly = false;
-    const range = document.createRange();
-    range.selectNodeContents(input);
-    const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
-    input.setSelectionRange(0, text.length);
-  } else {
-    input.focus();
-    input.select();
-  }
-  
-  let success = false;
-  try {
-    success = document.execCommand('copy');
-  } catch (e) {
-    console.log('execCommand failed:', e);
-  }
-  
-  document.body.removeChild(input);
-  window.getSelection()?.removeAllRanges();
-  
-  return success;
+  // Method 2: iOS Safari fallback using textarea (more reliable than input)
+  return new Promise((resolve) => {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.cssText = 'position:fixed;top:0;left:0;width:2em;height:2em;padding:0;border:none;outline:none;box-shadow:none;background:transparent;font-size:16px;';
+    document.body.appendChild(textarea);
+    
+    if (/ipad|ipod|iphone/i.test(navigator.userAgent)) {
+      // iOS specific handling
+      textarea.contentEditable = true;
+      textarea.readOnly = false;
+      
+      // Create a range and selection
+      const range = document.createRange();
+      range.selectNodeContents(textarea);
+      
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      
+      // Set selection range for iOS
+      textarea.setSelectionRange(0, 999999);
+    } else {
+      textarea.focus();
+      textarea.select();
+    }
+    
+    let success = false;
+    try {
+      success = document.execCommand('copy');
+    } catch (e) {
+      console.log('execCommand failed:', e);
+    }
+    
+    document.body.removeChild(textarea);
+    window.getSelection()?.removeAllRanges();
+    
+    resolve(success);
+  });
 };
+
 
 React.useEffect(() => {
   const params = new URLSearchParams(window.location.search);
@@ -3446,35 +3450,42 @@ if (isMobile) {
     onClick={(e) => e.target.select()}
   />
 
-  <button
-    disabled={isSaving}
-    onClick={async () => {
-      if (!shareLink) {
-        await generateShareLink();
-      } else {
-        const success = await copyToClipboard(shareLink);
-        if (success) {
-          setCopied(true);
-          setTimeout(() => setCopied(false), 1500);
-        }
-      }
-    }}
-    style={{
-      padding: "10px 16px",
-      background: "#222",
-      color: "#fff",
-      border: "1px solid #222",
-      borderRadius: 10,
-      fontFamily: "'Hoover', sans serif",
-      fontSize: 13,
-      fontWeight: 600,
-      cursor: isSaving ? "not-allowed" : "pointer",
-      opacity: isSaving ? 0.6 : 1,
-      whiteSpace: "nowrap",
-    }}
-  >
-    {isSaving ? "Saving…" : copied ? "✓ Copied!" : shareLink ? "Copy" : "Generate"}
-  </button>
+<button
+  disabled={isSaving}
+  onClick={async () => {
+    if (!shareLink) {
+      // No link yet - generate one
+      await generateShareLink();
+    } else if (copied) {
+      // Just copied - now generate new link
+      setCopied(false);
+      setShareLink("");
+      await generateShareLink();
+    } else {
+      // Link exists, not yet copied - copy it
+      const success = await copyToClipboard(shareLink);
+      // Always set copied to true so user knows it worked (or can try New link)
+      setCopied(true);
+    }
+  }}
+  
+  style={{
+    padding: "10px 16px",
+    background: shareLink ? "#222" : "transparent",
+    color: shareLink ? "#fff" : "#222",
+    border: "1px solid #222",
+    borderRadius: 10,
+    fontFamily: "'Hoover', sans serif",
+    fontSize: 13,
+    fontWeight: 600,
+    cursor: isSaving ? "not-allowed" : "pointer",
+    opacity: isSaving ? 0.6 : 1,
+    transition: "all 0.2s ease",
+    whiteSpace: "nowrap",
+  }}
+>
+  {isSaving ? "Saving…" : copied ? "New link" : shareLink ? "Copy" : "Generate"}
+</button>
 
   {shareLink && !copied && (
     <button
