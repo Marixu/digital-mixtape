@@ -4002,7 +4002,7 @@ if (isMobile) {
   
   
 
-{/* Voice Recorder Button */}
+// Voice Recorder Button
 <button
   onClick={() => {
     if (!navigator.mediaDevices?.getUserMedia) {
@@ -4016,8 +4016,9 @@ if (isMobile) {
       return;
     }
 
-    // Just show the modal - user will click Start Recording
+    // Show modal AND start recording
     setShowVoiceRecorder(true);
+    startRecording();
   }}
   style={{
     marginTop: 20,
