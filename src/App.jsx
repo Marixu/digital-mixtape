@@ -142,6 +142,8 @@ const tapeFrameIndex = React.useRef(0);
 const rollerFrameIndex = React.useRef(0);
 const animationRef = React.useRef(null);
 
+
+
 // ✅ NEW - safe default, then adjust after mount
 const [textSize, setTextSize] = React.useState(24);
 
@@ -866,7 +868,19 @@ async function generateShareLink() {
         mixtapeImage,
         labelOverlay,
         uploadedLabelImage,
-        // ... add all your state here
+        labelImageScale,
+        labelImagePos,
+        labelImageRotation,
+        labelMessage,
+        labelMessagePos,
+        textFont,
+        textSize,
+        textColor,
+        stickersOnTape,
+        siteBackground,
+        glowEnabled,
+        glowColor,
+        isDarkBg,
       },
       created_at: new Date().toISOString(),
     };
@@ -1047,7 +1061,6 @@ React.useEffect(() => {
   }
 }, []);
 
-
 function ReceiverLoading() {
   return (
     <div
@@ -1061,6 +1074,9 @@ function ReceiverLoading() {
         background: "#ffffff",
         fontFamily: "'Hoover', sans-serif",
         gap: 24,
+        position: "fixed",
+        inset: 0,
+        zIndex: 9999,
       }}
     >
       {/* Skeleton tape shape */}
@@ -1093,8 +1109,33 @@ function ReceiverLoading() {
   );
 }
 
+
   /* ---------- Upload label image ---------- */
-  const handleLabelUpload = (file) => {
+ const handleLabelUpload = async (file) => {
+  const fileName = file.name.toLowerCase();
+  
+  // Check if it's a HEIC file
+  if (fileName.endsWith('.heic') || fileName.endsWith('.heif')) {
+    try {
+      // Dynamically import heic2any library
+      const heic2any = (await import('heic2any')).default;
+      
+      const convertedBlob = await heic2any({
+        blob: file,
+        toType: 'image/jpeg',
+        quality: 0.9,
+      });
+      
+      const imageUrl = URL.createObjectURL(convertedBlob);
+      setUploadedLabelImage(imageUrl);
+    } catch (err) {
+      console.error('HEIC conversion failed:', err);
+      alert('Could not convert HEIC image. Please use JPG or PNG instead.');
+    }
+    return;
+  }
+  
+  // Regular image handling
   const imageUrl = URL.createObjectURL(file);
   setUploadedLabelImage(imageUrl);
 };
@@ -1836,12 +1877,13 @@ const finishMixtape = () => {
 
 
 if (isMobile) {
-  // Show loading screen for receivers until mixtape is loaded
-  if (appMode === "receiver" && !isReceiverReady) {
+  // Show loading screen for receivers until mixtape is FULLY loaded (including isHydrated)
+  if (appMode === "receiver" && (!isReceiverReady || !isHydrated)) {
     return (
       <div
         style={{
           minHeight: "100vh",
+          minHeight: "100dvh",
           width: "100%",
           display: "flex",
           alignItems: "center",
@@ -1851,18 +1893,15 @@ if (isMobile) {
           fontSize: 18,
           letterSpacing: 1,
           color: "#888",
+          position: "fixed",
+          inset: 0,
+          zIndex: 9999, 
         }}
       >
         Loading mixtape…
       </div>
     );
   }
-
-
-
-if (appMode === "receiver" && !isReceiverReady) {
-  return <ReceiverLoading />;
-}
 
   return (
     <div 
@@ -3128,7 +3167,7 @@ if (appMode === "receiver" && !isReceiverReady) {
     Upload Image
     <input
       type="file"
-      accept="image/png, image/jpeg"
+      accept="image/png, image/jpeg, image/heic, image/heif, .heic, .heif"
       onChange={(e) => {
         const f = e.target.files?.[0];
         if (f) handleLabelUpload(f);
@@ -3389,7 +3428,7 @@ if (appMode === "receiver" && !isReceiverReady) {
   Send this link to share your mixtape
 </p>
 
-<div style={{ display: "flex", gap: 10 }}>
+<div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
   <input
     type="text"
     value={shareLink}
@@ -3401,42 +3440,66 @@ if (appMode === "receiver" && !isReceiverReady) {
       fontSize: 13,
       color: "#555",
       cursor: "text",
+      flex: "1 1 150px",
+      minWidth: 0,
     }}
     onClick={(e) => e.target.select()}
   />
 
-<button
-  disabled={isSaving}
-  onClick={async () => {
-    if (shareLink) {
-      // Just copy existing link
-      const success = await copyToClipboard(shareLink);
-      if (success) {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+  <button
+    disabled={isSaving}
+    onClick={async () => {
+      if (!shareLink) {
+        await generateShareLink();
+      } else {
+        const success = await copyToClipboard(shareLink);
+        if (success) {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1500);
+        }
       }
-    } else {
-      // Generate new link
-      await generateShareLink();
-    }
-  }}
-  style={{
-    padding: "10px 16px",
-    background: shareLink ? "#222" : "transparent",
-    color: shareLink ? "#fff" : "#222",
-    border: "1px solid #222",
-    borderRadius: 10,
-    fontFamily: "'Hoover', sans serif",
-    fontSize: 13,
-    fontWeight: 600,
-    cursor: isSaving ? "not-allowed" : "pointer",
-    opacity: isSaving ? 0.6 : 1,
-    transition: "all 0.2s ease",
-    whiteSpace: "nowrap",
-  }}
->
-  {isSaving ? "Saving…" : copied ? "✓ Copied!" : shareLink ? "Copy" : "Generate"}
-</button>
+    }}
+    style={{
+      padding: "10px 16px",
+      background: "#222",
+      color: "#fff",
+      border: "1px solid #222",
+      borderRadius: 10,
+      fontFamily: "'Hoover', sans serif",
+      fontSize: 13,
+      fontWeight: 600,
+      cursor: isSaving ? "not-allowed" : "pointer",
+      opacity: isSaving ? 0.6 : 1,
+      whiteSpace: "nowrap",
+    }}
+  >
+    {isSaving ? "Saving…" : copied ? "✓ Copied!" : shareLink ? "Copy" : "Generate"}
+  </button>
+
+  {shareLink && !copied && (
+    <button
+      disabled={isSaving}
+      onClick={async () => {
+        setShareLink("");
+        await generateShareLink();
+      }}
+      style={{
+        padding: "10px 12px",
+        background: "transparent",
+        color: "#222",
+        border: "1px solid #ccc",
+        borderRadius: 10,
+        fontFamily: "'Hoover', sans serif",
+        fontSize: 13,
+        fontWeight: 500,
+        cursor: isSaving ? "not-allowed" : "pointer",
+        opacity: isSaving ? 0.6 : 1,
+        whiteSpace: "nowrap",
+      }}
+    >
+      New link
+    </button>
+  )}
 </div>
 
 
@@ -4444,7 +4507,7 @@ if (appMode === "receiver" && !isReceiverReady) {
   Send this link to share your mixtape
 </p>
 
-<div style={{ display: "flex", gap: 10 }}>
+<div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
   <input
     type="text"
     value={shareLink}
@@ -4456,32 +4519,66 @@ if (appMode === "receiver" && !isReceiverReady) {
       fontSize: 13,
       color: "#555",
       cursor: "text",
+      flex: "1 1 150px",
+      minWidth: 0,
     }}
     onClick={(e) => e.target.select()}
   />
 
-<button
-  style={{
-    ...styles.cta,
-    whiteSpace: "nowrap",
-    opacity: isSaving ? 0.6 : 1,
-    cursor: isSaving ? "not-allowed" : "pointer",
-  }}
-  disabled={isSaving}
-  onClick={async () => {
-    if (shareLink) {
-      const success = await copyToClipboard(shareLink);
-      if (success) {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+  <button
+    disabled={isSaving}
+    onClick={async () => {
+      if (!shareLink) {
+        await generateShareLink();
+      } else {
+        const success = await copyToClipboard(shareLink);
+        if (success) {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1500);
+        }
       }
-    } else {
-      await generateShareLink();
-    }
-  }}
->
-  {isSaving ? "Saving…" : copied ? "✓ Copied!" : shareLink ? "Copy" : "Generate"}
-</button>
+    }}
+    style={{
+      padding: "10px 16px",
+      background: "#222",
+      color: "#fff",
+      border: "1px solid #222",
+      borderRadius: 10,
+      fontFamily: "'Hoover', sans serif",
+      fontSize: 13,
+      fontWeight: 600,
+      cursor: isSaving ? "not-allowed" : "pointer",
+      opacity: isSaving ? 0.6 : 1,
+      whiteSpace: "nowrap",
+    }}
+  >
+    {isSaving ? "Saving…" : copied ? "✓ Copied!" : shareLink ? "Copy" : "Generate"}
+  </button>
+
+  {shareLink && !copied && (
+    <button
+      disabled={isSaving}
+      onClick={async () => {
+        setShareLink("");
+        await generateShareLink();
+      }}
+      style={{
+        padding: "10px 12px",
+        background: "transparent",
+        color: "#222",
+        border: "1px solid #ccc",
+        borderRadius: 10,
+        fontFamily: "'Hoover', sans serif",
+        fontSize: 12,
+        fontWeight: 500,
+        cursor: isSaving ? "not-allowed" : "pointer",
+        opacity: isSaving ? 0.6 : 1,
+        whiteSpace: "nowrap",
+      }}
+    >
+      New link
+    </button>
+  )}
 </div>
 
 
@@ -4767,17 +4864,8 @@ if (appMode === "receiver" && !isReceiverReady) {
 )}
 
 
-{/* Uploaded image clipped to crop.webp shape */}
-{uploadedLabelImage && (
-  <div
-  style={{
-    position: "absolute",
-    inset: 0,
-    zIndex: activeObject === "label-image" ? 90 : 40,
-    pointerEvents: "none",
-  }}
->
 
+{/* Uploaded image clipped to crop.webp shape */}
 {uploadedLabelImage && (
   <div
   data-selectable
@@ -4841,91 +4929,70 @@ if (appMode === "receiver" && !isReceiverReady) {
         backfaceVisibility: "hidden",
       }}
     />
-
-    {/* UI */}
-    {isEditable && activeObject === "label-image" && (
-      <>
-        <div
-          style={{
-          }}
-        />
-      </>
-    )}
   </div>
 )}
 
+{/* Controls OUTSIDE the mask so they're not clipped */}
+{uploadedLabelImage && isEditable && activeObject === "label-image" && (
+  <>
+    {/* scale */}
+    <div
+      onPointerDown={(e) => {
+        if (!isEditable) return;
+        e.stopPropagation();
+        dragRef.current = {
+          type: "scale-label",
+          startScale: labelImageScale,
+          startMouseX: e.clientX,
+        };
+      }}
+      style={{
+        position: "absolute",
+        right: "3%",
+        top: "44%",
+        cursor: "ew-resize",
+        fontSize: 18,
+        userSelect: "none",
+        pointerEvents: "auto",
+        zIndex: 200,
+      }}
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="#202020">
+        <path d="M9.5 13.09l1.41 1.41-4.5 4.5H10v2H3v-7h2v3.59l4.5-4.5zm1.41-3.59L9.5 10.91 5 6.41V10H3V3h7v2H6.41l4.5 4.5zm3.59 3.59l4.5 4.5V14h2v7h-7v-2h3.59l-4.5-4.5 1.41-1.41zM14.5 10.91l-1.41-1.41 4.5-4.5H14V3h7v7h-2V6.41l-4.5 4.5z"/>
+      </svg>
+    </div>
 
-
-    {isEditable && activeObject === "label-image" && (
-      <>
-        {/* bounding box */}
-        <div
-          style={{
-          }}
-        />
-
-        {/* scale */}
-        <div
-          onPointerDown={(e) => {
-            if (!isEditable) return;
-
-            e.stopPropagation();
-            dragRef.current = {
-              type: "scale-label",
-              startScale: labelImageScale,
-              startMouseX: e.clientX,
-            };
-          }}
-          style={{
-            position: "absolute",
-            right: 20,
-            top: "46%",
-            cursor: isEditable ? "ew-resize": "default",
-            fontSize: 18,
-            userSelect: "none",
-            pointerEvents: "auto",
-            zIndex: 200,
-          }}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="#202020">
-  <path d="M9.5 13.09l1.41 1.41-4.5 4.5H10v2H3v-7h2v3.59l4.5-4.5zm1.41-3.59L9.5 10.91 5 6.41V10H3V3h7v2H6.41l4.5 4.5zm3.59 3.59l4.5 4.5V14h2v7h-7v-2h3.59l-4.5-4.5 1.41-1.41zM14.5 10.91l-1.41-1.41 4.5-4.5H14V3h7v7h-2V6.41l-4.5 4.5z"/>
-</svg>
-        </div>
-
-        {/* rotate */}
-        <div
-          onPointerDown={(e) => {
-            if (!isEditable) return;
-
-            e.stopPropagation();
-            dragRef.current = {
-              type: "rotate-label",
-              startRotation: labelImageRotation,
-              startMouseY: e.clientY,
-            };
-          }}
-            style={{
-              position: "absolute",
-              left: "-5%",
-              top: "-30%",
-              transform: "translateX(-50%) rotate(-220deg)",
-              cursor: isEditable ? "grab": "default",
-              padding: "3px 8px",
-              color: "#202020ff",
-              fontSize: 18,
-              fontWeight: 700,
-              userSelect: "none",
-              pointerEvents: "auto",
-            }}
-
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="#202020">
-  <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-</svg>
-        </div>
-      </>
-    )}
-  </div>
+    {/* rotate */}
+    <div
+      onPointerDown={(e) => {
+        if (!isEditable) return;
+        e.stopPropagation();
+        dragRef.current = {
+          type: "rotate-label",
+          startRotation: labelImageRotation,
+          startMouseY: e.clientY,
+        };
+      }}
+      style={{
+        position: "absolute",
+        left: "7%",
+        top: "9%",
+        transform: "rotate(-220deg)",
+        cursor: "grab",
+        padding: "3px 8px",
+        color: "#202020",
+        fontSize: 18,
+        fontWeight: 700,
+        userSelect: "none",
+        pointerEvents: "auto",
+        zIndex: 200,
+      }}
+    >
+      <svg width="25" height="25" viewBox="0 0 24 24" fill="#202020">
+        <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+      </svg>
+    </div>
+  </>
 )}
 
 
